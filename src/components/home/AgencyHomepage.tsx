@@ -8,7 +8,6 @@ import {
   Star,
 } from "lucide-react";
 import { AnimatedGrowthDashboard, AnimatedGrowthSignals, AnimatedProcess } from "./AgencyAnimations";
-import InfiniteMobileRail from "./InfiniteMobileRail";
 
 const experts = [
   { name: "Rohit Mehra", role: "Performance Marketing Solution Provider", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png", companyLogo: "/company-logos/zomato-logo-transparent.png", company: "Zomato" },
@@ -140,9 +139,9 @@ export default function AgencyHomepage() {
       <section className="border-y border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading title="Prominent Solution Providers Who've Done It at Scale" />
-          <InfiniteMobileRail label="Solution providers">
+          <div aria-label="Solution providers" className="mobile-momentum-scroll flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 scrollbar-hide md:hidden">
             {experts.map((expert) => <ExpertCard key={expert.name} expert={expert} mobile />)}
-          </InfiniteMobileRail>
+          </div>
           <div className="hidden grid-cols-2 gap-3 md:grid lg:grid-cols-4">
             {experts.map((expert) => <ExpertCard key={expert.name} expert={expert} />)}
           </div>
@@ -196,9 +195,9 @@ export default function AgencyHomepage() {
       <section id="case-studies" className="bg-white py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading title="From Zero to Results — Real Stories" />
-          <InfiniteMobileRail label="Case studies">
+          <div aria-label="Case studies" className="mobile-momentum-scroll flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 scrollbar-hide md:hidden">
             {caseStudies.map((study) => <CaseStudyCard key={study.tag} study={study} mobile />)}
-          </InfiniteMobileRail>
+          </div>
           <div className="hidden gap-5 md:grid md:grid-cols-3">
             {caseStudies.map((study) => <CaseStudyCard key={study.tag} study={study} />)}
           </div>
