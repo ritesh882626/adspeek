@@ -2,31 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  BarChart3,
-  FileSearch,
   MessageCircle,
-  Phone,
   Quote,
-  Rocket,
   ShieldCheck,
   Star,
-  TrendingUp,
-  Trophy,
 } from "lucide-react";
+import { AnimatedGrowthDashboard, AnimatedProcess } from "./AgencyAnimations";
 
 const experts = [
   { name: "Rohit Mehra", role: "Performance Marketing Solution Provider", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png", companyLogo: "/company-logos/zomato-logo.png", company: "Zomato" },
   { name: "Aditi Sharma", role: "Digital Strategy Solution Provider", credential: "Ex-PwC | Digital Strategy", image: "/consultants/priya.png", companyLogo: "/company-logos/pwc-logo.png", company: "PwC" },
   { name: "Karan Arora", role: "Growth Analytics Solution Provider", credential: "Ex-KPMG | Growth Analytics", image: "/consultants/vikram.png", companyLogo: "/company-logos/kpmg-logo.webp", company: "KPMG" },
   { name: "Nikhil Bansal", role: "Creative Strategy Solution Provider", credential: "Ex-Deloitte | Brand & Creative", image: "/consultants/rohan.png", companyLogo: "/company-logos/deloitte-logo.jpg", company: "Deloitte" },
-];
-
-const process = [
-  { title: "Discovery Call", body: "We understand your business, goals, and challenges.", icon: Phone },
-  { title: "Strategy & Audit", body: "We audit, research and build a data-led growth strategy.", icon: FileSearch },
-  { title: "Execution", body: "We launch high-impact campaigns with precision.", icon: Rocket },
-  { title: "Optimise & Scale", body: "We test, learn, and optimise to maximise performance.", icon: BarChart3 },
-  { title: "You Grow", body: "You get predictable growth and we keep scaling it.", icon: Trophy },
 ];
 
 const signals = [
@@ -36,7 +23,13 @@ const signals = [
   { value: "38%", label: "Average CAC Reduction" },
 ];
 
-const quickResults = ["3x ROAS in 45 Days", "6x Revenue in 60 Days", "70% CAC Reduction", "2.5x Revenue in 30 Days", "4x ROAS in 60 Days"];
+const customerWork = [
+  { image: "/results/results-section-1.jpg", brand: "Fashion Campaign", result: "3x ROAS in 45 Days" },
+  { image: "/results/results-section-2.webp", brand: "D2C Apparel", result: "6x Revenue in 60 Days" },
+  { image: "/results/results-section-3.jpeg", brand: "Pet Care Creative", result: "70% CAC Reduction" },
+  { image: "/results/results-section-4.jpg", brand: "Lifestyle Campaign", result: "2.5x Revenue in 30 Days" },
+  { image: "/results/results-section-5.jpeg", brand: "Motorsport Creative", result: "4x ROAS in 60 Days" },
+];
 
 const caseStudies = [
   {
@@ -62,7 +55,16 @@ const caseStudies = [
   },
 ];
 
-const platforms = ["Meta Ads", "Google Ads", "Razorpay", "Shopify", "WhatsApp Business", "Webflow"];
+const platforms = [
+  { name: "Meta Ads", icon: "/icons/meta.png" },
+  { name: "Google Ads", icon: "/icons/google.png" },
+  { name: "Figma", icon: "/icons/figma.png" },
+  { name: "LinkedIn", icon: "/icons/linkedin.png" },
+  { name: "Slack", icon: "/icons/slack.png" },
+  { name: "PayPal", icon: "/icons/paypal.png" },
+  { name: "Google Play", icon: "/icons/playstore.png" },
+  { name: "Adobe", icon: "/icons/after-effects.png" },
+];
 
 const testimonials = [
   { quote: "AdsPeek transformed our ad performance. We saw 3x ROAS in just 45 days!", name: "Ankit Bhatia", role: "Founder, Urban Monkey", initials: "AB" },
@@ -76,45 +78,6 @@ function SectionHeading({ eyebrow, title, body }: { eyebrow?: string; title: str
       {eyebrow && <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-[var(--accent)]">{eyebrow}</p>}
       <h2 className="text-[28px] font-black leading-[1.12] tracking-tight text-[var(--foreground)] md:text-4xl">{title}</h2>
       {body && <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[var(--muted)] md:text-base">{body}</p>}
-    </div>
-  );
-}
-
-function GrowthDashboard() {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-900/8 sm:p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-black text-[var(--foreground)]">Growth Overview</h2>
-        <span className="rounded-md border border-slate-200 px-2 py-1 text-[9px] font-bold text-[var(--muted)]">Last 30 Days</span>
-      </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {[['Ad Spend', '₹48,75,000'], ['ROAS', '4.8x'], ['Conversions', '12,540'], ['Revenue', '₹2.34Cr']].map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-slate-200 p-3">
-            <p className="text-[9px] font-bold uppercase tracking-wide text-[var(--muted)]">{label}</p>
-            <p className="mt-1 text-sm font-black text-[var(--foreground)]">{value}</p>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 grid grid-cols-[1fr_110px] gap-3 sm:grid-cols-[1fr_150px]">
-        <div className="rounded-xl border border-slate-200 p-3">
-          <p className="mb-3 text-[10px] font-bold text-[var(--muted)]">Performance Over Time</p>
-          <svg viewBox="0 0 420 160" className="h-32 w-full" role="img" aria-label="Rising performance chart">
-            <defs>
-              <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#2563eb" stopOpacity="0.2" />
-                <stop offset="1" stopColor="#2563eb" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            {[30, 70, 110, 150].map((y) => <line key={y} x1="0" y1={y} x2="420" y2={y} stroke="#e2e8f0" strokeWidth="1" />)}
-            <path d="M8 142 L60 92 L112 120 L164 62 L216 88 L268 28 L320 67 L372 20 L412 42 L412 158 L8 158 Z" fill="url(#chart-fill)" />
-            <path d="M8 142 L60 92 L112 120 L164 62 L216 88 L268 28 L320 67 L372 20 L412 42" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 p-3 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border-[8px] border-blue-100 border-t-blue-600 text-base font-black">72%</div>
-          <p className="mt-3 text-[10px] font-bold text-[var(--foreground)]">ROI Positive Campaigns</p>
-        </div>
-      </div>
     </div>
   );
 }
@@ -144,7 +107,7 @@ export default function AgencyHomepage() {
               </Link>
             </div>
           </div>
-          <GrowthDashboard />
+          <AnimatedGrowthDashboard />
         </div>
       </section>
 
@@ -153,9 +116,9 @@ export default function AgencyHomepage() {
           <SectionHeading title="Prominent Solution Providers Who've Done It at Scale" />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {experts.map((expert) => (
-              <article key={expert.name} className="relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-14 shadow-sm lg:block lg:p-5 lg:pr-14">
-                <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm" title={expert.company}>
-                  <Image src={expert.companyLogo} alt={`${expert.company} logo`} width={24} height={24} className="h-full w-full object-contain" />
+              <article key={expert.name} className="relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-24 shadow-sm lg:block lg:p-5 lg:pr-24">
+                <div className="absolute right-3 top-3 h-14 w-20" title={expert.company}>
+                  <Image src={expert.companyLogo} alt={`${expert.company} logo`} fill sizes="80px" className="object-contain" />
                 </div>
                 <Image src={expert.image} alt={expert.name} width={96} height={96} className="h-16 w-16 flex-shrink-0 rounded-full object-cover object-top lg:h-20 lg:w-20" />
                 <div className="min-w-0 lg:mt-4">
@@ -185,22 +148,7 @@ export default function AgencyHomepage() {
       <section className="bg-white py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading eyebrow="Our Process" title="How We Turn Your Goals Into Results" />
-          <div className="relative grid gap-4 md:grid-cols-5">
-            <div className="absolute left-[10%] right-[10%] top-5 hidden border-t border-dashed border-slate-300 md:block" />
-            {process.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <article key={step.title} className="relative flex gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:block md:border-0 md:p-3 md:text-center md:shadow-none">
-                  <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-600 md:mx-auto">{index + 1}</div>
-                  <div>
-                    <Icon size={34} className="mb-3 mt-1 text-[var(--foreground)] md:mx-auto md:mt-5" strokeWidth={1.5} />
-                    <h3 className="text-sm font-black text-[var(--foreground)]">{step.title}</h3>
-                    <p className="mt-2 text-xs leading-relaxed text-[var(--muted)]">{step.body}</p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <AnimatedProcess />
         </div>
       </section>
 
@@ -215,13 +163,21 @@ export default function AgencyHomepage() {
               </div>
             ))}
           </div>
-          <p className="mb-5 mt-10 text-center text-xs font-black uppercase tracking-[0.14em] text-[var(--muted)]">Results Our Clients Love</p>
-          <div className="flex snap-x gap-3 overflow-x-auto pb-2 scrollbar-hide lg:grid lg:grid-cols-5 lg:overflow-visible">
-            {quickResults.map((result) => (
-              <div key={result} className="w-[68vw] flex-shrink-0 snap-center rounded-xl border border-slate-200 bg-white p-4 lg:w-auto">
-                <div className="mb-3 flex h-20 items-center justify-center rounded-lg bg-slate-100"><TrendingUp size={24} className="text-[var(--accent)]" /></div>
-                <p className="text-center text-xs font-bold text-[var(--foreground)]">{result}</p>
-              </div>
+          <div className="mb-5 mt-10 text-center">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--accent)]">Customer Results &amp; Creative Work</p>
+            <p className="mt-2 text-sm text-[var(--muted)]">A selection of campaigns, creatives, and outcomes delivered for our clients.</p>
+          </div>
+          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 scrollbar-hide lg:grid lg:grid-cols-5 lg:overflow-visible">
+            {customerWork.map((work) => (
+              <article key={work.image} className="w-[76vw] flex-shrink-0 snap-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm sm:w-[45vw] lg:w-auto">
+                <div className="relative h-56 bg-slate-100 lg:h-48">
+                  <Image src={work.image} alt={work.brand} fill sizes="(max-width: 639px) 76vw, (max-width: 1023px) 45vw, 20vw" className="object-cover" />
+                </div>
+                <div className="p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[var(--muted)]">{work.brand}</p>
+                  <p className="mt-2 text-sm font-black text-[var(--foreground)]">{work.result}</p>
+                </div>
+              </article>
             ))}
           </div>
         </div>
@@ -233,8 +189,8 @@ export default function AgencyHomepage() {
           <div className="grid gap-5 md:grid-cols-3">
             {caseStudies.map((study) => (
               <article key={study.tag} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                <div className="relative h-44 overflow-hidden">
-                  <Image src={study.image} alt={study.tag} fill sizes="(max-width: 767px) 100vw, 33vw" className="object-cover" />
+                <div className="relative h-48 overflow-hidden bg-slate-100">
+                  <Image src={study.image} alt={study.tag} fill sizes="(max-width: 767px) 100vw, 33vw" className="object-contain" />
                 </div>
                 <div className="p-5">
                   <span className="rounded-md border border-slate-300 px-2 py-1 text-[9px] font-black uppercase tracking-wide">{study.tag}</span>
@@ -256,8 +212,13 @@ export default function AgencyHomepage() {
       <section className="border-y border-slate-200 bg-[var(--surface)] py-14">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading eyebrow="Trusted Platforms" title="We Work With the Tools That Drive Results" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {platforms.map((platform) => <div key={platform} className="flex min-h-16 items-center justify-center rounded-xl border border-slate-200 bg-white px-3 text-center text-sm font-black shadow-sm">{platform}</div>)}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+            {platforms.map((platform) => (
+              <div key={platform.name} className="flex min-h-24 flex-col items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-center shadow-sm">
+                <Image src={platform.icon} alt="" width={34} height={34} className="h-8 w-8 object-contain" />
+                <span className="text-xs font-black text-[var(--foreground)]">{platform.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
