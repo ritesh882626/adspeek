@@ -67,18 +67,6 @@ button, a, [role="button"] {
   }
 }
 
-/* ProblemsSection: disable sticky scroll on mobile (section height is set inline) */
-@media (max-width: 1023px) {
-  #how-we-help {
-    height: auto !important;
-  }
-  .problems-scroll-inner {
-    position: relative !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-}
-
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -119,6 +107,11 @@ button, a, [role="button"] {
 .pause-on-hover:hover .animate-marquee,
 .pause-on-hover:hover .animate-marquee-reverse {
   animation-play-state: paused;
+}
+
+@media (max-width: 767px) {
+  .animate-marquee { animation-duration: 34s; }
+  .animate-marquee-reverse { animation-duration: 40s; }
 }
 
 /* Hide scrollbar utility */

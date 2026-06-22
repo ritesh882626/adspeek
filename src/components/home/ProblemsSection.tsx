@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, AlertCircle, BrainCircuit, ShoppingCart,
-  EyeOff, Copy, Scale, Lock,
+  EyeOff, Copy, Scale, Lock, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import ConsultationModal from "./ConsultationModal";
 
@@ -82,29 +82,37 @@ const problems = [
 ];
 
 export default function ProblemsSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+  const showProblem = (nextIndex: number) => {
+    setDirection(nextIndex > activeIndex || (activeIndex === problems.length - 1 && nextIndex === 0) ? 1 : -1);
+    setActiveIndex(nextIndex);
+  };
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const i = Math.min(Math.floor(v * problems.length), problems.length - 1);
-    setActiveIndex(i);
-  });
+  const step = (amount: number) => {
+    setDirection(amount);
+    setActiveIndex((current) => (current + amount + problems.length) % problems.length);
+  };
+
+  useEffect(() => {
+    if (paused || reduceMotion) return;
+    const timer = window.setInterval(() => step(1), 4500);
+    return () => window.clearInterval(timer);
+  }, [paused, reduceMotion]);
+
+  const activeProblem = problems[activeIndex];
+  const ActiveIcon = activeProblem.icon;
 
   return (
     <>
       <section
         id="how-we-help"
-        ref={containerRef}
-        className="relative bg-white"
-        style={{ height: `${problems.length * 110 + 20}vh` }}
+        className="relative overflow-hidden bg-white py-16 lg:py-28"
       >
-        <div className="problems-scroll-inner sticky top-0 h-screen flex items-center">
           <div className="w-full max-w-7xl mx-auto px-6 sm:px-10">
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-20 items-center">
 
@@ -149,17 +157,25 @@ export default function ProblemsSection() {
                   Before you sign another retainer, you need clarity — on what your business actually needs and the confidence to choose a partner who can deliver it.
                 </motion.p>
 
-                {/* Progress dots */}
-                <div className="flex items-center gap-2 mb-8">
-                  {problems.map((_, i) => (
-                    <div
+                {/* Progress controls */}
+                <div className="mb-8 flex items-center gap-2" aria-label="Problem carousel navigation">
+                  {problems.map((problem, i) => (
+                    <button
                       key={i}
-                      className="h-1.5 rounded-full transition-all duration-500"
+                      type="button"
+                      onClick={() => showProblem(i)}
+                      className="flex min-h-11 items-center px-0.5"
+                      aria-label={`Show problem ${i + 1}: ${problem.tag}`}
+                      aria-current={i === activeIndex ? "true" : undefined}
+                    >
+                      <span
+                      className="block h-1.5 rounded-full transition-all duration-500"
                       style={{
                         width: i === activeIndex ? 28 : 10,
                         background: i === activeIndex ? "var(--accent)" : i < activeIndex ? "rgba(37,99,235,0.25)" : "var(--border)",
                       }}
-                    />
+                      />
+                    </button>
                   ))}
                 </div>
 
@@ -172,82 +188,73 @@ export default function ProblemsSection() {
                 </button>
               </div>
 
-              {/* Right: animated cards */}
-              <div className="relative h-[480px] hidden lg:flex items-center">
-                {problems.map((p, i) => {
-                  const Icon = p.icon;
-                  const isActive = i === activeIndex;
-                  const isPast = i < activeIndex;
-                  return (
-                    <motion.div
-                      key={p.number}
-                      className="absolute inset-x-0"
-                      animate={{
-                        opacity: isActive ? 1 : 0,
-                        y: isActive ? 0 : isPast ? -64 : 80,
-                        scale: isActive ? 1 : isPast ? 0.94 : 1.02,
-                        zIndex: isActive ? 10 : 0,
-                      }}
+              {/* Right: automatic, toggleable horizontal carousel */}
+              <div
+                className="relative min-h-[430px] sm:min-h-[390px] lg:min-h-[480px] flex items-center"
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+                onFocusCapture={() => setPaused(true)}
+                onBlurCapture={() => setPaused(false)}
+                aria-live="polite"
+              >
+                <AnimatePresence mode="wait" initial={false} custom={direction}>
+                    <motion.article
+                      key={activeProblem.number}
+                      custom={direction}
+                      initial={reduceMotion ? false : { opacity: 0, x: direction > 0 ? -80 : 80 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 80 : -80 }}
                       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      className="w-full"
                     >
-                      <div className="bg-white border border-[var(--border)] rounded-2xl p-8 shadow-2xl shadow-black/8">
+                      <div className="bg-white border border-[var(--border)] rounded-2xl p-6 sm:p-8 shadow-2xl shadow-black/8">
                         {/* Header row */}
                         <div className="flex items-start justify-between mb-6">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-[var(--accent-light)] flex items-center justify-center flex-shrink-0">
-                              <Icon size={20} className="text-[var(--accent)]" />
+                              <ActiveIcon size={20} className="text-[var(--accent)]" />
                             </div>
-                            <span className="text-5xl font-black text-[var(--border)] leading-none select-none">{p.number}</span>
+                            <span className="text-4xl sm:text-5xl font-black text-[var(--border)] leading-none select-none">{activeProblem.number}</span>
                           </div>
                           <span className="px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-xs font-bold">
-                            {p.tag}
+                            {activeProblem.tag}
                           </span>
                         </div>
 
-                        <h3 className="text-xl font-black text-[var(--foreground)] mb-1 leading-snug">{p.title}</h3>
-                        <p className="text-[var(--accent)] font-bold text-sm mb-4">{p.accent}</p>
-                        <p className="text-[var(--muted)] leading-relaxed text-sm mb-6">{p.body}</p>
+                        <h3 className="text-lg sm:text-xl font-black text-[var(--foreground)] mb-1 leading-snug">{activeProblem.title}</h3>
+                        <p className="text-[var(--accent)] font-bold text-sm mb-4">{activeProblem.accent}</p>
+                        <p className="text-[var(--muted)] leading-relaxed text-sm mb-6">{activeProblem.body}</p>
 
                         {/* Stat */}
                         <div className="flex items-baseline gap-3 pt-5 border-t border-[var(--border)]">
-                          <span className="text-3xl font-black text-[var(--foreground)]">{p.stat}</span>
-                          <span className="text-xs text-[var(--muted)] leading-snug max-w-[240px]">{p.statLabel}</span>
+                          <span className="text-3xl font-black text-[var(--foreground)]">{activeProblem.stat}</span>
+                          <span className="text-xs text-[var(--muted)] leading-snug max-w-[240px]">{activeProblem.statLabel}</span>
                         </div>
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                    </motion.article>
+                </AnimatePresence>
 
-              {/* Mobile: stacked */}
-              <div className="lg:hidden space-y-4">
-                {problems.map((p) => {
-                  const Icon = p.icon;
-                  return (
-                    <div key={p.number} className="bg-white border border-[var(--border)] rounded-2xl p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-[var(--accent-light)] flex items-center justify-center">
-                            <Icon size={16} className="text-[var(--accent)]" />
-                          </div>
-                          <span className="text-3xl font-black text-[var(--border)]">{p.number}</span>
-                        </div>
-                        <span className="px-3 py-1 rounded-full bg-[var(--accent-light)] text-[var(--accent)] text-xs font-bold">{p.tag}</span>
-                      </div>
-                      <h3 className="font-black text-[var(--foreground)] mb-0.5">{p.title}</h3>
-                      <p className="text-[var(--accent)] text-sm font-bold mb-3">{p.accent}</p>
-                      <p className="text-[var(--muted)] text-sm leading-relaxed mb-4">{p.body}</p>
-                      <div className="flex items-baseline gap-2 pt-4 border-t border-[var(--border)]">
-                        <span className="text-2xl font-black text-[var(--foreground)]">{p.stat}</span>
-                        <span className="text-xs text-[var(--muted)]">{p.statLabel}</span>
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="absolute -bottom-1 right-0 flex gap-2 sm:bottom-3">
+                  <button
+                    type="button"
+                    onClick={() => step(-1)}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-white text-[var(--foreground)] shadow-sm transition hover:border-blue-200 hover:text-[var(--accent)] active:scale-95"
+                    aria-label="Previous problem"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => step(1)}
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--foreground)] text-white shadow-sm transition hover:bg-[var(--foreground)]/90 active:scale-95"
+                    aria-label="Next problem"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
       </section>
 
       <ConsultationModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />

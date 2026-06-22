@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+type Gtag = (
+  command: "event",
+  eventName: string,
+  parameters?: Record<string, string>,
+) => void;
+
 export default function StickyMobileCTA() {
   const [visible, setVisible] = useState(false);
   const [atBottom, setAtBottom] = useState(false);
@@ -26,8 +32,9 @@ export default function StickyMobileCTA() {
         href="#how-we-help"
         className="no-select block w-full bg-[var(--foreground)] text-white text-center font-bold text-[15px] py-4 rounded-[11px] active:bg-[var(--foreground)]/90 transition-colors"
         onClick={() => {
-          if (typeof window !== "undefined" && (window as typeof window & { gtag?: Function }).gtag) {
-            (window as typeof window & { gtag: Function }).gtag("event", "sticky_cta_click", {
+          const gtag = (window as typeof window & { gtag?: Gtag }).gtag;
+          if (gtag) {
+            gtag("event", "sticky_cta_click", {
               event_category: "mobile_engagement",
             });
           }

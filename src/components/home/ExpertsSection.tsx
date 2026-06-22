@@ -91,7 +91,7 @@ function ExpertCard({ expert }: { expert: typeof experts[0] }) {
       onMouseLeave={() => setHovered(false)}
       animate={{ y: hovered ? -8 : 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="flex-shrink-0 w-[240px] h-[380px] rounded-3xl overflow-hidden relative bg-[#f7f7f8] border border-[var(--border)] shadow-sm hover:shadow-2xl hover:shadow-black/12 transition-shadow duration-500 cursor-default"
+      className="flex-shrink-0 w-[200px] h-[320px] sm:w-[210px] sm:h-[340px] rounded-3xl overflow-hidden relative bg-[#f7f7f8] border border-[var(--border)] shadow-sm hover:shadow-2xl hover:shadow-black/12 transition-shadow duration-500 cursor-default"
     >
       {/* Full-bleed photo */}
       <div className="absolute inset-0">
@@ -100,7 +100,7 @@ function ExpertCard({ expert }: { expert: typeof experts[0] }) {
           alt={expert.name}
           fill
           className="object-cover object-top"
-          sizes="240px"
+          sizes="(max-width: 640px) 200px, 210px"
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
@@ -169,10 +169,10 @@ export default function ExpertsSection() {
         </div>
 
         {/* Infinite auto-scroll marquee row */}
-        <div className="relative overflow-hidden">
+        <div className="relative mx-[10%] overflow-hidden">
           {/* Edge fade masks */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 z-10 bg-gradient-to-r from-[var(--surface)] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 z-10 bg-gradient-to-l from-[var(--surface)] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-[10%] min-w-10 z-10 bg-gradient-to-r from-[var(--surface)] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] min-w-10 z-10 bg-gradient-to-l from-[var(--surface)] to-transparent" />
 
           <div
             className="flex gap-5 animate-marquee py-6"

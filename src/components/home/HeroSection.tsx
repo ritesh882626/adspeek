@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Users } from "lucide-react";
 import ToolsMarquee from "./ToolsMarquee";
 import ConsultationModal from "./ConsultationModal";
 
@@ -45,6 +45,16 @@ export default function HeroSection() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]" />
               </span>
               <span className="text-xs font-semibold text-[var(--accent)] tracking-wide">Business Growth Advisory Platform</span>
+            </div>
+          </motion.div>
+
+          {/* Social proof */}
+          <motion.div {...fadeUp(0.16)} className="mb-5">
+            <div className="inline-flex min-h-9 items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/90 px-3.5 py-1.5 shadow-sm">
+              <Users size={14} className="text-emerald-600" aria-hidden />
+              <span className="text-[11px] font-bold tracking-wide text-emerald-700 sm:text-xs">
+                Trusted by 200+ New Businesses
+              </span>
             </div>
           </motion.div>
 
@@ -110,7 +120,7 @@ export default function HeroSection() {
           {/* Tools section */}
           <motion.div {...fadeUp(0.65)} className="mt-16 w-full">
             <p className="text-[10px] font-black text-[var(--muted)] tracking-[0.22em] uppercase mb-5">
-              Tools We Use
+              Trusted Platforms
             </p>
             <ToolsMarquee />
           </motion.div>

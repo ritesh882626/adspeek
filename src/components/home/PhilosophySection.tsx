@@ -53,7 +53,7 @@ export default function PhilosophySection() {
   return (
     <>
       {/* Philosophy */}
-      <section className="py-28 bg-white border-b border-[var(--border)]">
+      <section className="py-16 lg:py-28 bg-white border-b border-[var(--border)] overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             {/* Left */}
@@ -64,7 +64,7 @@ export default function PhilosophySection() {
               viewport={{ once: true }}
             >
               <span className="text-[10px] font-black text-[var(--accent)] tracking-[0.2em] uppercase block mb-4">Our Philosophy</span>
-              <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-[var(--foreground)] leading-[1.08] mb-6">
+              <h2 className="text-[32px] lg:text-5xl font-black tracking-tight text-[var(--foreground)] leading-[1.08] mb-6">
                 We&apos;re Not Here To Sell You Marketing Plans.
               </h2>
               <p className="text-xl text-[var(--muted)] font-medium mb-8 leading-relaxed">
