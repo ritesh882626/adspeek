@@ -118,23 +118,23 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
   const [activeTab, setActiveTab] = useState<Tab>("problem");
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-black/12 w-full max-w-5xl mx-auto border border-[var(--border)]">
-      <div className="grid grid-cols-1 md:grid-cols-[420px_1fr]">
+    <div className="h-[70vh] max-h-[620px] md:h-auto md:max-h-none bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm md:shadow-2xl md:shadow-black/12 w-full max-w-5xl mx-auto border border-[var(--border)]">
+      <div className="grid h-full grid-cols-1 grid-rows-[minmax(190px,28vh)_minmax(0,1fr)] md:h-auto md:grid-rows-none md:grid-cols-[420px_1fr]">
 
         {/* Left: full-bleed image with overlay */}
-        <div className="relative min-h-[420px] md:min-h-[500px] overflow-hidden">
+        <div className="relative h-full min-h-0 md:min-h-[500px] overflow-hidden">
           <Image
             src={study.imageSrc}
             alt={study.company}
             fill
             className="object-cover object-center"
-            sizes="420px"
+            sizes="(max-width: 767px) 85vw, 420px"
           />
           {/* Dark gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
 
           {/* Content on top of image */}
-          <div className="absolute inset-0 flex flex-col justify-between p-8">
+          <div className="absolute inset-0 flex flex-col justify-between p-5 md:p-8">
             {/* Industry tag */}
             <div>
               <span
@@ -147,18 +147,18 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
             {/* Company + metrics */}
             <div>
               <p className="text-white/60 text-xs font-semibold mb-1">{study.location}</p>
-              <h3 className="text-2xl font-black text-white mb-5">{study.company}</h3>
+              <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-5">{study.company}</h3>
 
               {/* Before / After */}
-              <div className="grid grid-cols-2 gap-3 mb-5">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+              <div className="grid grid-cols-2 gap-2 md:gap-3 mb-3 md:mb-5">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/10">
                   <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">Before</p>
-                  <p className="text-xl font-black text-white/60">{study.before.value}</p>
+                  <p className="text-base md:text-xl font-black text-white/60">{study.before.value}</p>
                   <p className="text-[10px] text-white/40 mt-0.5">{study.before.label}</p>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/25 ring-1 ring-white/20">
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/25 ring-1 ring-white/20">
                   <p className="text-[9px] font-black text-white/70 uppercase tracking-widest mb-1">After</p>
-                  <p className="text-xl font-black text-white">{study.after.value}</p>
+                  <p className="text-base md:text-xl font-black text-white">{study.after.value}</p>
                   <p className="text-[10px] text-white/60 mt-0.5">{study.after.label}</p>
                 </div>
               </div>
@@ -169,7 +169,7 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
                   <TrendingUp size={16} className="text-emerald-400" />
                 </div>
                 <div>
-                  <span className="text-2xl font-black text-white">{study.metric}</span>
+                  <span className="text-xl md:text-2xl font-black text-white">{study.metric}</span>
                   <span className="text-xs text-white/50 ml-2">{study.metricLabel}</span>
                 </div>
               </div>
@@ -178,15 +178,15 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
         </div>
 
         {/* Right: tabs */}
-        <div className="p-8 md:p-10 flex flex-col justify-between min-h-[420px] md:min-h-[500px]">
+        <div className="min-h-0 overflow-y-auto p-5 md:p-10 flex flex-col justify-between md:min-h-[500px] md:overflow-visible">
           {/* Tab bar */}
           <div>
-            <div className="flex gap-1 mb-8 bg-[var(--surface)] rounded-2xl p-1.5">
+            <div className="flex gap-1 mb-4 md:mb-8 bg-[var(--surface)] rounded-xl md:rounded-2xl p-1">
               {(["problem", "solution", "result"] as Tab[]).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold capitalize transition-all duration-200 ${
+                  className={`flex-1 min-h-11 py-2 rounded-lg md:rounded-xl text-xs font-bold capitalize transition-all duration-200 ${
                     activeTab === tab
                       ? "bg-white text-[var(--foreground)] shadow-sm"
                       : "text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -205,10 +205,10 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               >
-                <h4 className="font-black text-[var(--foreground)] text-lg leading-snug mb-4">
+                <h4 className="font-black text-[var(--foreground)] text-base md:text-lg leading-snug mb-3 md:mb-4">
                   {study.tabs[activeTab].heading}
                 </h4>
-                <p className="text-sm text-[var(--muted)] leading-relaxed">
+                <p className="text-[13px] md:text-sm text-[var(--muted)] leading-relaxed">
                   {study.tabs[activeTab].body}
                 </p>
               </motion.div>
@@ -216,7 +216,7 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
           </div>
 
           {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-[var(--border)]">
+          <div className="mt-4 pt-4 md:mt-8 md:pt-6 border-t border-[var(--border)]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] text-[var(--muted)] font-black tracking-widest uppercase mb-0.5">Industry</p>
@@ -249,9 +249,33 @@ export default function CaseStudiesSection() {
   });
 
   return (
+    <>
+    {/* Mobile: compact native swipe cards with no scroll-triggered animation. */}
+    <section className="bg-[var(--surface)] py-16 overflow-hidden md:hidden">
+      <div className="px-6">
+        <span className="text-[10px] font-black text-[var(--accent)] tracking-[0.2em] uppercase block mb-3">
+          Case Studies
+        </span>
+        <h2 className="text-[28px] leading-[1.1] font-black tracking-tight text-[var(--foreground)]">
+          Real Businesses. Real Results.
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+          What happens when businesses get the right advice before hiring.
+        </p>
+      </div>
+
+      <div className="mt-8 flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain px-6 pb-4 scrollbar-hide mobile-momentum-scroll">
+        {caseStudies.map((study) => (
+          <div key={`mobile-${study.id}`} className="w-[85vw] flex-shrink-0 snap-center">
+            <CaseStudyCard study={study} />
+          </div>
+        ))}
+      </div>
+    </section>
+
     <section
       ref={containerRef}
-      className="relative bg-[var(--surface)]"
+      className="relative hidden md:block bg-[var(--surface)]"
       style={{ height: `${caseStudies.length * 120 + 20}vh` }}
     >
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
@@ -313,5 +337,6 @@ export default function CaseStudiesSection() {
         </div>
       </div>
     </section>
+    </>
   );
 }

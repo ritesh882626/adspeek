@@ -43,7 +43,7 @@ const services = [
 
 export default function ServicesOverview() {
   return (
-    <section className="py-24 bg-[var(--surface)]">
+    <section className="py-16 lg:py-24 bg-[var(--surface)]">
       <Container>
         <SectionHeader
           eyebrow="What We Do"

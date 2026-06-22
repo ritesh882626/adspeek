@@ -33,7 +33,7 @@ const steps = [
 
 export default function Process() {
   return (
-    <section className="py-24 bg-[var(--foreground)]">
+    <section className="py-16 lg:py-24 bg-[var(--foreground)]">
       <Container>
         <SectionHeader
           eyebrow="How We Work"

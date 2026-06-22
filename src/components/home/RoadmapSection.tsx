@@ -163,7 +163,7 @@ function ChatWidget({ onClose, onStartForm }: { onClose: () => void; onStartForm
             onChange={(e) => setUserMsg(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             placeholder="Type your message..."
-            className="flex-1 px-3 py-2.5 text-xs bg-transparent outline-none text-[var(--foreground)] placeholder:text-[var(--muted)]"
+            className="flex-1 px-3 py-2.5 text-base sm:text-xs bg-transparent outline-none text-[var(--foreground)] placeholder:text-[var(--muted)]"
           />
           <button
             onClick={sendMessage}
@@ -290,9 +290,52 @@ export default function RoadmapSection() {
 
   return (
     <>
+      {/* Mobile: immediate native carousel; no sticky scroll or entrance triggers. */}
+      <section className="bg-white py-16 lg:hidden overflow-hidden">
+        <div className="px-6">
+          <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
+            How It Works
+          </span>
+          <h2 className="max-w-sm text-left text-[28px] font-black leading-[1.1] tracking-tight text-[var(--foreground)]">
+            A Clear Path From Confusion To Growth
+          </h2>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-[var(--muted)]">
+            Swipe through the five steps behind every AdsPeek recommendation.
+          </p>
+        </div>
+
+        <div className="mt-8 flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain px-6 pb-4 scrollbar-hide mobile-momentum-scroll">
+          {steps.map((step) => {
+            const StepIcon = step.icon;
+            return (
+              <article
+                key={`mobile-${step.number}`}
+                className="w-[85vw] flex-shrink-0 snap-center rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm"
+              >
+                <div className="mb-6 flex items-center justify-between">
+                  <span className="text-4xl font-black leading-none" style={{ color: `${step.color}22` }}>
+                    {step.number}
+                  </span>
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl border ${step.bg} ${step.border}`}>
+                    <StepIcon size={20} className={step.text} />
+                  </div>
+                </div>
+                <h3 className="text-xl font-black leading-snug text-[var(--foreground)]">{step.title}</h3>
+                <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">{step.description}</p>
+                <div className={`mt-6 flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold ${step.bg} ${step.text} ${step.border}`}>
+                  <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ background: step.color }} />
+                  {step.detail}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Desktop retains the chapter-style scroll experience. */}
       <section
         ref={containerRef}
-        className="relative"
+        className="relative hidden lg:block"
         style={{ height: `${steps.length * 100}vh` }}
       >
         <div className="sticky top-0 h-screen bg-white flex flex-col overflow-hidden">

@@ -122,3 +122,10 @@ button, a, [role="button"] {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Native momentum for touch-first card rails. */
+.mobile-momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scroll-padding-inline: 24px;
+}

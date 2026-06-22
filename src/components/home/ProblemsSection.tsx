@@ -181,15 +181,16 @@ export default function ProblemsSection() {
 
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="group inline-flex items-center gap-2 px-6 py-3.5 bg-[var(--foreground)] text-white rounded-xl text-sm font-bold hover:bg-[var(--foreground)]/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                  className="group hidden lg:inline-flex items-center gap-2 px-6 py-3.5 bg-[var(--foreground)] text-white rounded-xl text-sm font-bold hover:bg-[var(--foreground)]/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Tell Us Your Exact Problem
                   <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
 
-              {/* Right: automatic, toggleable horizontal carousel */}
-              <div
+              <div className="space-y-5">
+                {/* Right: automatic, toggleable horizontal carousel */}
+                <div
                 className="relative min-h-[430px] sm:min-h-[390px] lg:min-h-[480px] flex items-center"
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}
@@ -201,13 +202,13 @@ export default function ProblemsSection() {
                     <motion.article
                       key={activeProblem.number}
                       custom={direction}
-                      initial={reduceMotion ? false : { opacity: 0, x: direction > 0 ? -80 : 80 }}
+                      initial={reduceMotion ? false : { opacity: 0, x: direction > 0 ? 36 : -36 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? 80 : -80 }}
-                      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: direction > 0 ? -36 : 36 }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       className="w-full"
                     >
-                      <div className="bg-white border border-[var(--border)] rounded-2xl p-6 sm:p-8 shadow-2xl shadow-black/8">
+                      <div className="bg-white border border-[var(--border)] rounded-2xl p-6 sm:p-8 shadow-sm lg:shadow-2xl lg:shadow-black/8">
                         {/* Header row */}
                         <div className="flex items-start justify-between mb-6">
                           <div className="flex items-center gap-3">
@@ -252,6 +253,16 @@ export default function ProblemsSection() {
                     <ChevronRight size={18} />
                   </button>
                 </div>
+                </div>
+
+                {/* On mobile the CTA follows the card and its controls. */}
+                <button
+                  onClick={() => setModalOpen(true)}
+                  className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--foreground)] px-5 py-3 text-xs font-bold text-white transition active:scale-[0.98] lg:hidden"
+                >
+                  Tell Us Your Exact Problem
+                  <ArrowRight size={14} />
+                </button>
               </div>
             </div>
           </div>

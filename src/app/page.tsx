@@ -3,7 +3,6 @@ import HeroSection from "@/components/home/HeroSection";
 import ProblemsSection from "@/components/home/ProblemsSection";
 import ExpertsSection from "@/components/home/ExpertsSection";
 import RoadmapSection from "@/components/home/RoadmapSection";
-import TrustComparison from "@/components/home/TrustComparison";
 import CaseStudiesSection from "@/components/home/CaseStudiesSection";
 import PhilosophySection from "@/components/home/PhilosophySection";
 
@@ -25,7 +24,6 @@ export default function HomePage() {
       <ProblemsSection />
       <ExpertsSection />
       <RoadmapSection />
-      <TrustComparison />
       <CaseStudiesSection />
       <PhilosophySection />
     </>

@@ -19,7 +19,7 @@ export default function CTA({
   primaryHref = "/contact",
 }: CTAProps) {
   return (
-    <section className="py-24 bg-[var(--accent)]">
+    <section className="py-16 lg:py-24 bg-[var(--accent)]">
       <Container size="md">
         <motion.div
           className="text-center"
@@ -28,7 +28,7 @@ export default function CTA({
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-5">{title}</h2>
+          <h2 className="text-[28px] leading-[1.15] sm:text-4xl font-bold text-white mb-5">{title}</h2>
           <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-xl mx-auto">
             {description}
           </p>

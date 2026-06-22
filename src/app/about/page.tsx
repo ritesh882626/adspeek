@@ -77,7 +77,7 @@ export default function AboutPage() {
         <Container>
           <div className="max-w-3xl">
             <Badge variant="accent" className="mb-5">About AdsPeek</Badge>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-6">
+            <h1 className="text-[32px] sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-5 sm:mb-6">
               We Started AdsPeek Because We Were Tired of Agencies That Overpromised and Underdelivered.
             </h1>
             <p className="text-lg text-[var(--muted)] leading-relaxed mb-4">
@@ -110,7 +110,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-white">
         <Container>
           <SectionHeader
             eyebrow="Our Values"
@@ -141,7 +141,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team */}
-      <section className="py-24 bg-[var(--surface)]">
+      <section className="py-16 lg:py-24 bg-[var(--surface)]">
         <Container>
           <SectionHeader
             eyebrow="The Team"

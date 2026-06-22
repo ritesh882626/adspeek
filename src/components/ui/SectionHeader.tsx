@@ -22,7 +22,7 @@ export default function SectionHeader({
           {eyebrow}
         </Badge>
       )}
-      <h2 className="text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
+      <h2 className="text-[28px] leading-[1.15] font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
         {title}
       </h2>
       {description && (

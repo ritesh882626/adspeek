@@ -44,7 +44,7 @@ export default function ServicePageLayout({
               </div>
               <Badge variant="accent">{eyebrow}</Badge>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-6">
+            <h1 className="text-[32px] sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-5 sm:mb-6">
               {title}
             </h1>
             <p className="text-lg text-[var(--muted)] leading-relaxed mb-8 max-w-2xl">
@@ -64,7 +64,7 @@ export default function ServicePageLayout({
       </section>
 
       {/* Features */}
-      <section className="py-24 bg-[var(--surface)]">
+      <section className="py-16 lg:py-24 bg-[var(--surface)]">
         <Container>
           <SectionHeader
             eyebrow="What's Included"
@@ -86,7 +86,7 @@ export default function ServicePageLayout({
       </section>
 
       {/* Deliverables */}
-      <section className="py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-white">
         <Container size="md">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -109,7 +109,7 @@ export default function ServicePageLayout({
       </section>
 
       {/* Process */}
-      <section className="py-24 bg-[var(--foreground)]">
+      <section className="py-16 lg:py-24 bg-[var(--foreground)]">
         <Container>
           <SectionHeader
             eyebrow="Our Process"
@@ -134,7 +134,7 @@ export default function ServicePageLayout({
       </section>
 
       {/* FAQ */}
-      <section className="py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-white">
         <Container size="md">
           <SectionHeader
             eyebrow="FAQ"

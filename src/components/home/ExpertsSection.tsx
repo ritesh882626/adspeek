@@ -82,16 +82,20 @@ const experts = [
 // Doubled for seamless infinite loop
 const marqueeExperts = [...experts, ...experts];
 
-function ExpertCard({ expert }: { expert: typeof experts[0] }) {
+function ExpertCard({ expert, mobile = false }: { expert: typeof experts[0]; mobile?: boolean }) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      animate={{ y: hovered ? -8 : 0 }}
+      animate={mobile ? undefined : { y: hovered ? -8 : 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="flex-shrink-0 w-[200px] h-[320px] sm:w-[210px] sm:h-[340px] rounded-3xl overflow-hidden relative bg-[#f7f7f8] border border-[var(--border)] shadow-sm hover:shadow-2xl hover:shadow-black/12 transition-shadow duration-500 cursor-default"
+      className={`flex-shrink-0 overflow-hidden relative bg-[#f7f7f8] border border-[var(--border)] shadow-sm cursor-default ${
+        mobile
+          ? "w-[85vw] h-[60vh] min-h-[390px] max-h-[500px] snap-center rounded-2xl"
+          : "w-[210px] h-[340px] rounded-3xl hover:shadow-2xl hover:shadow-black/12 transition-shadow duration-500"
+      }`}
     >
       {/* Full-bleed photo */}
       <div className="absolute inset-0">
@@ -100,7 +104,7 @@ function ExpertCard({ expert }: { expert: typeof experts[0] }) {
           alt={expert.name}
           fill
           className="object-cover object-top"
-          sizes="(max-width: 640px) 200px, 210px"
+          sizes={mobile ? "85vw" : "210px"}
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
@@ -147,18 +151,18 @@ export default function ExpertsSection() {
 
   return (
     <>
-      <section className="py-28 bg-[var(--surface)] border-y border-[var(--border)] overflow-hidden">
+      <section className="py-16 lg:py-28 bg-[var(--surface)] border-y border-[var(--border)] overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-10">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14"
+            className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-9 md:mb-14"
           >
             <div>
               <span className="text-[10px] font-black text-[var(--accent)] tracking-[0.2em] uppercase block mb-3">Meet the Experts</span>
-              <h2 className="text-4xl lg:text-5xl font-black tracking-tight text-[var(--foreground)] leading-[1.08] max-w-xl">
+              <h2 className="text-[28px] lg:text-5xl font-black tracking-tight text-[var(--foreground)] leading-[1.1] max-w-xl">
                 Meet The Experts Behind Every Recommendation
               </h2>
             </div>
@@ -168,8 +172,15 @@ export default function ExpertsSection() {
           </motion.div>
         </div>
 
-        {/* Infinite auto-scroll marquee row */}
-        <div className="relative mx-[10%] overflow-hidden">
+        {/* Mobile: native swipe carousel, no vanishing mask or autoplay */}
+        <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain scrollbar-hide -mx-0 px-6 pb-3 mobile-momentum-scroll">
+          {experts.map((expert) => (
+            <ExpertCard key={`mobile-${expert.id}`} expert={expert} mobile />
+          ))}
+        </div>
+
+        {/* Desktop: infinite auto-scroll marquee row */}
+        <div className="relative mx-[10%] hidden md:block overflow-hidden">
           {/* Edge fade masks */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-[10%] min-w-10 z-10 bg-gradient-to-r from-[var(--surface)] to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] min-w-10 z-10 bg-gradient-to-l from-[var(--surface)] to-transparent" />

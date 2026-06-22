@@ -75,7 +75,7 @@ export default function CaseStudiesPage() {
         <Container>
           <div className="max-w-2xl">
             <Badge variant="accent" className="mb-4">Case Studies</Badge>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-5">
+            <h1 className="text-[32px] sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-5">
               Real Work. Real Results.
             </h1>
             <p className="text-lg text-[var(--muted)] leading-relaxed">
@@ -86,7 +86,7 @@ export default function CaseStudiesPage() {
       </section>
 
       {/* Case studies grid */}
-      <section className="py-20 bg-[var(--surface)]">
+      <section className="py-16 lg:py-20 bg-[var(--surface)]">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {caseStudies.map((cs) => {

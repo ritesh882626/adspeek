@@ -44,7 +44,7 @@ export default function ContactPage() {
         <Container>
           <div className="max-w-2xl">
             <Badge variant="accent" className="mb-4">Contact Us</Badge>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-5">
+            <h1 className="text-[32px] sm:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-5">
               Let&apos;s Talk Growth
             </h1>
             <p className="text-lg text-[var(--muted)] leading-relaxed">
@@ -55,7 +55,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact form + info */}
-      <section className="py-20 bg-[var(--surface)]">
+      <section className="py-16 lg:py-20 bg-[var(--surface)]">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             {/* Form */}
