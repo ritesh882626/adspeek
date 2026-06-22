@@ -7,20 +7,13 @@ import {
   ShieldCheck,
   Star,
 } from "lucide-react";
-import { AnimatedGrowthDashboard, AnimatedProcess } from "./AgencyAnimations";
+import { AnimatedGrowthDashboard, AnimatedGrowthSignals, AnimatedProcess } from "./AgencyAnimations";
 
 const experts = [
-  { name: "Rohit Mehra", role: "Performance Marketing Solution Provider", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png", companyLogo: "/company-logos/zomato-logo.png", company: "Zomato" },
-  { name: "Aditi Sharma", role: "Digital Strategy Solution Provider", credential: "Ex-PwC | Digital Strategy", image: "/consultants/priya.png", companyLogo: "/company-logos/pwc-logo.png", company: "PwC" },
-  { name: "Karan Arora", role: "Growth Analytics Solution Provider", credential: "Ex-KPMG | Growth Analytics", image: "/consultants/vikram.png", companyLogo: "/company-logos/kpmg-logo.webp", company: "KPMG" },
-  { name: "Nikhil Bansal", role: "Creative Strategy Solution Provider", credential: "Ex-Deloitte | Brand & Creative", image: "/consultants/rohan.png", companyLogo: "/company-logos/deloitte-logo.jpg", company: "Deloitte" },
-];
-
-const signals = [
-  { value: "₹12Cr+", label: "Ad Spend Managed" },
-  { value: "200+", label: "Businesses Scaled" },
-  { value: "4.8x", label: "Average ROAS" },
-  { value: "38%", label: "Average CAC Reduction" },
+  { name: "Rohit Mehra", role: "Performance Marketing Solution Provider", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png", companyLogo: "/company-logos/zomato-logo-transparent.png", company: "Zomato" },
+  { name: "Aditi Sharma", role: "Digital Strategy Solution Provider", credential: "Ex-PwC | Digital Strategy", image: "/consultants/priya.png", companyLogo: "/company-logos/pwc-logo-transparent.png", company: "PwC" },
+  { name: "Karan Arora", role: "Growth Analytics Solution Provider", credential: "Ex-KPMG | Growth Analytics", image: "/consultants/vikram.png", companyLogo: "/company-logos/kpmg-logo-transparent.png", company: "KPMG" },
+  { name: "Nikhil Bansal", role: "Creative Strategy Solution Provider", credential: "Ex-Deloitte | Brand & Creative", image: "/consultants/rohan.png", companyLogo: "/company-logos/deloitte-logo-transparent.png", company: "Deloitte" },
 ];
 
 const customerWork = [
@@ -72,13 +65,45 @@ const testimonials = [
   { quote: "Professional team with deep expertise. Our CAC dropped by 40%.", name: "Rohan Malhotra", role: "Founder, ClassPrep", initials: "RM" },
 ];
 
-function SectionHeading({ eyebrow, title, body }: { eyebrow?: string; title: string; body?: string }) {
+function SectionHeading({ title, body }: { title: string; body?: string }) {
   return (
     <div className="mb-8 text-left md:mb-12 md:text-center">
-      {eyebrow && <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-[var(--accent)]">{eyebrow}</p>}
       <h2 className="text-[28px] font-black leading-[1.12] tracking-tight text-[var(--foreground)] md:text-4xl">{title}</h2>
       {body && <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[var(--muted)] md:text-base">{body}</p>}
     </div>
+  );
+}
+
+function ExpertCard({ expert, mobile = false }: { expert: (typeof experts)[number]; mobile?: boolean }) {
+  return (
+    <article className={`relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-24 shadow-sm ${mobile ? "w-[82vw] flex-shrink-0" : "lg:block lg:p-5 lg:pr-24"}`}>
+      <div className="absolute right-3 top-3 h-14 w-20" title={expert.company}>
+        <Image src={expert.companyLogo} alt={`${expert.company} logo`} fill sizes="80px" className="object-contain" />
+      </div>
+      <Image src={expert.image} alt={expert.name} width={96} height={96} className="h-16 w-16 flex-shrink-0 rounded-full object-cover object-top lg:h-20 lg:w-20" />
+      <div className="min-w-0 lg:mt-4">
+        <h3 className="font-black text-[var(--foreground)]">{expert.name}</h3>
+        <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{expert.role}</p>
+        <p className="mt-2 text-xs font-semibold leading-relaxed text-[var(--foreground)]">{expert.credential}</p>
+      </div>
+    </article>
+  );
+}
+
+function CaseStudyCard({ study, mobile = false }: { study: (typeof caseStudies)[number]; mobile?: boolean }) {
+  return (
+    <article className={`overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${mobile ? "w-[84vw] flex-shrink-0" : ""}`}>
+      <div className="relative aspect-[3/2] overflow-hidden bg-slate-100">
+        <Image src={study.image} alt={study.tag} fill sizes={mobile ? "84vw" : "(max-width: 767px) 84vw, 33vw"} className="object-cover object-top" />
+      </div>
+      <div className="p-5">
+        <span className="rounded-md border border-slate-300 px-2 py-1 text-[9px] font-black uppercase tracking-wide">{study.tag}</span>
+        <p className="mt-4 text-xs leading-relaxed"><strong>Challenge:</strong> {study.challenge}</p>
+        <p className="mt-2 text-xs leading-relaxed"><strong>Solution:</strong> {study.solution}</p>
+        <h3 className="mt-5 text-xl font-black text-[var(--foreground)]">{study.result}</h3>
+        <Link href="/case-studies" className="mt-5 inline-flex min-h-11 items-center gap-2 text-xs font-black text-[var(--foreground)]">Read Full Case Study <ArrowRight size={13} /></Link>
+      </div>
+    </article>
   );
 }
 
@@ -114,20 +139,13 @@ export default function AgencyHomepage() {
       <section className="border-y border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading title="Prominent Solution Providers Who've Done It at Scale" />
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {experts.map((expert) => (
-              <article key={expert.name} className="relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-24 shadow-sm lg:block lg:p-5 lg:pr-24">
-                <div className="absolute right-3 top-3 h-14 w-20" title={expert.company}>
-                  <Image src={expert.companyLogo} alt={`${expert.company} logo`} fill sizes="80px" className="object-contain" />
-                </div>
-                <Image src={expert.image} alt={expert.name} width={96} height={96} className="h-16 w-16 flex-shrink-0 rounded-full object-cover object-top lg:h-20 lg:w-20" />
-                <div className="min-w-0 lg:mt-4">
-                  <h3 className="font-black text-[var(--foreground)]">{expert.name}</h3>
-                  <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{expert.role}</p>
-                  <p className="mt-2 text-xs font-semibold leading-relaxed text-[var(--foreground)]">{expert.credential}</p>
-                </div>
-              </article>
-            ))}
+          <div className="pause-on-hover mobile-momentum-scroll overflow-x-auto scrollbar-hide md:hidden">
+            <div className="flex w-max gap-3 animate-marquee">
+              {[...experts, ...experts].map((expert, index) => <ExpertCard key={`${expert.name}-${index}`} expert={expert} mobile />)}
+            </div>
+          </div>
+          <div className="hidden grid-cols-2 gap-3 md:grid lg:grid-cols-4">
+            {experts.map((expert) => <ExpertCard key={expert.name} expert={expert} />)}
           </div>
         </div>
       </section>
@@ -147,24 +165,17 @@ export default function AgencyHomepage() {
 
       <section className="bg-white py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading eyebrow="Our Process" title="How We Turn Your Goals Into Results" />
+          <SectionHeading title="How We Turn Your Goals Into Results" />
           <AnimatedProcess />
         </div>
       </section>
 
       <section className="border-y border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading eyebrow="Growth Signals" title="What Growth Looks Like With AdsPeek" />
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {signals.map((signal) => (
-              <div key={signal.label} className="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
-                <p className="text-2xl font-black text-[var(--foreground)] sm:text-3xl">{signal.value}</p>
-                <p className="mt-1 text-xs text-[var(--muted)]">{signal.label}</p>
-              </div>
-            ))}
-          </div>
+          <SectionHeading title="What Growth Looks Like With AdsPeek" body="A live-style view of the commercial signals we optimise across every account." />
+          <AnimatedGrowthSignals />
           <div className="mb-5 mt-10 text-center">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--accent)]">Customer Results &amp; Creative Work</p>
+            <p className="text-lg font-black text-[var(--foreground)]">Customer Results &amp; Creative Work</p>
             <p className="mt-2 text-sm text-[var(--muted)]">A selection of campaigns, creatives, and outcomes delivered for our clients.</p>
           </div>
           <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 scrollbar-hide lg:grid lg:grid-cols-5 lg:overflow-visible">
@@ -185,22 +196,14 @@ export default function AgencyHomepage() {
 
       <section id="case-studies" className="bg-white py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading eyebrow="Case Studies" title="From Zero to Results — Real Stories" />
-          <div className="grid gap-5 md:grid-cols-3">
-            {caseStudies.map((study) => (
-              <article key={study.tag} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                <div className="relative h-48 overflow-hidden bg-slate-100">
-                  <Image src={study.image} alt={study.tag} fill sizes="(max-width: 767px) 100vw, 33vw" className="object-contain" />
-                </div>
-                <div className="p-5">
-                  <span className="rounded-md border border-slate-300 px-2 py-1 text-[9px] font-black uppercase tracking-wide">{study.tag}</span>
-                  <p className="mt-4 text-xs leading-relaxed"><strong>Challenge:</strong> {study.challenge}</p>
-                  <p className="mt-2 text-xs leading-relaxed"><strong>Solution:</strong> {study.solution}</p>
-                  <h3 className="mt-5 text-xl font-black text-[var(--foreground)]">{study.result}</h3>
-                  <Link href="/case-studies" className="mt-5 inline-flex min-h-11 items-center gap-2 text-xs font-black text-[var(--foreground)]">Read Full Case Study <ArrowRight size={13} /></Link>
-                </div>
-              </article>
-            ))}
+          <SectionHeading title="From Zero to Results — Real Stories" />
+          <div className="pause-on-hover mobile-momentum-scroll overflow-x-auto scrollbar-hide md:hidden">
+            <div className="flex w-max gap-4 animate-marquee-reverse">
+              {[...caseStudies, ...caseStudies].map((study, index) => <CaseStudyCard key={`${study.tag}-${index}`} study={study} mobile />)}
+            </div>
+          </div>
+          <div className="hidden gap-5 md:grid md:grid-cols-3">
+            {caseStudies.map((study) => <CaseStudyCard key={study.tag} study={study} />)}
           </div>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 text-center sm:flex-row">
             <p className="text-sm font-bold text-[var(--foreground)]">Want results like these? Let&apos;s talk.</p>
@@ -211,7 +214,7 @@ export default function AgencyHomepage() {
 
       <section className="border-y border-slate-200 bg-[var(--surface)] py-14">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading eyebrow="Trusted Platforms" title="We Work With the Tools That Drive Results" />
+          <SectionHeading title="We Work With the Tools That Drive Results" />
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
             {platforms.map((platform) => (
               <div key={platform.name} className="flex min-h-24 flex-col items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-center shadow-sm">
@@ -225,7 +228,7 @@ export default function AgencyHomepage() {
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading eyebrow="Testimonials" title="What Clients Say" />
+          <SectionHeading title="What Clients Say" />
           <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 scrollbar-hide md:grid md:grid-cols-3 md:overflow-visible">
             {testimonials.map((testimonial) => (
               <article key={testimonial.name} className="w-[calc(100vw-48px)] flex-shrink-0 snap-center rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:w-auto">
@@ -245,8 +248,7 @@ export default function AgencyHomepage() {
       <section className="border-t border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 sm:px-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--accent)]">Final CTA</p>
-            <h2 className="mt-3 text-[30px] font-black leading-[1.1] tracking-tight text-[var(--foreground)] md:text-4xl">Ready to See What&apos;s Possible for Your Business?</h2>
+            <h2 className="text-[30px] font-black leading-[1.1] tracking-tight text-[var(--foreground)] md:text-4xl">Ready to See What&apos;s Possible for Your Business?</h2>
             <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">Most of our clients see results within 30 days of onboarding.</p>
             <div className="mt-7 flex flex-col gap-2 sm:max-w-xs">
               <Link href="/contact" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-[var(--foreground)] px-5 text-sm font-black text-white">Submit Enquiry</Link>

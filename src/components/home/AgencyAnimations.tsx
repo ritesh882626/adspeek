@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { BarChart3, FileSearch, Phone, Rocket, Trophy } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, BarChart3, FileSearch, Gauge, Phone, Rocket, Trophy, UsersRound, WalletCards } from "lucide-react";
 
 function CountUp({ target, format }: { target: number; format: (value: number) => string }) {
   const [value, setValue] = useState(0);
@@ -120,6 +120,82 @@ export function AnimatedGrowthDashboard() {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+const growthSignals = [
+  { label: "Ad Spend Managed", target: 12, format: (value: number) => `₹${value.toFixed(1)}Cr+`, change: "+18.4%", icon: WalletCards, bars: [42, 55, 48, 66, 72, 88] },
+  { label: "Businesses Scaled", target: 200, format: (value: number) => `${Math.round(value)}+`, change: "+24 this quarter", icon: UsersRound, bars: [34, 43, 51, 59, 72, 82] },
+  { label: "Average ROAS", target: 4.8, format: (value: number) => `${value.toFixed(1)}x`, change: "+0.7x", icon: Gauge, bars: [38, 51, 46, 64, 73, 91] },
+  { label: "Average CAC Reduction", target: 38, format: (value: number) => `${Math.round(value)}%`, change: "-12.6% MoM", icon: ArrowDownRight, bars: [88, 76, 71, 60, 51, 39] },
+];
+
+export function AnimatedGrowthSignals() {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <div className="relative overflow-hidden rounded-[28px] border border-white/70 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 p-4 shadow-2xl shadow-blue-950/20 sm:p-6 lg:p-8">
+      <div className="pointer-events-none absolute -left-16 top-10 h-52 w-52 rounded-full bg-blue-500/25 blur-3xl" />
+      <div className="pointer-events-none absolute -right-12 bottom-0 h-56 w-56 rounded-full bg-cyan-400/15 blur-3xl" />
+
+      <div className="relative grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {growthSignals.map((signal, index) => {
+          const Icon = signal.icon;
+          return (
+            <motion.article
+              key={signal.label}
+              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ delay: index * 0.08, duration: 0.45 }}
+              className="rounded-2xl border border-white/15 bg-white/10 p-4 text-white shadow-lg backdrop-blur-xl sm:p-5"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/10"><Icon size={17} /></span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-1 text-[9px] font-black text-emerald-300"><ArrowUpRight size={10} />{signal.change}</span>
+              </div>
+              <p className="mt-4 text-2xl font-black tracking-tight sm:text-3xl"><CountUp target={signal.target} format={signal.format} /></p>
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.1em] text-blue-100/70 sm:text-xs">{signal.label}</p>
+              <div className="mt-4 flex h-9 items-end gap-1" aria-hidden>
+                {signal.bars.map((height, barIndex) => (
+                  <motion.span
+                    key={barIndex}
+                    className="flex-1 rounded-t-sm bg-gradient-to-t from-blue-500/45 to-cyan-300"
+                    initial={reduceMotion ? false : { height: "8%" }}
+                    whileInView={{ height: `${height}%` }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.25 + barIndex * 0.07, duration: 0.55, ease: "easeOut" }}
+                  />
+                ))}
+              </div>
+            </motion.article>
+          );
+        })}
+      </div>
+
+      <div className="relative mt-3 grid gap-3 lg:grid-cols-[1.55fr_0.85fr]">
+        <div className="rounded-2xl border border-white/15 bg-white/10 p-4 text-white backdrop-blur-xl sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div><p className="text-sm font-black">Portfolio Performance</p><p className="mt-1 text-[10px] text-blue-100/65">Blended revenue growth across active accounts</p></div>
+            <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[10px] font-black text-emerald-300">+31.8%</span>
+          </div>
+          <svg viewBox="0 0 620 170" className="mt-5 h-36 w-full" role="img" aria-label="Portfolio performance trending upward">
+            <defs><linearGradient id="signal-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#38bdf8" stopOpacity=".38"/><stop offset="1" stopColor="#38bdf8" stopOpacity="0"/></linearGradient></defs>
+            {[30, 75, 120, 165].map((y) => <line key={y} x1="0" y1={y} x2="620" y2={y} stroke="rgba(255,255,255,.1)" />)}
+            <path d="M8 150 L76 122 L144 134 L212 91 L280 104 L348 57 L416 75 L484 34 L552 49 L612 14 L612 170 L8 170 Z" fill="url(#signal-area)" />
+            <motion.path d="M8 150 L76 122 L144 134 L212 91 L280 104 L348 57 L416 75 L484 34 L552 49 L612 14" fill="none" stroke="#67e8f9" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" initial={reduceMotion ? false : { pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: false, amount: 0.55 }} transition={{ duration: 1.7, ease: "easeInOut" }} />
+          </svg>
+        </div>
+
+        <div className="grid grid-cols-[120px_1fr] items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-4 text-white backdrop-blur-xl sm:grid-cols-[150px_1fr] sm:p-6">
+          <div className="relative mx-auto h-28 w-28 sm:h-32 sm:w-32">
+            <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90" aria-hidden><circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,.1)" strokeWidth="12"/><motion.circle cx="60" cy="60" r="48" fill="none" stroke="#22d3ee" strokeWidth="12" strokeLinecap="round" initial={reduceMotion ? false : { pathLength: 0 }} whileInView={{ pathLength: .78 }} viewport={{ once: false }} transition={{ duration: 1.4, ease: "easeOut" }}/></svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center"><span className="text-2xl font-black">78%</span><span className="text-[8px] uppercase tracking-wider text-blue-100/60">On target</span></div>
+          </div>
+          <div><p className="text-sm font-black">Campaign Health</p><p className="mt-2 text-xs leading-relaxed text-blue-100/65">39 of 50 campaigns are meeting or beating their efficiency target.</p><div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10"><motion.div className="h-full rounded-full bg-gradient-to-r from-blue-400 to-cyan-300" initial={{ width: 0 }} whileInView={{ width: "78%" }} viewport={{ once: false }} transition={{ duration: 1.2 }} /></div></div>
+        </div>
+      </div>
+    </div>
   );
 }
 

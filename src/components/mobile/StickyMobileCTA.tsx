@@ -27,10 +27,10 @@ export default function StickyMobileCTA() {
   if (!visible || atBottom) return null;
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-[var(--border)] px-4 py-3 pb-safe">
+    <div className="fixed bottom-3 left-3 right-3 z-40 rounded-2xl border border-white/70 bg-white/90 p-2 shadow-[0_12px_35px_rgba(15,23,42,0.2)] backdrop-blur-xl lg:hidden">
       <a
         href="/contact"
-        className="no-select block w-full bg-[var(--foreground)] text-white text-center font-bold text-[15px] py-4 rounded-[11px] active:bg-[var(--foreground)]/90 transition-colors"
+        className="no-select flex min-h-11 w-full items-center justify-center rounded-xl bg-[var(--foreground)] px-4 py-2.5 text-center text-[13px] font-bold text-white transition-colors active:bg-[var(--foreground)]/90"
         onClick={() => {
           const gtag = (window as typeof window & { gtag?: Gtag }).gtag;
           if (gtag) {
