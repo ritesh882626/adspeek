@@ -29,7 +29,7 @@ export default function StickyMobileCTA() {
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-[var(--border)] px-4 py-3 pb-safe">
       <a
-        href="#how-we-help"
+        href="/contact"
         className="no-select block w-full bg-[var(--foreground)] text-white text-center font-bold text-[15px] py-4 rounded-[11px] active:bg-[var(--foreground)]/90 transition-colors"
         onClick={() => {
           const gtag = (window as typeof window & { gtag?: Gtag }).gtag;
@@ -40,7 +40,7 @@ export default function StickyMobileCTA() {
           }
         }}
       >
-        Book Free Consultation →
+        Get a Free Growth Audit →
       </a>
     </div>
   );

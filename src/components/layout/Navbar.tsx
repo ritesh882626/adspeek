@@ -14,9 +14,10 @@ const services = [
 ];
 
 const navLinks = [
+  { label: "Home", href: "/" },
   { label: "Case Studies", href: "/case-studies" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "About Us", href: "/about" },
+  { label: "Resources", href: "/case-studies" },
 ];
 
 export default function Navbar() {
@@ -95,7 +96,7 @@ export default function Navbar() {
 
             {navLinks.map((l) => (
               <Link
-                key={l.href}
+                key={l.label}
                 href={l.href}
                 className="px-3 py-2 rounded-lg text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface)] transition-colors"
               >
@@ -107,7 +108,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden md:block">
             <Button href="/contact" size="sm">
-              Book a Free Call
+              Get a Free Growth Audit
             </Button>
           </div>
 
@@ -141,7 +142,7 @@ export default function Navbar() {
           <div className="border-t border-[var(--border)] mt-2 pt-2 space-y-1">
             {navLinks.map((l) => (
               <Link
-                key={l.href}
+                key={l.label}
                 href={l.href}
                 className="block px-3 py-2 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface)]"
                 onClick={() => setMenuOpen(false)}
@@ -152,7 +153,7 @@ export default function Navbar() {
           </div>
           <div className="pt-2">
             <Button href="/contact" className="w-full justify-center" onClick={() => setMenuOpen(false)}>
-              Book a Free Call
+              Get a Free Growth Audit
             </Button>
           </div>
         </div>

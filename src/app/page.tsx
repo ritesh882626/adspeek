@@ -1,31 +1,17 @@
 import { Metadata } from "next";
-import HeroSection from "@/components/home/HeroSection";
-import ProblemsSection from "@/components/home/ProblemsSection";
-import ExpertsSection from "@/components/home/ExpertsSection";
-import RoadmapSection from "@/components/home/RoadmapSection";
-import CaseStudiesSection from "@/components/home/CaseStudiesSection";
-import PhilosophySection from "@/components/home/PhilosophySection";
+import AgencyHomepage from "@/components/home/AgencyHomepage";
 
 export const metadata: Metadata = {
-  title: "AdsPeek — Business Growth Advisory",
+  title: "AdsPeek — Performance Marketing That Actually Performs",
   description:
-    "Don't hire an agency yet. AdsPeek helps businesses understand exactly what growth lever to pull and which marketing partner to trust — before spending a single rupee.",
+    "AdsPeek drives predictable growth for D2C brands and service businesses through performance marketing, creative strategy, and relentless optimisation.",
   openGraph: {
-    title: "AdsPeek — Business Growth Advisory",
-    description: "Expert-backed guidance to find the right marketing partner for your business.",
+    title: "AdsPeek — Performance Marketing Agency",
+    description: "Performance marketing that turns ad spend into measurable business growth.",
     type: "website",
   },
 };
 
 export default function HomePage() {
-  return (
-    <>
-      <HeroSection />
-      <ProblemsSection />
-      <ExpertsSection />
-      <RoadmapSection />
-      <CaseStudiesSection />
-      <PhilosophySection />
-    </>
-  );
+  return <AgencyHomepage />;
 }

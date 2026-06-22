@@ -75,7 +75,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-white/60 text-sm leading-relaxed mb-6">
-              We help ambitious businesses find the right marketing partner — with expert guidance, a clear roadmap, and zero sales pressure.
+              Performance marketing for India&apos;s next big brands — strategy, creative, media buying, and optimisation under one roof.
             </p>
             <div className="space-y-2.5 text-sm text-white/60">
               <a
@@ -137,13 +137,13 @@ export default function Footer() {
               Ready to grow?
             </h3>
             <p className="text-sm text-white/60 mb-5 leading-relaxed">
-              Get a free growth roadmap and expert consultation — no pitch, no pressure.
+              Get a free growth audit and discover where your next stage of growth will come from.
             </p>
             <Link
               href="/contact"
               className="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-[var(--accent)] text-white text-sm font-semibold hover:bg-[var(--accent-hover)] transition-colors w-full md:w-auto min-h-[44px]"
             >
-              Book a Free Call
+              Get a Free Growth Audit
             </Link>
             <div className="mt-5 pt-5 border-t border-white/10 space-y-1">
               <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Get in touch</p>

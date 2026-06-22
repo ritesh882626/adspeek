@@ -23,19 +23,19 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "AdsPeek — Business Growth Advisory Platform",
+    default: "AdsPeek — Performance Marketing Agency",
     template: "%s | AdsPeek",
   },
   description:
-    "AdsPeek helps businesses find the right marketing partner with expert-backed guidance. Get a free growth roadmap before spending a single rupee on marketing.",
+    "AdsPeek helps D2C brands and service businesses grow through performance marketing, creative strategy, conversion optimisation, and analytics.",
   metadataBase: new URL("https://adspeek.in"),
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
   openGraph: {
-    title: "AdsPeek — Business Growth Advisory Platform",
-    description: "Expert guidance. Clear roadmap. Better agency decisions.",
+    title: "AdsPeek — Performance Marketing Agency",
+    description: "Performance marketing that turns ad spend into measurable business growth.",
     type: "website",
     siteName: "AdsPeek",
   },
