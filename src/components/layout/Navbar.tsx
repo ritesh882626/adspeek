@@ -7,17 +7,19 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 const services = [
+  { label: "All Services", href: "/services" },
+  { label: "Build", href: "/services/build" },
+  { label: "Grow", href: "/services/grow" },
+  { label: "Automate", href: "/services/automate" },
+  { label: "Website Development", href: "/services/website-development" },
+  { label: "SEO", href: "/services/seo" },
   { label: "Performance Marketing", href: "/services/performance-marketing" },
-  { label: "Web Development", href: "/services/web-development" },
-  { label: "App Development", href: "/services/app-development" },
-  { label: "SEO & Content", href: "/services/seo-content" },
 ];
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Case Studies", href: "/case-studies" },
   { label: "About Us", href: "/about" },
-  { label: "Resources", href: "/case-studies" },
 ];
 
 export default function Navbar() {
@@ -80,7 +82,7 @@ export default function Navbar() {
               </button>
 
               {servicesOpen && (
-                <div className="absolute top-full left-0 mt-1 w-56 rounded-xl bg-white border border-[var(--border)] shadow-lg py-1.5">
+                <div className="absolute top-full left-0 mt-1 w-64 rounded-xl bg-white border border-[var(--border)] shadow-lg py-1.5 max-h-[70vh] overflow-y-auto">
                   {services.map((s) => (
                     <Link
                       key={s.href}

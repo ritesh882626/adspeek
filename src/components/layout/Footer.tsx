@@ -6,10 +6,13 @@ import Image from "next/image";
 import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
 
 const services = [
+  { label: "All Services", href: "/services" },
+  { label: "Build", href: "/services/build" },
+  { label: "Grow", href: "/services/grow" },
+  { label: "Automate", href: "/services/automate" },
+  { label: "Website Development", href: "/services/website-development" },
+  { label: "SEO", href: "/services/seo" },
   { label: "Performance Marketing", href: "/services/performance-marketing" },
-  { label: "Web Development", href: "/services/web-development" },
-  { label: "App Development", href: "/services/app-development" },
-  { label: "SEO & Content", href: "/services/seo-content" },
 ];
 
 const company = [
