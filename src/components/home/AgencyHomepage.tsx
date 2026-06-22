@@ -8,6 +8,7 @@ import {
   Star,
 } from "lucide-react";
 import { AnimatedGrowthDashboard, AnimatedGrowthSignals, AnimatedProcess } from "./AgencyAnimations";
+import InfiniteMobileRail from "./InfiniteMobileRail";
 
 const experts = [
   { name: "Rohit Mehra", role: "Performance Marketing Solution Provider", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png", companyLogo: "/company-logos/zomato-logo-transparent.png", company: "Zomato" },
@@ -76,7 +77,7 @@ function SectionHeading({ title, body }: { title: string; body?: string }) {
 
 function ExpertCard({ expert, mobile = false }: { expert: (typeof experts)[number]; mobile?: boolean }) {
   return (
-    <article className={`relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-24 shadow-sm ${mobile ? "w-[82vw] flex-shrink-0" : "lg:block lg:p-5 lg:pr-24"}`}>
+    <article className={`relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-24 shadow-sm ${mobile ? "w-[82vw] flex-shrink-0 snap-center" : "lg:block lg:p-5 lg:pr-24"}`}>
       <div className="absolute right-3 top-3 h-14 w-20" title={expert.company}>
         <Image src={expert.companyLogo} alt={`${expert.company} logo`} fill sizes="80px" className="object-contain" />
       </div>
@@ -92,7 +93,7 @@ function ExpertCard({ expert, mobile = false }: { expert: (typeof experts)[numbe
 
 function CaseStudyCard({ study, mobile = false }: { study: (typeof caseStudies)[number]; mobile?: boolean }) {
   return (
-    <article className={`overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${mobile ? "w-[84vw] flex-shrink-0" : ""}`}>
+    <article className={`overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg ${mobile ? "w-[84vw] flex-shrink-0 snap-center" : ""}`}>
       <div className="relative aspect-[3/2] overflow-hidden bg-slate-100">
         <Image src={study.image} alt={study.tag} fill sizes={mobile ? "84vw" : "(max-width: 767px) 84vw, 33vw"} className="object-cover object-top" />
       </div>
@@ -139,11 +140,9 @@ export default function AgencyHomepage() {
       <section className="border-y border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading title="Prominent Solution Providers Who've Done It at Scale" />
-          <div className="pause-on-hover mobile-momentum-scroll overflow-x-auto scrollbar-hide md:hidden">
-            <div className="flex w-max gap-3 animate-marquee">
-              {[...experts, ...experts].map((expert, index) => <ExpertCard key={`${expert.name}-${index}`} expert={expert} mobile />)}
-            </div>
-          </div>
+          <InfiniteMobileRail label="Solution providers">
+            {experts.map((expert) => <ExpertCard key={expert.name} expert={expert} mobile />)}
+          </InfiniteMobileRail>
           <div className="hidden grid-cols-2 gap-3 md:grid lg:grid-cols-4">
             {experts.map((expert) => <ExpertCard key={expert.name} expert={expert} />)}
           </div>
@@ -172,7 +171,7 @@ export default function AgencyHomepage() {
 
       <section className="border-y border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading title="What Growth Looks Like With AdsPeek" body="A live-style view of the commercial signals we optimise across every account." />
+          <SectionHeading title="What Growth Looks Like With AdsPeek" body="The numbers that matter, moving in the right direction." />
           <AnimatedGrowthSignals />
           <div className="mb-5 mt-10 text-center">
             <p className="text-lg font-black text-[var(--foreground)]">Customer Results &amp; Creative Work</p>
@@ -197,11 +196,9 @@ export default function AgencyHomepage() {
       <section id="case-studies" className="bg-white py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
           <SectionHeading title="From Zero to Results — Real Stories" />
-          <div className="pause-on-hover mobile-momentum-scroll overflow-x-auto scrollbar-hide md:hidden">
-            <div className="flex w-max gap-4 animate-marquee-reverse">
-              {[...caseStudies, ...caseStudies].map((study, index) => <CaseStudyCard key={`${study.tag}-${index}`} study={study} mobile />)}
-            </div>
-          </div>
+          <InfiniteMobileRail label="Case studies">
+            {caseStudies.map((study) => <CaseStudyCard key={study.tag} study={study} mobile />)}
+          </InfiniteMobileRail>
           <div className="hidden gap-5 md:grid md:grid-cols-3">
             {caseStudies.map((study) => <CaseStudyCard key={study.tag} study={study} />)}
           </div>

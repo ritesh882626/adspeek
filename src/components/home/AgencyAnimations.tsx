@@ -134,11 +134,11 @@ export function AnimatedGrowthSignals() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="relative overflow-hidden rounded-[28px] border border-white/70 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 p-4 shadow-2xl shadow-blue-950/20 sm:p-6 lg:p-8">
-      <div className="pointer-events-none absolute -left-16 top-10 h-52 w-52 rounded-full bg-blue-500/25 blur-3xl" />
-      <div className="pointer-events-none absolute -right-12 bottom-0 h-56 w-56 rounded-full bg-cyan-400/15 blur-3xl" />
+    <div className="relative isolate py-3">
+      <motion.div aria-hidden className="pointer-events-none absolute -left-12 top-0 -z-10 h-64 w-64 rounded-full bg-blue-300/35 blur-3xl" animate={reduceMotion ? undefined : { x: [0, 90, 20, 0], y: [0, 35, 100, 0], scale: [1, 1.2, .9, 1] }} transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }} />
+      <motion.div aria-hidden className="pointer-events-none absolute -right-10 bottom-0 -z-10 h-72 w-72 rounded-full bg-cyan-200/45 blur-3xl" animate={reduceMotion ? undefined : { x: [0, -100, -30, 0], y: [0, -55, -120, 0], scale: [1, .85, 1.15, 1] }} transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }} />
 
-      <div className="relative grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible">
         {growthSignals.map((signal, index) => {
           const Icon = signal.icon;
           return (
@@ -148,7 +148,7 @@ export function AnimatedGrowthSignals() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
               transition={{ delay: index * 0.08, duration: 0.45 }}
-              className="rounded-2xl border border-white/15 bg-white/10 p-4 text-white shadow-lg backdrop-blur-xl sm:p-5"
+              className="w-[72vw] flex-shrink-0 snap-center rounded-[22px] border border-white/80 bg-slate-950/[0.88] p-5 text-white shadow-xl shadow-blue-950/15 backdrop-blur-2xl sm:w-[44vw] lg:w-auto"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/10"><Icon size={17} /></span>
@@ -173,8 +173,8 @@ export function AnimatedGrowthSignals() {
         })}
       </div>
 
-      <div className="relative mt-3 grid gap-3 lg:grid-cols-[1.55fr_0.85fr]">
-        <div className="rounded-2xl border border-white/15 bg-white/10 p-4 text-white backdrop-blur-xl sm:p-6">
+      <div className="relative mt-1 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 scrollbar-hide lg:grid lg:grid-cols-[1.55fr_0.85fr] lg:overflow-visible">
+        <div className="w-[88vw] flex-shrink-0 snap-center rounded-[22px] border border-white/80 bg-slate-950/[0.88] p-5 text-white shadow-xl shadow-blue-950/15 backdrop-blur-2xl sm:w-[70vw] sm:p-6 lg:w-auto">
           <div className="flex items-start justify-between gap-4">
             <div><p className="text-sm font-black">Portfolio Performance</p><p className="mt-1 text-[10px] text-blue-100/65">Blended revenue growth across active accounts</p></div>
             <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[10px] font-black text-emerald-300">+31.8%</span>
@@ -187,7 +187,7 @@ export function AnimatedGrowthSignals() {
           </svg>
         </div>
 
-        <div className="grid grid-cols-[120px_1fr] items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-4 text-white backdrop-blur-xl sm:grid-cols-[150px_1fr] sm:p-6">
+        <div className="grid w-[88vw] flex-shrink-0 snap-center grid-cols-[120px_1fr] items-center gap-4 rounded-[22px] border border-white/80 bg-slate-950/[0.88] p-5 text-white shadow-xl shadow-blue-950/15 backdrop-blur-2xl sm:w-[70vw] sm:grid-cols-[150px_1fr] sm:p-6 lg:w-auto">
           <div className="relative mx-auto h-28 w-28 sm:h-32 sm:w-32">
             <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90" aria-hidden><circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,.1)" strokeWidth="12"/><motion.circle cx="60" cy="60" r="48" fill="none" stroke="#22d3ee" strokeWidth="12" strokeLinecap="round" initial={reduceMotion ? false : { pathLength: 0 }} whileInView={{ pathLength: .78 }} viewport={{ once: false }} transition={{ duration: 1.4, ease: "easeOut" }}/></svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center"><span className="text-2xl font-black">78%</span><span className="text-[8px] uppercase tracking-wider text-blue-100/60">On target</span></div>
@@ -221,15 +221,17 @@ export function AnimatedProcess() {
   const MobileIcon = mobileStep.icon;
 
   return (
-    <>
+    <div className="relative overflow-hidden rounded-[28px] border border-white/80 bg-white/45 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur-2xl sm:p-6">
+      <motion.div aria-hidden className="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full bg-blue-200/45 blur-3xl" animate={reduceMotion ? undefined : { x: [0, 170, 360, 620, 900], opacity: [.35, .7, .8, .65, .35] }} transition={{ duration: 6, repeat: Infinity, ease: "linear" }} />
       <div className="relative hidden md:grid md:grid-cols-5 md:gap-4">
-        <div className="absolute left-[10%] right-[10%] top-5 h-px overflow-hidden bg-slate-200">
+        <div className="absolute left-[10%] right-[10%] top-5 h-1 overflow-visible rounded-full bg-white/80 shadow-inner">
           <motion.div
-            className="h-full origin-left bg-gradient-to-r from-blue-400 via-blue-600 to-cyan-400"
+            className="h-full origin-left rounded-full bg-gradient-to-r from-blue-300 via-blue-600 to-cyan-300 shadow-[0_0_18px_rgba(37,99,235,0.9)]"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 6, repeat: reduceMotion ? 0 : Infinity, ease: "linear" }}
           />
+          <motion.span className="absolute -top-1.5 h-4 w-4 -translate-x-1/2 rounded-full bg-white ring-4 ring-blue-500/35 shadow-[0_0_24px_8px_rgba(37,99,235,0.65)]" animate={{ left: `${activeStep * 25}%` }} transition={{ duration: .45, ease: [0.22, 1, 0.36, 1] }} />
         </div>
         {processSteps.map((step, index) => {
           const Icon = step.icon;
@@ -239,7 +241,7 @@ export function AnimatedProcess() {
               key={step.title}
               animate={{ scale: active ? 1.06 : 1 }}
               transition={{ duration: 0.28, ease: "easeOut" }}
-              className={`relative rounded-2xl p-3 text-center transition-shadow duration-300 ${active ? "bg-blue-50 shadow-[0_0_28px_rgba(37,99,235,0.22)]" : "bg-transparent"}`}
+              className={`relative rounded-[22px] border p-4 text-center backdrop-blur-xl transition-all duration-300 ${active ? "border-blue-200/80 bg-white/85 shadow-[0_0_34px_rgba(37,99,235,0.28)]" : "border-white/70 bg-white/35 shadow-sm"}`}
             >
               <div className={`relative z-10 mx-auto flex h-10 w-10 items-center justify-center rounded-full text-xs font-black transition-colors ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{index + 1}</div>
               <Icon size={34} className={`mx-auto mb-3 mt-5 transition-colors ${active ? "text-blue-600" : "text-[var(--foreground)]"}`} strokeWidth={1.5} />
@@ -250,11 +252,11 @@ export function AnimatedProcess() {
         })}
       </div>
 
-      <div className="overflow-hidden md:hidden">
+      <div className="relative overflow-hidden md:hidden">
         <div className="mb-5 flex items-center gap-2">
           {processSteps.map((step, index) => (
-            <div key={step.title} className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
-              <motion.div className="h-full origin-left bg-blue-600" animate={{ scaleX: index <= activeStep ? 1 : 0 }} transition={{ duration: 0.3 }} />
+            <div key={step.title} className="h-1.5 flex-1 overflow-visible rounded-full bg-white/80 shadow-inner">
+              <motion.div className="h-full origin-left rounded-full bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.8)]" animate={{ scaleX: index <= activeStep ? 1 : 0 }} transition={{ duration: 0.3 }} />
             </div>
           ))}
         </div>
@@ -265,7 +267,7 @@ export function AnimatedProcess() {
             animate={{ opacity: 1, x: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: -90 }}
             transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-            className="flex min-h-[210px] items-center gap-5 rounded-2xl border border-blue-100 bg-blue-50/70 p-6 shadow-[0_0_28px_rgba(37,99,235,0.14)]"
+            className="flex min-h-[210px] items-center gap-5 rounded-[22px] border border-white/80 bg-white/60 p-6 shadow-[0_18px_45px_rgba(37,99,235,0.16)] backdrop-blur-2xl"
           >
             <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white">
               <MobileIcon size={27} />
@@ -278,6 +280,6 @@ export function AnimatedProcess() {
           </motion.article>
         </AnimatePresence>
       </div>
-    </>
+    </div>
   );
 }
