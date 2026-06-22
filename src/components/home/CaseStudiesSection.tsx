@@ -164,13 +164,13 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
               </div>
 
               {/* Big metric */}
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-400/20 flex items-center justify-center">
-                  <TrendingUp size={16} className="text-emerald-400" />
+              <div className="flex min-w-0 items-center gap-2 md:gap-3">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-emerald-400/20 md:h-8 md:w-8 md:rounded-lg">
+                  <TrendingUp size={13} className="text-emerald-400 md:h-4 md:w-4" />
                 </div>
-                <div>
-                  <span className="text-xl md:text-2xl font-black text-white">{study.metric}</span>
-                  <span className="text-xs text-white/50 ml-2">{study.metricLabel}</span>
+                <div className="flex min-w-0 items-center gap-1.5 md:gap-0">
+                  <span className="flex-shrink-0 text-base font-black leading-none text-white md:text-2xl">{study.metric}</span>
+                  <span className="min-w-0 text-[9px] leading-tight text-white/50 md:ml-2 md:text-xs">{study.metricLabel}</span>
                 </div>
               </div>
             </div>

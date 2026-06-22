@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, AlertCircle, BrainCircuit, ShoppingCart,
@@ -84,7 +84,6 @@ const problems = [
 export default function ProblemsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [paused, setPaused] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const reduceMotion = useReducedMotion();
 
@@ -97,12 +96,6 @@ export default function ProblemsSection() {
     setDirection(amount);
     setActiveIndex((current) => (current + amount + problems.length) % problems.length);
   };
-
-  useEffect(() => {
-    if (paused || reduceMotion) return;
-    const timer = window.setInterval(() => step(1), 4500);
-    return () => window.clearInterval(timer);
-  }, [paused, reduceMotion]);
 
   const activeProblem = problems[activeIndex];
   const ActiveIcon = activeProblem.icon;
@@ -192,10 +185,6 @@ export default function ProblemsSection() {
                 {/* Right: automatic, toggleable horizontal carousel */}
                 <div
                 className="relative min-h-[430px] sm:min-h-[390px] lg:min-h-[480px] flex items-center"
-                onMouseEnter={() => setPaused(true)}
-                onMouseLeave={() => setPaused(false)}
-                onFocusCapture={() => setPaused(true)}
-                onBlurCapture={() => setPaused(false)}
                 aria-live="polite"
               >
                 <AnimatePresence mode="wait" initial={false} custom={direction}>
