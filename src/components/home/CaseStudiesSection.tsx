@@ -118,8 +118,8 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
   const [activeTab, setActiveTab] = useState<Tab>("problem");
 
   return (
-    <div className="h-[70vh] max-h-[620px] md:h-auto md:max-h-none bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm md:shadow-2xl md:shadow-black/12 w-full max-w-5xl mx-auto border border-[var(--border)]">
-      <div className="grid h-full grid-cols-1 grid-rows-[minmax(190px,28vh)_minmax(0,1fr)] md:h-auto md:grid-rows-none md:grid-cols-[420px_1fr]">
+    <div className="h-[90vh] max-h-[680px] md:h-auto md:max-h-none bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm md:shadow-2xl md:shadow-black/12 w-full max-w-5xl mx-auto border border-[var(--border)]">
+      <div className="grid h-full grid-cols-1 grid-rows-[38%_62%] md:h-auto md:grid-rows-none md:grid-cols-[420px_1fr]">
 
         {/* Left: full-bleed image with overlay */}
         <div className="relative h-full min-h-0 md:min-h-[500px] overflow-hidden">
@@ -151,15 +151,15 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
 
               {/* Before / After */}
               <div className="grid grid-cols-2 gap-2 md:gap-3 mb-3 md:mb-5">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/10">
-                  <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">Before</p>
-                  <p className="text-base md:text-xl font-black text-white/60">{study.before.value}</p>
-                  <p className="text-[10px] text-white/40 mt-0.5">{study.before.label}</p>
+                <div className="flex max-h-[10vh] min-h-0 flex-col justify-center overflow-hidden bg-white/10 backdrop-blur-sm rounded-xl md:max-h-none md:rounded-2xl px-3 py-2 md:p-4 border border-white/10">
+                  <p className="text-[8px] md:text-[9px] font-black text-white/40 uppercase tracking-widest mb-0.5 md:mb-1">Before</p>
+                  <p className="text-sm md:text-xl leading-tight font-black text-white/60">{study.before.value}</p>
+                  <p className="text-[9px] md:text-[10px] leading-tight text-white/40 mt-0.5">{study.before.label}</p>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 border border-white/25 ring-1 ring-white/20">
-                  <p className="text-[9px] font-black text-white/70 uppercase tracking-widest mb-1">After</p>
-                  <p className="text-base md:text-xl font-black text-white">{study.after.value}</p>
-                  <p className="text-[10px] text-white/60 mt-0.5">{study.after.label}</p>
+                <div className="flex max-h-[10vh] min-h-0 flex-col justify-center overflow-hidden bg-white/20 backdrop-blur-sm rounded-xl md:max-h-none md:rounded-2xl px-3 py-2 md:p-4 border border-white/25 ring-1 ring-white/20">
+                  <p className="text-[8px] md:text-[9px] font-black text-white/70 uppercase tracking-widest mb-0.5 md:mb-1">After</p>
+                  <p className="text-sm md:text-xl leading-tight font-black text-white">{study.after.value}</p>
+                  <p className="text-[9px] md:text-[10px] leading-tight text-white/60 mt-0.5">{study.after.label}</p>
                 </div>
               </div>
 
@@ -178,7 +178,7 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
         </div>
 
         {/* Right: tabs */}
-        <div className="min-h-0 overflow-y-auto p-5 md:p-10 flex flex-col justify-between md:min-h-[500px] md:overflow-visible">
+        <div className="min-h-0 overflow-hidden p-5 md:p-10 flex flex-col justify-between md:min-h-[500px] md:overflow-visible">
           {/* Tab bar */}
           <div>
             <div className="flex gap-1 mb-4 md:mb-8 bg-[var(--surface)] rounded-xl md:rounded-2xl p-1">
@@ -216,7 +216,7 @@ function CaseStudyCard({ study }: { study: typeof caseStudies[0] }) {
           </div>
 
           {/* Footer */}
-          <div className="mt-4 pt-4 md:mt-8 md:pt-6 border-t border-[var(--border)]">
+          <div className="hidden md:block mt-8 pt-6 border-t border-[var(--border)]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] text-[var(--muted)] font-black tracking-widest uppercase mb-0.5">Industry</p>
