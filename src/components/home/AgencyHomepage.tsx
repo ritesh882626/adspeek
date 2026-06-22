@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 
 const experts = [
-  { name: "Rohit Mehra", role: "Co-founder", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png" },
-  { name: "Aditi Sharma", role: "Co-founder", credential: "Ex-PwC | Digital Strategy", image: "/consultants/priya.png" },
-  { name: "Karan Arora", role: "Head of Growth", credential: "Ex-KPMG | Growth Analytics", image: "/consultants/vikram.png" },
-  { name: "Nikhil Bansal", role: "Creative Lead", credential: "Ex-Flipkart | Brand & Creative", image: "/consultants/rohan.png" },
+  { name: "Rohit Mehra", role: "Performance Marketing Solution Provider", credential: "Ex-Zomato | Performance Marketing Lead", image: "/consultants/arjun.png", companyLogo: "/company-logos/zomato-logo.png", company: "Zomato" },
+  { name: "Aditi Sharma", role: "Digital Strategy Solution Provider", credential: "Ex-PwC | Digital Strategy", image: "/consultants/priya.png", companyLogo: "/company-logos/pwc-logo.png", company: "PwC" },
+  { name: "Karan Arora", role: "Growth Analytics Solution Provider", credential: "Ex-KPMG | Growth Analytics", image: "/consultants/vikram.png", companyLogo: "/company-logos/kpmg-logo.webp", company: "KPMG" },
+  { name: "Nikhil Bansal", role: "Creative Strategy Solution Provider", credential: "Ex-Deloitte | Brand & Creative", image: "/consultants/rohan.png", companyLogo: "/company-logos/deloitte-logo.jpg", company: "Deloitte" },
 ];
 
 const process = [
@@ -150,14 +150,17 @@ export default function AgencyHomepage() {
 
       <section className="border-y border-slate-200 bg-[var(--surface)] py-16">
         <div className="mx-auto max-w-7xl px-6 sm:px-10">
-          <SectionHeading title="Built by People Who've Done It at Scale" />
+          <SectionHeading title="Prominent Solution Providers Who've Done It at Scale" />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {experts.map((expert) => (
-              <article key={expert.name} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:block lg:p-5">
+              <article key={expert.name} className="relative flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 pr-14 shadow-sm lg:block lg:p-5 lg:pr-14">
+                <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm" title={expert.company}>
+                  <Image src={expert.companyLogo} alt={`${expert.company} logo`} width={24} height={24} className="h-full w-full object-contain" />
+                </div>
                 <Image src={expert.image} alt={expert.name} width={96} height={96} className="h-16 w-16 flex-shrink-0 rounded-full object-cover object-top lg:h-20 lg:w-20" />
                 <div className="min-w-0 lg:mt-4">
                   <h3 className="font-black text-[var(--foreground)]">{expert.name}</h3>
-                  <p className="text-xs text-[var(--muted)]">{expert.role}</p>
+                  <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{expert.role}</p>
                   <p className="mt-2 text-xs font-semibold leading-relaxed text-[var(--foreground)]">{expert.credential}</p>
                 </div>
               </article>
