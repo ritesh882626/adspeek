@@ -1,0 +1,59 @@
+[
+  {
+    "slug": "krave-apparel",
+    "title": "Krave Apparel",
+    "clientName": "Krave Apparel",
+    "industry": "D2C Fashion & Apparel",
+    "location": "Mumbai, India",
+    "services": ["Custom Theme Development", "Mobile UX Architecture", "CRO"],
+    "platform": "Shopify Online Store 2.0",
+    "metrics": "+34% Mobile Conversion Rate, 1.1s Load Time",
+    "challenge": "Krave was suffering from a 4.2-second mobile load time and high cart abandonment caused by clunky third-party apps on an off-the-shelf theme.",
+    "solution": "AdsPeek engineered a bespoke Shopify 2.0 Liquid theme from custom Figma designs, replacing 9 third-party apps with native Liquid micro-features including a slide-out cart drawer and variant selector.",
+    "results": [
+      "Mobile page load time reduced from 4.2s to 1.1s",
+      "Checkout initiation rate jumped by 34% in the first 60 days",
+      "99/100 Core Web Vitals score on mobile Google Lighthouse"
+    ],
+    "clientQuote": "AdsPeek completely re-architected our custom Shopify theme. Our mobile load times dropped from 4.2s to under 1s, and our conversion rate jumped from 1.9% to 3.4% in the very first month.",
+    "liveUrl": "https://kraveapparel.in"
+  },
+  {
+    "slug": "aurora-skincare",
+    "title": "Aurora Skincare",
+    "clientName": "Aurora Skincare",
+    "industry": "Clean Beauty & Cosmetics",
+    "location": "Gurugram, India",
+    "services": ["WooCommerce Migration", "Custom Bundling Flow", "Speed Audit"],
+    "platform": "Shopify Online Store 2.0",
+    "metrics": "+42% Average Order Value (AOV), Zero Downtime Migration",
+    "challenge": "Aurora was experiencing recurring database crashes on WooCommerce during holiday traffic surges and struggling with complex multi-step skincare bundle configurations.",
+    "solution": "Seamless zero-downtime migration of 4,000+ customer records and orders to Shopify, coupled with a custom Liquid routine builder and automated COD verification.",
+    "results": [
+      "Zero downtime and zero lost orders during DNS cutover",
+      "Average Order Value increased by 42% via custom product routine builder",
+      "RTO reduced by 18% with automated OTP address confirmation"
+    ],
+    "clientQuote": "Migrating 4,000+ SKUs from WooCommerce to Shopify was terrifying for our team. AdsPeek executed the cutover with zero downtime, zero missing orders, and our organic search rankings did not drop even 1%.",
+    "liveUrl": "https://auroraskincare.co"
+  },
+  {
+    "slug": "nova-tech",
+    "title": "Nova Tech",
+    "clientName": "Nova Tech",
+    "industry": "Consumer Tech & Audio",
+    "location": "Bengaluru, India",
+    "services": ["Custom Storefront", "B2B Wholesale Portal", "ERP Webhook Integration"],
+    "platform": "Shopify Plus",
+    "metrics": "2.8x DTC Revenue Growth, Automated ERP Sync",
+    "challenge": "Nova needed to handle both high-volume consumer product drops and wholesale dealer bulk orders under a unified Shopify catalog without inventory sync delays.",
+    "solution": "Developed a Shopify Plus enterprise storefront featuring automated tiered wholesale pricing, B2B customer authentication, and real-time webhook sync to their SAP warehouse system.",
+    "results": [
+      "DTC online revenue grew 2.8x over two quarters",
+      "Wholesale order processing time cut from 2 days to automated instant checkout",
+      "Real-time multi-warehouse inventory accuracy across India"
+    ],
+    "clientQuote": "We launched our flagship audio line on Shopify Plus with AdsPeek. Their technical rigor, speed optimization, and understanding of B2B workflows made them our indispensable engineering partner.",
+    "liveUrl": "https://novatechgear.com"
+  }
+]

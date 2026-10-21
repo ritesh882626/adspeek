@@ -1,0 +1,178 @@
+{
+  "services": [
+    {
+      "slug": "custom-shopify-store-development",
+      "title": "Custom Shopify Store Development",
+      "h1": "Custom Shopify Store Development for High-Growth Brands",
+      "category": "Development",
+      "metaDescription": "Bespoke Shopify store development built from Figma designs with Liquid, modern headless options, zero app bloat, and sub-second loading speeds.",
+      "phase": 1,
+      "status": "ready",
+      "heroAnswer": "AdsPeek engineers high-converting, custom Shopify storefronts from pixel-perfect Figma designs. We eliminate third-party app dependencies with clean custom Liquid architecture, guaranteed 90+ Core Web Vitals, and tailored conversion funnels built for scaling direct-to-consumer brands globally.",
+      "deliverables": [
+        "Figma-to-Liquid custom theme development with zero boilerplate code",
+        "Tailored product page (PDP) variants, sticky carts, and upsell logic",
+        "Collection page filtering, facet search, and mega-menu architecture",
+        "Third-party ERP, CRM, warehouse, and courier webhook integrations",
+        "Cross-browser QA and responsive validation across all mobile viewports"
+      ],
+      "targetAudience": [
+        "Growing D2C brands outgrowing off-the-shelf Shopify templates",
+        "Enterprise retailers seeking custom checkout and ERP integrations",
+        "Founders launching new direct-to-consumer product lines"
+      ],
+      "processSteps": [
+        { "step": "01", "title": "Discovery & Architecture", "desc": "Technical scoping, catalog structure mapping, and Liquid codebase planning." },
+        { "step": "02", "title": "Bespoke Development", "desc": "Modular section development directly in Shopify theme editor." },
+        { "step": "03", "title": "Performance QA", "desc": "Rigorous mobile performance, accessibility, and checkout stress testing." },
+        { "step": "04", "title": "Launch & Handover", "desc": "DNS cutover, live monitoring, team training, and 30-day post-launch warranty." }
+      ],
+      "pricingNote": "Custom store builds typically range from $3,000 to $7,000 (₹2,50,000 - ₹5,80,000) based on catalog size and custom functionality.",
+      "faqs": [
+        {
+          "q": "Do we own 100% of the custom theme code after launch?",
+          "a": "Yes. Upon final milestone payment and handover, 100% of the theme code, assets, and Shopify store ownership are transferred directly to your organization with zero proprietary locks."
+        },
+        {
+          "q": "Can our marketing team edit sections without code after handover?",
+          "a": "Every section we build is natively exposed to the Shopify Theme Editor (OS 2.0). Your team can drag, drop, reorder, change copy, and swap media without touching Liquid code."
+        },
+        {
+          "q": "How long does a typical custom Shopify store build take?",
+          "a": "Most bespoke store projects take between 3 to 6 weeks from kickoff to launch, divided into structured milestone sprints."
+        }
+      ],
+      "relatedServices": ["shopify-store-design", "shopify-theme-development", "shopify-migration"],
+      "relatedQuestions": ["shopify-store-cost-india", "how-long-to-build-shopify-store", "questions-before-hiring-shopify-developer"]
+    },
+    {
+      "slug": "shopify-store-design",
+      "title": "Shopify Store Design",
+      "h1": "Conversion-Focused Shopify Store Design",
+      "category": "Design & UX",
+      "metaDescription": "Strategic Shopify UI/UX design crafted in Figma. Modern Shopify-inspired aesthetics, deliberate customer journeys, and mobile-first product pages.",
+      "phase": 1,
+      "status": "ready",
+      "heroAnswer": "We design high-converting eCommerce shopping experiences engineered specifically for Shopify. From intuitive navigation hierarchy to conversion-tested product detail pages, our Figma design systems balance brand elegance with high checkout conversion rates.",
+      "deliverables": [
+        "Complete desktop and mobile design system in Figma",
+        "Custom home, collection, product, and storytelling landing page mockups",
+        "Mobile-first micro-interactions and cart drawer UX flows",
+        "Design token library with typography, color, and spacing specifications"
+      ],
+      "targetAudience": [
+        "Premium brands seeking high-end editorial and modern aesthetics",
+        "Stores suffering from high bounce rates or low mobile conversion rates"
+      ],
+      "processSteps": [
+        { "step": "01", "title": "UX Research", "desc": "Customer persona review, competitor benchmarking, and funnel analysis." },
+        { "step": "02", "title": "Wireframing", "desc": "Mobile-first wireframes prioritizing frictionless navigation." },
+        { "step": "03", "title": "Figma Prototypes", "desc": "High-fidelity interactive mockups and brand identity styling." }
+      ],
+      "pricingNote": "UI/UX design packages start from $1,800 to $4,000 depending on total page templates.",
+      "faqs": [
+        {
+          "q": "Do you provide Figma design files?",
+          "a": "Yes, you receive complete organized Figma files with components, autolayout, responsive variants, and developer handoff specs."
+        }
+      ],
+      "relatedServices": ["custom-shopify-store-development", "shopify-theme-development"],
+      "relatedQuestions": ["how-to-choose-shopify-development-company"]
+    },
+    {
+      "slug": "shopify-theme-development",
+      "title": "Shopify Theme Development",
+      "h1": "Custom Shopify Theme Development (Online Store 2.0)",
+      "category": "Theme Engineering",
+      "metaDescription": "Custom Liquid theme development for Shopify Online Store 2.0. Modular drag-and-drop sections, fast load speeds, and clean native Liquid code.",
+      "phase": 1,
+      "status": "ready",
+      "heroAnswer": "AdsPeek builds modular, lightweight Liquid themes adhering strictly to Shopify Online Store 2.0 standards. We give your internal team full visual control over banners, product sections, and promotional landing pages without relying on slow page builders.",
+      "deliverables": [
+        "Modular OS 2.0 JSON templates and Liquid schema settings",
+        "Dynamic drag-and-drop section blocks for home, PDP, and collection pages",
+        "Lightweight vanilla JavaScript without heavy external frameworks",
+        "Integrated Schema.org microdata for rich search snippets"
+      ],
+      "targetAudience": [
+        "Marketing teams tired of clunky third-party page builders",
+        "Brands needing custom product configuration and bundled upsells"
+      ],
+      "processSteps": [
+        { "step": "01", "title": "Architecture Setup", "desc": "Clean Liquid boilerplate with GitHub version control and CI/CD." },
+        { "step": "02", "title": "Section Development", "desc": "Custom schema-powered blocks for theme customization." },
+        { "step": "03", "title": "Speed Audit", "desc": "CSS/JS tree-shaking and Core Web Vitals optimization." }
+      ],
+      "pricingNote": "Custom theme development packages range from $2,500 to $5,500.",
+      "faqs": [
+        {
+          "q": "Can we update theme sections without hiring a developer each time?",
+          "a": "Yes, every custom section includes intuitive controls in the Shopify visual customizer for copy, images, colors, and layout."
+        }
+      ],
+      "relatedServices": ["custom-shopify-store-development", "shopify-store-design"],
+      "relatedQuestions": ["shopify-store-cost-india"]
+    },
+    {
+      "slug": "shopify-migration",
+      "title": "Shopify Migration Services",
+      "h1": "Zero-Downtime Store Redesign & Platform Migration to Shopify",
+      "category": "Migration",
+      "metaDescription": "Safe, zero-downtime platform migrations to Shopify. 100% SEO redirect preservation, order and customer history transfer, and zero lost rankings.",
+      "phase": 1,
+      "status": "ready",
+      "heroAnswer": "Upgrade an outdated storefront or transition from WooCommerce, Magento, or custom stacks to Shopify with zero downtime. We safely migrate your complete product catalog, customer accounts, and order history while protecting 100% of your organic search rankings with comprehensive 301 redirect mapping.",
+      "deliverables": [
+        "Automated extraction and transfer of products, variants, and metadata",
+        "Customer accounts and historical order mapping",
+        "Full 1-to-1 301 URL redirect architecture to protect Google rankings",
+        "Payment gateway and inventory sync integration"
+      ],
+      "targetAudience": [
+        "Stores struggling with WooCommerce plugin bloat and database crashes",
+        "Brands migrating from Magento or custom bespoke platforms"
+      ],
+      "processSteps": [
+        { "step": "01", "title": "Catalog Audit", "desc": "Audit of all SKUs, customer data, and current organic landing page URLs." },
+        { "step": "02", "title": "Staging Transfer", "desc": "Secure sandbox data migration and integrity verification." },
+        { "step": "03", "title": "SEO Protection", "desc": "Automated 301 redirect deployment and Google Search Console monitoring." },
+        { "step": "04", "title": "Zero-Downtime Cutover", "desc": "Off-peak DNS switchover with live checkout validation." }
+      ],
+      "pricingNote": "Full store migrations range from $2,000 to $6,000 depending on SKU volume and custom integrations.",
+      "faqs": [
+        {
+          "q": "Will my store lose organic Google rankings during migration?",
+          "a": "No. By crawling every legacy URL, mapping comprehensive 1-to-1 301 redirects, and matching title tags and schema, we protect your search traffic and domain authority."
+        }
+      ],
+      "relatedServices": ["custom-shopify-store-development"],
+      "relatedQuestions": ["shopify-migration-seo", "shopify-vs-woocommerce-india"]
+    }
+  ],
+  "migrationPlatforms": [
+    {
+      "platform": "woocommerce-to-shopify",
+      "name": "WooCommerce",
+      "title": "WooCommerce to Shopify Migration",
+      "h1": "WooCommerce to Shopify Migration Services",
+      "metaDescription": "Seamlessly migrate from WooCommerce to Shopify with zero downtime, full customer and order history transfer, and 100% preserved Google SEO rankings.",
+      "phase": 1,
+      "status": "ready",
+      "heroAnswer": "Leave WordPress maintenance headaches and plugin vulnerabilities behind. AdsPeek migrates your WooCommerce store to Shopify with zero revenue disruption, full customer data preservation, and airtight 301 redirect mapping to protect your hard-earned SEO authority.",
+      "checklist": [
+        "Products, categories, attributes, and inventory transfer",
+        "Customer accounts, addresses, and order history mapping",
+        "301 redirects for every WordPress/WooCommerce URL",
+        "Payment gateways (Razorpay, Stripe, Cashfree, COD) configuration"
+      ],
+      "downtimeGuarantee": "Zero customer downtime during DNS cutover",
+      "pricingNote": "WooCommerce to Shopify migrations start at $2,000 (₹1,60,000).",
+      "faqs": [
+        {
+          "q": "Can customer passwords be transferred from WooCommerce to Shopify?",
+          "a": "Because WooCommerce and Shopify use different encryption hashes, Shopify requires customers to activate their account via an automated one-click email invite upon launch."
+        }
+      ]
+    }
+  ]
+}

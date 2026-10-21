@@ -1,0 +1,186 @@
+[
+  {
+    "slug": "india",
+    "name": "India",
+    "type": "country",
+    "parentCountry": "india",
+    "countryName": "India",
+    "phase": 1,
+    "status": "ready",
+    "metaDescription": "Leading Shopify development company in India. We design, build, and optimize high-converting Shopify stores for direct-to-consumer and enterprise brands.",
+    "heroAnswer": "AdsPeek is a premier Shopify store development agency headquartered in Gurugram, India. We help ambitious Indian and global brands build custom, lightning-fast Shopify stores engineered for high checkout conversions, seamless UPI/COD payments, and scalable multi-channel growth.",
+    "timeZoneNote": "Indian Standard Time (IST, UTC+5:30) with real-time overlap for US, UK, and UAE clients.",
+    "currency": "INR",
+    "priceRangeLocal": "₹1,50,000 - ₹6,00,000",
+    "localNeeds": [
+      "Frictionless UPI & Cash on Delivery (COD) checkout integration",
+      "RTO (Return to Origin) reduction with automated OTP address verification",
+      "Automated GST invoice generation complying with Indian tax regulations",
+      "Delhivery, Shiprocket, and BlueDart logistics and tracking webhooks"
+    ],
+    "paymentGateways": ["Razorpay", "Cashfree", "PhonePe", "PayU", "Shopify Payments"],
+    "industries": ["Apparel & Fashion", "Beauty & Skincare", "Consumer Electronics", "Health & Wellness"],
+    "faqs": [
+      {
+        "q": "Why hire a Shopify development agency based in India?",
+        "a": "Indian agencies like AdsPeek provide senior engineering talent at competitive rates with deep mastery of local eCommerce nuances such as Cash on Delivery, UPI one-click payments, WhatsApp notifications, and GST compliance."
+      },
+      {
+        "q": "Can you integrate Indian courier partners like Shiprocket or Delhivery?",
+        "a": "Yes, we integrate Shiprocket, Delhivery, Bluedart, and custom multi-courier APIs for automated AWB generation, label printing, and live tracking."
+      }
+    ],
+    "nearby": ["delhi-ncr", "haryana"],
+    "updatedAt": "2026-10-20"
+  },
+  {
+    "slug": "haryana",
+    "name": "Haryana",
+    "type": "state",
+    "parentCountry": "india",
+    "countryName": "India",
+    "phase": 1,
+    "status": "ready",
+    "metaDescription": "Shopify website development company in Haryana. Based in Gurugram, delivering bespoke Shopify and Shopify Plus storefronts for scaling D2C brands.",
+    "heroAnswer": "Headquartered in Gurugram, Haryana, AdsPeek delivers bespoke Shopify store development for regional manufacturers, luxury retailers, and fast-scaling D2C brands throughout the Haryana and NCR business ecosystem.",
+    "timeZoneNote": "IST (UTC+5:30) with in-person discovery sessions available in Gurugram and Faridabad.",
+    "currency": "INR",
+    "priceRangeLocal": "₹1,50,000 - ₹5,00,000",
+    "localNeeds": [
+      "In-person strategy and technical kickoff workshops in Gurugram",
+      "B2B bulk ordering and wholesale tiered pricing rules",
+      "Integrated regional logistics and automated shipping calculators"
+    ],
+    "paymentGateways": ["Razorpay", "Cashfree", "PayU"],
+    "industries": ["Manufacturing & B2B", "Apparel & Textiles", "Auto & Hardware"],
+    "faqs": [
+      {
+        "q": "Can we meet the development team in person in Haryana?",
+        "a": "Yes, our primary engineering studio is located in Sector 22, Gurugram. We welcome in-person discovery meetings by appointment."
+      }
+    ],
+    "nearby": ["gurugram", "delhi-ncr"],
+    "updatedAt": "2026-10-20"
+  },
+  {
+    "slug": "delhi-ncr",
+    "name": "Delhi NCR",
+    "type": "state",
+    "parentCountry": "india",
+    "countryName": "India",
+    "phase": 1,
+    "status": "ready",
+    "metaDescription": "Shopify development agency serving Delhi NCR brands across Delhi, Gurugram, and Noida. Custom Liquid themes, migrations, and CRO optimization.",
+    "heroAnswer": "AdsPeek is the trusted Shopify development partner for high-growth direct-to-consumer and retail brands across Delhi NCR. We engineer custom storefronts that combine modern visual aesthetics with enterprise speed and conversion performance.",
+    "timeZoneNote": "IST (UTC+5:30) with direct support for Delhi, Gurugram, and Noida teams.",
+    "currency": "INR",
+    "priceRangeLocal": "₹1,80,000 - ₹6,00,000",
+    "localNeeds": [
+      "High-converting mobile UI for urban D2C shoppers",
+      "Same-day / next-day delivery coordination with local fulfillment centers",
+      "Custom loyalty programs and influencer referral tracking"
+    ],
+    "paymentGateways": ["Razorpay", "Cashfree", "Shopify Payments"],
+    "industries": ["Fashion & Lifestyle", "Cosmetics & Beauty", "D2C Food & Beverage"],
+    "faqs": [
+      {
+        "q": "Which cities in Delhi NCR do you serve?",
+        "a": "We actively partner with brands across New Delhi, South Delhi, Gurugram, Noida, and Greater Noida with dedicated account management."
+      }
+    ],
+    "nearby": ["delhi", "gurugram", "noida"],
+    "updatedAt": "2026-10-20"
+  },
+  {
+    "slug": "gurugram",
+    "name": "Gurugram",
+    "type": "city",
+    "parentCountry": "india",
+    "parentState": "haryana",
+    "countryName": "India",
+    "phase": 1,
+    "status": "ready",
+    "metaDescription": "Top Shopify development company in Gurugram (Gurgaon). Custom Shopify store design, theme builds, and migration services by local experts.",
+    "heroAnswer": "Located in Sector 22, Gurugram, AdsPeek is an elite Shopify development agency helping Gurgaon's thriving eCommerce and startup brands launch high-performing storefronts. We build bespoke Liquid themes, fast mobile shopping flows, and conversion-optimized checkouts.",
+    "timeZoneNote": "IST (UTC+5:30) — on-site client meetings available at our Sector 22 studio.",
+    "currency": "INR",
+    "priceRangeLocal": "₹1,80,000 - ₹5,50,000",
+    "localNeeds": [
+      "Fast-turnaround technical support and dedicated project manager",
+      "Seamless integration with Indian fulfillment and payment gateways",
+      "Direct code ownership with full team training"
+    ],
+    "paymentGateways": ["Razorpay", "Cashfree", "PhonePe"],
+    "industries": ["D2C Brands", "Tech Accessories", "Health & Wellness"],
+    "faqs": [
+      {
+        "q": "Where is AdsPeek located in Gurugram?",
+        "a": "We are located in Sector 22, Gurugram, Haryana. You can schedule an in-person discovery consultation with our technical lead."
+      }
+    ],
+    "nearby": ["delhi", "noida"],
+    "spellingVariants": ["Gurgaon"],
+    "updatedAt": "2026-10-20"
+  },
+  {
+    "slug": "delhi",
+    "name": "Delhi",
+    "type": "city",
+    "parentCountry": "india",
+    "parentState": "delhi-ncr",
+    "countryName": "India",
+    "phase": 1,
+    "status": "ready",
+    "metaDescription": "Shopify development company in Delhi. Custom eCommerce website design, Shopify theme development, and speed optimization for Delhi retailers.",
+    "heroAnswer": "AdsPeek partners with Delhi's retail founders, designer labels, and online entrepreneurs to build standout Shopify storefronts. From bespoke fashion collections to high-volume multi-product catalogs, we turn online visitors into repeat buyers.",
+    "timeZoneNote": "IST (UTC+5:30) with regular on-site strategy workshops in Delhi.",
+    "currency": "INR",
+    "priceRangeLocal": "₹1,80,000 - ₹5,50,000",
+    "localNeeds": [
+      "Editorial lookbooks and interactive fashion variant pickers",
+      "Speed optimization for high-density mobile traffic",
+      "Multilingual and currency switcher capabilities"
+    ],
+    "paymentGateways": ["Razorpay", "Cashfree", "Shopify Payments"],
+    "industries": ["Designer Fashion", "Jewelry & Luxury Goods", "Home Decor"],
+    "faqs": [
+      {
+        "q": "Do you work with traditional Delhi retailers moving online?",
+        "a": "Yes, we have extensive experience helping brick-and-mortar retailers in Delhi transition their catalogs to Shopify with automated POS and inventory synchronization."
+      }
+    ],
+    "nearby": ["gurugram", "noida"],
+    "spellingVariants": ["New Delhi"],
+    "updatedAt": "2026-10-20"
+  },
+  {
+    "slug": "noida",
+    "name": "Noida",
+    "type": "city",
+    "parentCountry": "india",
+    "parentState": "delhi-ncr",
+    "countryName": "India",
+    "phase": 1,
+    "status": "ready",
+    "metaDescription": "Shopify store developers in Noida. Expert theme customization, WooCommerce migrations, and conversion rate optimization for Noida businesses.",
+    "heroAnswer": "AdsPeek provides modern Shopify development and eCommerce engineering services for businesses and digital startups in Noida. We engineer high-converting digital storefronts that load in under 1 second and deliver seamless checkout experiences.",
+    "timeZoneNote": "IST (UTC+5:30) with dedicated virtual and in-person collaboration.",
+    "currency": "INR",
+    "priceRangeLocal": "₹1,50,000 - ₹5,00,000",
+    "localNeeds": [
+      "Clean modular Liquid architecture without app bloat",
+      "API integrations with CRM and customer support platforms",
+      "Automated order fulfillment and tracking notifications"
+    ],
+    "paymentGateways": ["Razorpay", "Cashfree", "PayU"],
+    "industries": ["Consumer Tech", "Fitness & Sports", "Cosmetics"],
+    "faqs": [
+      {
+        "q": "How can Noida businesses get started with AdsPeek?",
+        "a": "You can request a free 30-minute discovery consultation where we analyze your requirements and provide a clear milestone roadmap."
+      }
+    ],
+    "nearby": ["delhi", "gurugram"],
+    "updatedAt": "2026-10-20"
+  }
+]
