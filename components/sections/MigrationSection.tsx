@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, ArrowRight, ShieldCheck, Database, FileText, ArrowRightLeft } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Database, FileText, ArrowRightLeft } from 'lucide-react';
 
 interface MigrationSectionProps {
   onOpenConsultation?: () => void;

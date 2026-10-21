@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Menu, X, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronDown, Menu, X, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
   onOpenConsultation: () => void;
@@ -158,7 +158,6 @@ export function Header({ onOpenConsultation }: HeaderProps) {
                   >
                     <div className="text-sm font-medium text-gray-900 group-hover:text-[#0C5A48] flex items-center justify-between">
                       <span>{service.title}</span>
-                      <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-[#0C5A48]" />
                     </div>
                     <p className="text-xs text-gray-500 mt-0.5">{service.desc}</p>
                   </a>

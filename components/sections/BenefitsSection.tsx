@@ -1,35 +1,42 @@
 import React from 'react';
-import { Smartphone, Zap, Sliders, Compass, Layers, BarChart3 } from 'lucide-react';
+import {
+  IconMobileFirst,
+  IconSubsecondSpeed,
+  IconCustomizableTheme,
+  IconSmartNavigation,
+  IconScalableArchitecture,
+  IconConversionAnalytics,
+} from '@/components/ui/PremiumIcons';
 
 export function BenefitsSection() {
   const benefits = [
     {
-      icon: Smartphone,
+      icon: IconMobileFirst,
       title: 'Mobile-First Experiences',
       desc: 'Over 78% of Shopify orders happen on mobile. We engineer intuitive touch gestures, sticky add-to-carts, and lightning thumb-friendly layouts.',
     },
     {
-      icon: Zap,
+      icon: IconSubsecondSpeed,
       title: 'Fast-Loading Storefronts',
       desc: 'Sub-second page speeds directly lift conversion rates. We eliminate heavy script dependencies and optimize asset delivery for 90+ Core Web Vitals.',
     },
     {
-      icon: Sliders,
+      icon: IconCustomizableTheme,
       title: 'Customizable Themes',
       desc: 'Empower your marketing team. Every section we build is natively editable inside the Shopify Theme Editor without needing a developer for everyday updates.',
     },
     {
-      icon: Compass,
+      icon: IconSmartNavigation,
       title: 'User-Friendly Navigation',
       desc: 'Smart product filtering, visual mega menus, and predictive search help customers find what they want in fewer clicks, lifting average order value.',
     },
     {
-      icon: Layers,
+      icon: IconScalableArchitecture,
       title: 'Scalable Store Architecture',
       desc: 'Built to sustain viral flash sales, massive inventory spikes, and multi-market expansions without breaking or requiring costly rebuilds.',
     },
     {
-      icon: BarChart3,
+      icon: IconConversionAnalytics,
       title: 'Analytics-Ready Implementation',
       desc: 'Properly instrumented Google Analytics 4, Meta Conversions API (CAPI), and event tracking ensure every ad dollar spent can be accurately measured.',
     },
@@ -58,14 +65,15 @@ export function BenefitsSection() {
             return (
               <div
                 key={i}
-                className="snap-center shrink-0 w-[82vw] max-w-[320px] sm:w-auto sm:max-w-none p-6 sm:p-7 md:p-8 rounded-2xl bg-white border border-gray-200/80 shadow-sm hover:shadow-card-light transition-all duration-200 flex flex-col justify-between"
+                className="group snap-center shrink-0 w-[82vw] max-w-[320px] sm:w-auto sm:max-w-none p-6 sm:p-7 md:p-8 rounded-2xl bg-white border border-gray-200/80 shadow-sm hover:shadow-card-light hover:border-[#0C5A48]/30 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center mb-5 sm:mb-6 border border-[#D1EFE3]">
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  {/* Premium Icon Pedestal */}
+                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/15 shadow-[0_4px_16px_rgba(12,90,72,0.06)] flex items-center justify-center mb-5 sm:mb-6 group-hover:border-[#0C5A48]/35 group-hover:shadow-[0_8px_24px_rgba(12,90,72,0.12)] group-hover:-translate-y-0.5 transition-all duration-300">
+                    <Icon size={30} tone="emerald" className="group-hover:scale-105" />
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-normal text-gray-950 mb-2 sm:mb-2.5 tracking-tight">
+                  <h3 className="text-lg sm:text-xl font-normal text-gray-950 mb-2 sm:mb-2.5 tracking-tight group-hover:text-[#0C5A48] transition-colors">
                     {benefit.title}
                   </h3>
 

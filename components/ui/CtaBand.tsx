@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, Clock, FileText } from 'lucide-react';
+import { ShieldCheck, Clock, FileText } from 'lucide-react';
 
 interface CtaBandProps {
   title?: string;

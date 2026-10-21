@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, MapPin, ArrowUpRight, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Mail, MapPin, MessageSquare, ShieldCheck } from 'lucide-react';
 
 interface FooterProps {
   onOpenConsultation?: () => void;

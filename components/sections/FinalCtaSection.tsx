@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, ShieldCheck, Clock, FileText } from 'lucide-react';
+import { ShieldCheck, Clock, FileText } from 'lucide-react';
 
 interface FinalCtaSectionProps {
   onOpenConsultation: () => void;

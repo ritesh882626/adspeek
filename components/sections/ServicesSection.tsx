@@ -2,14 +2,13 @@
 
 import React from 'react';
 import {
-  ShoppingBag,
-  Palette,
-  LayoutGrid,
-  RefreshCw,
-  TrendingUp,
-  Wrench,
-  ArrowRight,
-} from 'lucide-react';
+  IconStoreDev,
+  IconStoreDesign,
+  IconModularSections,
+  IconZeroDowntimeMigration,
+  IconCroGrowth,
+  IconEnterpriseSupport,
+} from '@/components/ui/PremiumIcons';
 
 interface ServicesSectionProps {
   onSelectService?: (serviceName: string) => void;
@@ -18,37 +17,37 @@ interface ServicesSectionProps {
 export function ServicesSection({ onSelectService }: ServicesSectionProps) {
   const services = [
     {
-      icon: ShoppingBag,
+      icon: IconStoreDev,
       title: 'Shopify Store Development',
       desc: 'Complete, custom storefront development tailored to your unique catalog, custom checkout requirements, and brand aesthetics.',
       points: ['Custom Liquid architecture', 'Zero-bloat theme coding', 'Tailored checkout & cart flows'],
     },
     {
-      icon: Palette,
+      icon: IconStoreDesign,
       title: 'Shopify Store Design',
       desc: 'Modern, high-converting storefronts built with intuitive navigation, engaging product storytelling, and deliberate customer journeys.',
       points: ['Figma to pixel-perfect code', 'Mobile-first UX hierarchy', 'Brand identity integration'],
     },
     {
-      icon: LayoutGrid,
+      icon: IconModularSections,
       title: 'Custom Shopify Sections',
       desc: 'Modular, editable Liquid sections built directly into your Shopify theme editor so your marketing team can build landing pages with ease.',
       points: ['Dynamic drag-and-drop sections', 'No app bloat required', 'Cross-browser tested'],
     },
     {
-      icon: RefreshCw,
+      icon: IconZeroDowntimeMigration,
       title: 'Store Redesign & Migration',
       desc: 'Upgrade an outdated store or migrate smoothly from WooCommerce, Magento, or custom stacks with 100% SEO redirect preservation.',
       points: ['Zero data or order loss', 'SEO rankings protected', 'Historical customer data transfer'],
     },
     {
-      icon: TrendingUp,
+      icon: IconCroGrowth,
       title: 'Conversion Rate Optimization',
       desc: 'Improve product pages, reduce shopping cart abandonment, and eliminate mobile checkout friction through data-backed design audits.',
       points: ['Frictionless checkout paths', 'Trust & urgency micro-UX', 'Product page storytelling'],
     },
     {
-      icon: Wrench,
+      icon: IconEnterpriseSupport,
       title: 'Store Maintenance & Support',
       desc: 'Continuous technical support, speed monitoring, seasonal campaign rollouts, and third-party app auditing to ensure peak uptime.',
       points: ['Dedicated sprint retainers', 'Speed regression monitoring', 'Emergency bug resolution'],
@@ -79,11 +78,12 @@ export function ServicesSection({ onSelectService }: ServicesSectionProps) {
             return (
               <div
                 key={index}
-                className="snap-center shrink-0 w-[84vw] max-w-[340px] md:w-auto md:max-w-none group p-6 sm:p-7 md:p-8 rounded-2xl bg-white border border-gray-200/80 shadow-card-light hover:shadow-card-hover hover:border-[#0C5A48]/30 transition-all duration-200 flex flex-col justify-between"
+                className="snap-center shrink-0 w-[84vw] max-w-[340px] md:w-auto md:max-w-none group p-6 sm:p-7 md:p-8 rounded-2xl bg-white border border-gray-200/80 shadow-card-light hover:shadow-card-hover hover:border-[#0C5A48]/30 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  {/* Premium Icon Pedestal */}
+                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/15 shadow-[0_4px_16px_rgba(12,90,72,0.06)] flex items-center justify-center mb-5 group-hover:border-[#0C5A48]/35 group-hover:shadow-[0_8px_24px_rgba(12,90,72,0.12)] group-hover:-translate-y-0.5 transition-all duration-300">
+                    <Icon size={30} tone="emerald" className="group-hover:scale-105" />
                   </div>
 
                   <h3 className="type-card text-gray-950 mb-2.5 group-hover:text-[#0C5A48] transition-colors">

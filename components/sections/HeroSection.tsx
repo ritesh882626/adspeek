@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, CheckCircle, Smartphone, Zap } from 'lucide-react';
 import { HeroInquiryCard } from './HeroInquiryCard';
+import { IconHeroCheck, IconHeroMobile, IconHeroZap } from '@/components/ui/PremiumIcons';
 
 interface HeroSectionProps {
   onOpenConsultation: () => void;
@@ -58,18 +58,18 @@ export function HeroSection({ onOpenConsultation }: HeroSectionProps) {
               </a>
             </div>
 
-            {/* 3 Compact Trust Badges - Stack cleanly on mobile */}
+            {/* 3 Compact Trust Badges - Stack cleanly on mobile with bespoke micro-icons */}
             <div className="pt-6 sm:pt-8 border-t border-gray-200/70 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
-                <CheckCircle className="w-4 h-4 text-[#0C5A48] shrink-0" />
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-gray-800 bg-[#FAF9F5] sm:bg-transparent px-3 py-2 sm:px-0 sm:py-0 rounded-xl sm:rounded-none border border-gray-200/60 sm:border-none">
+                <IconHeroCheck size={18} className="shrink-0" />
                 <span>Conversion-focused design</span>
               </div>
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
-                <Smartphone className="w-4 h-4 text-[#0C5A48] shrink-0" />
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-gray-800 bg-[#FAF9F5] sm:bg-transparent px-3 py-2 sm:px-0 sm:py-0 rounded-xl sm:rounded-none border border-gray-200/60 sm:border-none">
+                <IconHeroMobile size={18} className="shrink-0" />
                 <span>Mobile-first development</span>
               </div>
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
-                <Zap className="w-4 h-4 text-[#0C5A48] shrink-0" />
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-gray-800 bg-[#FAF9F5] sm:bg-transparent px-3 py-2 sm:px-0 sm:py-0 rounded-xl sm:rounded-none border border-gray-200/60 sm:border-none">
+                <IconHeroZap size={18} className="shrink-0" />
                 <span>Built around your business</span>
               </div>
             </div>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertCircle, Loader2, Clock, Globe } from 'lucide-react';
 import { detectUserRegionCurrency, REGION_CURRENCIES, type RegionCurrency } from '@/lib/currency';
+import { IconHeroCheck } from '@/components/ui/PremiumIcons';
 
 export function HeroInquiryCard() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -111,8 +112,8 @@ export function HeroInquiryCard() {
   if (success) {
     return (
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/90 shadow-card-light text-center animate-in fade-in duration-300">
-        <div className="w-14 h-14 rounded-full bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center mx-auto mb-4 border border-[#D1EFE3]">
-          <CheckCircle2 className="w-8 h-8" />
+        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/20 shadow-[0_8px_24px_rgba(12,90,72,0.12)] flex items-center justify-center mx-auto mb-4">
+          <IconHeroCheck size={36} />
         </div>
         <h3 className="text-xl sm:text-2xl font-light text-gray-950 mb-2">
           Consultation Booked!

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, CheckCircle2, Building2, Globe2, Zap } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
+import { IconPlusB2B, IconPlusMarkets, IconPlusCheckout } from '@/components/ui/PremiumIcons';
 
 interface ShopifyPlusSectionProps {
   onOpenConsultation?: () => void;
@@ -98,12 +99,12 @@ export function ShopifyPlusSection({ onOpenConsultation }: ShopifyPlusSectionPro
                   </div>
                 </div>
 
-                {/* Modules Panel */}
+                {/* Modules Panel with Premium Pedestals */}
                 <div className="space-y-2.5 sm:space-y-3">
-                  <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-gray-200/80 flex items-center justify-between gap-2">
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-gray-200/80 flex items-center justify-between gap-2 shadow-sm">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center shrink-0">
-                        <Building2 className="w-4 h-4" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/15 shadow-sm flex items-center justify-center shrink-0">
+                        <IconPlusB2B size={20} />
                       </div>
                       <div className="min-w-0">
                         <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">B2B Wholesale Portal</h4>
@@ -113,10 +114,10 @@ export function ShopifyPlusSection({ onOpenConsultation }: ShopifyPlusSectionPro
                     <span className="text-[11px] font-mono font-medium text-[#0C5A48] shrink-0">ACTIVE</span>
                   </div>
 
-                  <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-gray-200/80 flex items-center justify-between gap-2">
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-gray-200/80 flex items-center justify-between gap-2 shadow-sm">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center shrink-0">
-                        <Globe2 className="w-4 h-4" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/15 shadow-sm flex items-center justify-center shrink-0">
+                        <IconPlusMarkets size={20} />
                       </div>
                       <div className="min-w-0">
                         <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Shopify Markets Multi-Currency</h4>
@@ -126,10 +127,10 @@ export function ShopifyPlusSection({ onOpenConsultation }: ShopifyPlusSectionPro
                     <span className="text-[11px] font-mono font-medium text-[#0C5A48] shrink-0">ENABLED</span>
                   </div>
 
-                  <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-gray-200/80 flex items-center justify-between gap-2">
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-gray-200/80 flex items-center justify-between gap-2 shadow-sm">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center shrink-0">
-                        <Zap className="w-4 h-4" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/15 shadow-sm flex items-center justify-center shrink-0">
+                        <IconPlusCheckout size={20} />
                       </div>
                       <div className="min-w-0">
                         <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Checkout Extensibility</h4>

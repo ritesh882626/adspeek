@@ -55,8 +55,8 @@ export function TechIntegrationsSection() {
                 key={i}
                 className="p-4 sm:p-5 lg:p-6 rounded-2xl bg-[#061A1C] border border-white/[0.08] hover:border-[#C5E1C5]/30 hover:bg-[#082224] transition-all text-center flex flex-col items-center justify-center group"
               >
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#02090A] border border-white/[0.08] text-[#C5E1C5] flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-110 transition-transform shrink-0">
-                  <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#06221E] via-[#041618] to-[#02090A] border border-[#36F4A4]/25 shadow-[0_0_12px_rgba(54,244,164,0.06)] text-[#36F4A4] flex items-center justify-center mb-2.5 sm:mb-3 group-hover:border-[#36F4A4]/50 group-hover:shadow-[0_0_20px_rgba(54,244,164,0.18)] group-hover:scale-110 transition-all duration-300 shrink-0">
+                  <Icon className="w-5 h-5" />
                 </div>
                 <h3 className="text-xs sm:text-sm md:text-base font-medium text-[#EFF8F0] group-hover:text-[#C5E1C5] transition-colors truncate max-w-full">
                   {tech.name}

@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X, ExternalLink, Check, Layers, Cpu, TrendingUp, Globe, Lock, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
+import { X, ExternalLink, Check, Layers, Cpu, Globe, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 import type { PortfolioProject } from '@/components/sections/PortfolioSection';
 import { detectUserRegionCurrency } from '@/lib/currency';
+import { IconNdaLock, IconImpactRocket } from '@/components/ui/PremiumIcons';
 
 interface ProjectPreviewModalProps {
   isOpen: boolean;
@@ -188,8 +189,8 @@ export function ProjectPreviewModal({
 
             {/* Key Outcome Metric Card */}
             <div className="p-4 rounded-xl bg-[#EBF7F2] border border-[#D1EFE3] flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#0C5A48] text-white flex items-center justify-center shrink-0">
-                <TrendingUp className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0C5A48] to-[#084537] text-white flex items-center justify-center shrink-0 shadow-sm">
+                <IconImpactRocket size={24} />
               </div>
               <div>
                 <p className="text-xs font-mono text-[#0C5A48] uppercase tracking-wider font-semibold">
@@ -272,8 +273,8 @@ export function ProjectPreviewModal({
           <div className="absolute inset-0 z-30 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-[6px]">
             <div className="relative w-full max-w-lg bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-gray-200/90 animate-in zoom-in-95 duration-200">
               <div className="text-center mb-6">
-                <div className="w-12 h-12 rounded-full bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center mx-auto mb-3 border border-[#D1EFE3]">
-                  <Lock className="w-6 h-6" />
+                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/20 shadow-[0_6px_20px_rgba(12,90,72,0.1)] flex items-center justify-center mx-auto mb-3.5">
+                  <IconNdaLock size={30} />
                 </div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50 text-amber-800 text-[11px] font-mono font-medium border border-amber-200 mb-2">
                   <ShieldCheck className="w-3.5 h-3.5" />

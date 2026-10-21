@@ -1,25 +1,30 @@
 import React from 'react';
-import { ShoppingBag, LayoutTemplate, Gauge, Headset } from 'lucide-react';
+import {
+  IconCredibilityStore,
+  IconCredibilityCustom,
+  IconCredibilityGauge,
+  IconCredibilityRetainer,
+} from '@/components/ui/PremiumIcons';
 
 export function CredibilityStrip() {
   const items = [
     {
-      icon: ShoppingBag,
+      icon: IconCredibilityStore,
       title: 'Shopify Store Development',
       desc: 'Bespoke, conversion-engineered themes',
     },
     {
-      icon: LayoutTemplate,
+      icon: IconCredibilityCustom,
       title: 'Custom Storefronts',
       desc: 'Liquid & Headless architecture',
     },
     {
-      icon: Gauge,
+      icon: IconCredibilityGauge,
       title: 'eCommerce Optimization',
       desc: 'Speed, CRO & Core Web Vitals audits',
     },
     {
-      icon: Headset,
+      icon: IconCredibilityRetainer,
       title: 'Ongoing Support',
       desc: 'Reliable sprint-based retainers',
     },
@@ -38,8 +43,8 @@ export function CredibilityStrip() {
                   index > 0 ? 'pt-4 xs:pt-0 xs:pl-4 sm:pl-6 lg:pl-8' : ''
                 }`}
               >
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#061A1C] border border-[#36F4A4]/20 flex items-center justify-center shrink-0 text-[#36F4A4]">
-                  <Icon className="w-5 h-5" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#06221E] via-[#041618] to-[#02090A] border border-[#36F4A4]/30 shadow-[0_0_16px_rgba(54,244,164,0.08),inset_0_1px_1px_rgba(255,255,255,0.08)] flex items-center justify-center shrink-0">
+                  <Icon size={24} />
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs sm:text-sm font-medium text-[#EFF8F0] tracking-tight truncate">

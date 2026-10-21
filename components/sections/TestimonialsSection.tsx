@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, ShieldCheck } from 'lucide-react';
+import { PremiumRatingStars, PremiumVerifiedShield } from '@/components/ui/PremiumIcons';
 
 export function TestimonialsSection() {
   const testimonials = [
@@ -80,15 +80,11 @@ export function TestimonialsSection() {
           {testimonials.map((t, idx) => (
             <div
               key={idx}
-              className="snap-center shrink-0 w-[84vw] max-w-[340px] md:w-auto md:max-w-none p-6 sm:p-7 md:p-8 rounded-2xl bg-white border border-gray-200/80 shadow-sm hover:shadow-card-light transition-all duration-200 flex flex-col justify-between"
+              className="snap-center shrink-0 w-[84vw] max-w-[340px] md:w-auto md:max-w-none p-6 sm:p-7 md:p-8 rounded-2xl bg-white border border-gray-200/80 shadow-sm hover:shadow-card-light transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-3.5 sm:mb-4">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
+                  <PremiumRatingStars count={5} size={15} />
                   <span className="text-[10px] sm:text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200 truncate">
                     {t.tag}
                   </span>
@@ -106,8 +102,8 @@ export function TestimonialsSection() {
                     {t.role} &bull; <span className="text-[#0C5A48] font-medium">{t.brand}</span>
                   </p>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-[#0C5A48] font-medium">
-                  <ShieldCheck className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-1.5 text-[11px] text-[#0C5A48] font-medium bg-[#EBF7F2] px-2.5 py-1 rounded-full border border-[#D1EFE3]">
+                  <PremiumVerifiedShield size={14} />
                   <span>Verified</span>
                 </div>
               </div>

@@ -1,12 +1,17 @@
 import React from 'react';
-import { Search, Code2, Rocket, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
+import {
+  IconProcessScope,
+  IconProcessDev,
+  IconProcessLaunch,
+} from '@/components/ui/PremiumIcons';
 
 export function ProcessSection() {
   const steps = [
     {
       number: '01',
       title: 'Discover & Scope',
-      icon: Search,
+      icon: IconProcessScope,
       tag: 'WEEK 1',
       desc: 'We deeply analyze your catalog, customer personas, competitive landscape, and technical requirements before writing a single line of code.',
       deliverables: [
@@ -23,7 +28,7 @@ export function ProcessSection() {
     {
       number: '02',
       title: 'Design & Develop',
-      icon: Code2,
+      icon: IconProcessDev,
       tag: 'WEEKS 2-4',
       desc: 'We craft high-fidelity Figma designs, then build clean, modular Shopify Liquid code with responsive touch optimization across all screen sizes.',
       deliverables: [
@@ -40,7 +45,7 @@ export function ProcessSection() {
     {
       number: '03',
       title: 'Test & Launch',
-      icon: Rocket,
+      icon: IconProcessLaunch,
       tag: 'WEEK 5',
       desc: 'A comprehensive 40-point pre-launch checklist covering checkout flow, payment gateways, mobile performance, tracking pixels, and redirects.',
       deliverables: [
@@ -82,7 +87,7 @@ export function ProcessSection() {
             return (
               <div
                 key={idx}
-                className="p-6 sm:p-7 md:p-8 rounded-2xl bg-[#061A1C] border border-white/[0.08] shadow-card-dark flex flex-col justify-between hover:border-[#C5E1C5]/30 transition-all duration-200 group"
+                className="p-6 sm:p-7 md:p-8 rounded-2xl bg-[#061A1C] border border-white/[0.08] shadow-card-dark flex flex-col justify-between hover:border-[#C5E1C5]/30 transition-all duration-300 group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
@@ -94,8 +99,9 @@ export function ProcessSection() {
                     </span>
                   </div>
 
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#02090A] border border-white/[0.08] text-[#C5E1C5] flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-105 transition-transform">
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  {/* Illuminated Pedestal */}
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#06221E] via-[#041618] to-[#02090A] border border-[#36F4A4]/30 shadow-[0_0_20px_rgba(54,244,164,0.1),inset_0_1px_1px_rgba(255,255,255,0.08)] flex items-center justify-center mb-4 sm:mb-5 group-hover:border-[#36F4A4]/60 group-hover:shadow-[0_0_28px_rgba(54,244,164,0.2)] group-hover:-translate-y-0.5 transition-all duration-300">
+                    <Icon size={30} />
                   </div>
 
                   <h3 className="type-card text-[#EFF8F0] mb-2.5">{step.title}</h3>

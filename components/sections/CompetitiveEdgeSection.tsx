@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, CheckCircle2, TrendingUp } from 'lucide-react';
+import { CheckCircle2, TrendingUp } from 'lucide-react';
 
 interface CompetitiveEdgeSectionProps {
   onOpenConsultation?: () => void;

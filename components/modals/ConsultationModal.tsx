@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2, Loader2, Clock, ShieldCheck, Sparkles } from 'lucide-react';
 import { detectUserRegionCurrency, REGION_CURRENCIES, type RegionCurrency } from '@/lib/currency';
+import { IconHeroCheck } from '@/components/ui/PremiumIcons';
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -158,8 +159,8 @@ export function ConsultationModal({
 
         {success ? (
           <div className="py-8 text-center animate-in fade-in duration-300">
-            <div className="w-16 h-16 rounded-full bg-[#EBF7F2] text-[#0C5A48] flex items-center justify-center mx-auto mb-4 border border-[#D1EFE3]">
-              <CheckCircle2 className="w-9 h-9" />
+            <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-white via-[#F4F9F6] to-[#E6F4EE] border border-[#0C5A48]/20 shadow-[0_8px_24px_rgba(12,90,72,0.12)] flex items-center justify-center mx-auto mb-4">
+              <IconHeroCheck size={36} />
             </div>
             <h3 className="text-2xl font-light text-gray-950 mb-2">
               Consultation Request Received!
