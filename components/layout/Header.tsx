@@ -202,6 +202,7 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/quote"
+              data-adspeek-estimate
               className="hidden sm:inline-flex items-center justify-center px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-medium rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white shadow-sm hover:shadow transition-all duration-200 cursor-pointer min-h-[44px]"
             >
               Get a Quote
@@ -311,6 +312,7 @@ export function Header({ onOpenConsultation }: HeaderProps) {
           <div className="pt-6 border-t border-gray-100 space-y-3 pb-8">
             <Link
               href="/quote"
+              data-adspeek-estimate
               onClick={() => setMobileMenuOpen(false)}
               className="w-full py-3.5 px-6 rounded-full bg-[#0C5A48] text-white text-center font-medium shadow-sm hover:bg-[#084537] transition-all min-h-[48px] flex items-center justify-center text-sm cursor-pointer"
             >

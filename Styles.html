@@ -1,6 +1,6 @@
 <style>
 /* ==========================================================================
-   AdsPeek Package Builder Design System Tokens
+   AdsPeek Package Builder Design System Tokens & Base Reset
    ========================================================================== */
 :root {
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -44,34 +44,34 @@
   --radius-pill: 9999px;
   
   /* Shadows */
-  --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.15);
   --shadow-price-card: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
 /* ==========================================================================
-   Base & Reset
+   Full Viewport Lock & Base Reset
    ========================================================================== */
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  font-family: var(--font-family);
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Page itself NEVER scrolls */
   background-color: var(--bg-page);
+  font-family: var(--font-family);
   color: var(--color-text-main);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Focus styles for accessibility */
+/* Accessibility Focus Rings */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -82,34 +82,162 @@ textarea:focus-visible,
 }
 
 /* ==========================================================================
-   Card Shell Layout (Desktop default)
+   Modal Overlay Container (Full Screen Overlay)
    ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-page);
+  overflow: hidden;
+  z-index: 100;
+  padding: 24px;
+}
+
+/* Main Card Shell - Fixed Size on Desktop */
 .app-container {
-  width: 100%;
-  max-width: 1060px;
+  width: min(1180px, 100vw - 48px);
+  height: min(760px, 100dvh - 48px);
   background-color: var(--bg-card);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
-  min-height: 620px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+/* Top Right Close Button (✕) */
+.modal-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid var(--border-default);
+  color: #4B5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 60;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.modal-close-btn:hover {
+  background: #F3F4F6;
+  color: #111827;
+  border-color: #9CA3AF;
+  transform: scale(1.05);
+}
+
+/* In-app Leave Confirm Modal Overlay */
+.inapp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647;
+  padding: 20px;
+}
+
+.inapp-modal-overlay[hidden] {
+  display: none !important;
+}
+
+.inapp-modal-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  animation: modalPopIn 0.18s ease-out;
+}
+
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.inapp-modal-card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.inapp-modal-card p {
+  font-size: 13.5px;
+  color: #4B5563;
+  margin: 0 0 20px 0;
+  line-height: 1.45;
+}
+
+.inapp-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.inapp-modal-actions button {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary {
+  background: #F3F4F6;
+  border: 1px solid #D1D5DB;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #E5E7EB;
+  color: #111827;
+}
+
+.btn-danger {
+  background: #DC2626;
+  border: 1px solid #DC2626;
+  color: #FFFFFF;
+}
+
+.btn-danger:hover {
+  background: #B91C1C;
 }
 
 /* Staff mode top strip */
 .staff-strip {
   background-color: #111827;
   color: #FFFFFF;
-  height: 36px;
-  padding: 0 28px;
+  height: 34px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  z-index: 10;
+  z-index: 55;
+  flex-shrink: 0;
 }
 
 .staff-strip .logout-btn {
@@ -118,7 +246,7 @@ textarea:focus-visible,
   cursor: pointer;
   background: none;
   border: none;
-  font-size: 12px;
+  font-size: 11.5px;
   font-family: inherit;
   transition: color 0.15s ease;
 }
@@ -127,31 +255,37 @@ textarea:focus-visible,
   color: #FFFFFF;
 }
 
+/* ==========================================================================
+   Split Card Layout (Desktop & Tablet)
+   ========================================================================== */
 .split-card {
   display: flex;
   flex: 1;
+  min-height: 0;
+  height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
-/* ==========================================================================
-   Left Panel (Pastel Gradient)
-   ========================================================================== */
+/* Left Panel - Fixed Grid (Auto / 1fr / Auto) */
 .left-panel {
   width: 38%;
   min-width: 320px;
   background: var(--gradient-left);
-  padding: 38px 34px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-right: 1px solid rgba(229, 231, 235, 0.6);
+  padding: 34px 30px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid rgba(229, 231, 235, 0.7);
+  flex-shrink: 0;
 }
 
 .brand-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .brand-logo-sq {
@@ -177,69 +311,73 @@ textarea:focus-visible,
 }
 
 .left-panel-content {
-  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .left-title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   line-height: 1.25;
   color: #111827;
   letter-spacing: -0.025em;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .left-desc {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--color-text-muted);
-  line-height: 1.55;
-  margin-bottom: 24px;
+  line-height: 1.5;
+  margin-bottom: 18px;
 }
 
 .benefit-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .benefit-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: #374151;
 }
 
 .benefit-icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2;
+  width: 17px;
+  height: 17px;
+  stroke-width: 2.2;
   color: #111827;
   flex-shrink: 0;
 }
 
-/* Left Panel Live Price Card */
+/* Left Panel Live Price Card (Always pinned at bottom of left panel) */
 .price-card {
   background: #FFFFFF;
   border-radius: 16px;
-  padding: 20px 22px;
+  padding: 18px 20px;
   box-shadow: var(--shadow-price-card);
   border: 1px solid rgba(229, 231, 235, 0.8);
-  margin-top: 24px;
-  transition: transform 0.15s ease;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .price-card-label {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--color-text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .price-card-amount {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.03em;
   color: #111827;
@@ -254,31 +392,37 @@ textarea:focus-visible,
 
 @keyframes pricePulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+  50% { transform: scale(1.035); }
   100% { transform: scale(1); }
 }
 
 .price-card-subtext {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--color-text-subtle);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 /* ==========================================================================
-   Right Panel
+   Right Panel - Fixed 3-Row Grid (Header / Options Scroll Area / Footer)
    ========================================================================== */
 .right-panel {
   flex: 1;
   background-color: var(--bg-right-panel);
-  padding: 38px 44px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow-y: auto;
+  padding: 34px 38px 24px 38px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
-.screen-header {
-  margin-bottom: 24px;
+/* 1. Header (Fixed at top) */
+.screen-header-wrap {
+  grid-row: 1;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+  padding-right: 32px; /* Avoid overlapping close button */
 }
 
 .screen-title {
@@ -286,22 +430,22 @@ textarea:focus-visible,
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #111827;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .screen-subtitle {
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--color-text-muted);
 }
 
-/* Step Dots */
+/* 7 Step Dots */
 .step-dots-container {
-  margin-top: 18px;
-  margin-bottom: 24px;
+  margin-top: 14px;
+  margin-bottom: 14px;
   position: relative;
   display: flex;
   align-items: center;
-  width: 220px;
+  width: 210px;
 }
 
 .step-dots-line {
@@ -345,15 +489,104 @@ textarea:focus-visible,
 
 .step-dot.active {
   background-color: #111827;
-  transform: scale(1.15);
+  transform: scale(1.2);
 }
 
 .step-dot.completed {
   background-color: #111827;
 }
 
+/* 2. Options Area (THE ONLY SCROLLING REGION) */
+.options-scroll-area {
+  grid-row: 2;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  padding-right: 8px;
+  padding-bottom: 12px;
+}
+
+/* Styled Scrollbars */
+.options-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.options-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.options-scroll-area::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+.options-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* 3. Footer (Fixed at bottom) */
+.screen-footer-wrap {
+  grid-row: 3;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background-color: var(--bg-right-panel);
+}
+
+.screen-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  flex-shrink: 0;
+  background-color: var(--bg-right-panel);
+}
+
+.prev-step-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s ease;
+  padding: 6px 0;
+}
+
+.prev-step-btn:hover {
+  color: #111827;
+}
+
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: none;
+  border-radius: var(--radius-control);
+  padding: 11px 26px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ==========================================================================
-   Tiles & Grids
+   Tiles & Grids (No invalid nested buttons)
    ========================================================================== */
 .tiles-grid-1 {
   display: flex;
@@ -364,21 +597,18 @@ textarea:focus-visible,
 .tiles-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .tile {
   background-color: var(--tile-bg);
   border: 1px solid var(--tile-border);
   border-radius: var(--radius-tile);
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   position: relative;
-  cursor: pointer;
   transition: all 0.15s ease;
-  user-select: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .tile:hover:not(.disabled) {
@@ -398,6 +628,26 @@ textarea:focus-visible,
   border-color: #E5E7EB;
 }
 
+/* Main clickable area of the tile */
+.tile-main-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  position: relative;
+  min-height: 64px;
+}
+
+.tile.disabled .tile-main-btn {
+  cursor: not-allowed;
+}
+
 .tile-check-badge {
   position: absolute;
   top: 10px;
@@ -410,6 +660,7 @@ textarea:focus-visible,
   display: none;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .tile.selected .tile-check-badge {
@@ -417,14 +668,14 @@ textarea:focus-visible,
 }
 
 .tile-icon-box {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   background-color: #F3F4F6;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 14px;
+  margin-right: 12px;
   flex-shrink: 0;
   color: #111827;
 }
@@ -435,10 +686,11 @@ textarea:focus-visible,
 
 .tile-content {
   flex: 1;
+  min-width: 0;
 }
 
 .tile-title {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #111827;
   display: flex;
@@ -447,20 +699,20 @@ textarea:focus-visible,
 }
 
 .tile-desc {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--color-text-muted);
-  margin-top: 3px;
-  line-height: 1.4;
+  margin-top: 2px;
+  line-height: 1.35;
 }
 
 .tile-side {
   text-align: right;
-  margin-left: 12px;
+  margin-left: 10px;
   flex-shrink: 0;
 }
 
 .tile-price {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #111827;
 }
@@ -468,7 +720,7 @@ textarea:focus-visible,
 .tile-pill {
   font-size: 11px;
   font-weight: 500;
-  padding: 3px 9px;
+  padding: 3px 8px;
   border-radius: var(--radius-pill);
   background: var(--badge-pill-bg);
   color: var(--badge-pill-text);
@@ -480,27 +732,37 @@ textarea:focus-visible,
   color: #92400E;
   font-size: 10px;
   font-weight: 600;
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
   margin-left: 6px;
 }
 
+/* Optional + Qty Stepper embedded in Tile (outside .tile-main-btn) */
+.tile-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 12px 16px;
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
 /* ==========================================================================
-   Steppers & Quantity Controls
+   Steppers & Controls
    ========================================================================== */
 .stepper-card {
   background: #FFFFFF;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-tile);
-  padding: 18px 20px;
-  margin-bottom: 14px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
 }
 
 .stepper-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .stepper-left {
@@ -510,7 +772,7 @@ textarea:focus-visible,
 }
 
 .stepper-title {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #111827;
 }
@@ -518,7 +780,7 @@ textarea:focus-visible,
 .stepper-control {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .stepper-btn {
@@ -534,6 +796,8 @@ textarea:focus-visible,
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
   transition: all 0.1s ease;
 }
 
@@ -542,51 +806,56 @@ textarea:focus-visible,
   border-color: #CBD5E1;
 }
 
+.stepper-btn:active:not(:disabled) {
+  background: #E5E7EB;
+}
+
 .stepper-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .stepper-input {
-  width: 48px;
+  width: 52px;
   height: 32px;
   text-align: center;
   border: 1px solid var(--border-default);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #111827;
   background: #FFFFFF;
+  font-family: inherit;
 }
 
 .stepper-helper {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--color-text-muted);
-  margin-left: 52px;
+  margin-left: 50px;
 }
 
 /* ==========================================================================
    Chips & Locked Inclusions
    ========================================================================== */
 .section-group-label {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   color: #4B5563;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .locked-chips-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .locked-chip {
   background: #FFFFFF;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-control);
-  padding: 8px 12px;
+  padding: 6px 12px;
   font-size: 12px;
   font-weight: 500;
   color: #374151;
@@ -596,26 +865,24 @@ textarea:focus-visible,
 }
 
 .locked-chip-icon {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   color: #6B7280;
 }
 
-/* ==========================================================================
-   Filter Pills
-   ========================================================================== */
+/* Filter Pills */
 .filter-pills {
   display: flex;
   gap: 8px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .filter-pill {
   border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  font-size: 12.5px;
+  padding: 5px 13px;
+  font-size: 12px;
   font-weight: 500;
   border: 1px solid var(--border-default);
   background: #FFFFFF;
@@ -636,30 +903,30 @@ textarea:focus-visible,
   background-color: #EEF2FF;
   border: 1px solid #E0E7FF;
   border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 12.5px;
+  padding: 10px 14px;
+  font-size: 12px;
   color: #3730A3;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 /* ==========================================================================
-   Summary View
+   Summary View - Scrolling Items & Fixed Totals
    ========================================================================== */
-.summary-card {
+.summary-items-list {
   background: #FFFFFF;
   border: 1px solid var(--border-default);
   border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 20px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
 }
 
 .summary-group {
   display: flex;
   justify-content: space-between;
-  padding: 14px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #F3F4F6;
 }
 
@@ -668,12 +935,12 @@ textarea:focus-visible,
 }
 
 .summary-group-title-col {
-  width: 130px;
+  width: 120px;
   flex-shrink: 0;
 }
 
 .summary-group-name {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #111827;
   display: flex;
@@ -682,7 +949,7 @@ textarea:focus-visible,
 }
 
 .summary-edit-link {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   color: #6B7280;
   text-decoration: underline;
@@ -693,14 +960,14 @@ textarea:focus-visible,
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .summary-item-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 13px;
+  font-size: 12.5px;
   color: #374151;
 }
 
@@ -715,42 +982,46 @@ textarea:focus-visible,
   white-space: nowrap;
 }
 
-.summary-totals-box {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1.5px dashed var(--border-default);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* Fixed Totals Box (direct above footer) */
+.summary-totals-fixed {
+  background: #FFFFFF;
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .summary-total-row {
   display: flex;
-  justify-content: flex-end;
-  gap: 24px;
-  font-size: 13.5px;
+  justify-content: space-between;
+  font-size: 12.5px;
   color: var(--color-text-muted);
+  margin-bottom: 4px;
 }
 
 .summary-total-row.grand-total {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #111827;
-  padding-top: 8px;
+  padding-top: 6px;
+  margin-bottom: 0;
+  border-top: 1px dashed var(--border-default);
 }
 
-/* Staff Adjust Section */
+/* Staff Adjust Components */
 .custom-line-dashed-btn {
   width: 100%;
   border: 1.5px dashed #CBD5E1;
   background: #F8FAFC;
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 13px;
+  border-radius: 10px;
+  padding: 9px;
+  font-size: 12.5px;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
-  margin: 12px 0 18px 0;
+  margin: 10px 0;
   transition: all 0.15s ease;
 }
 
@@ -759,12 +1030,13 @@ textarea:focus-visible,
   border-color: #94A3B8;
 }
 
-.staff-pricing-box {
+.staff-pricing-fixed {
   background: #F9FAFB;
   border: 1px solid var(--border-default);
-  border-radius: 14px;
-  padding: 16px 20px;
-  margin-top: 14px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -773,14 +1045,14 @@ textarea:focus-visible,
 .form-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 12px;
+  gap: 4px;
+  margin-bottom: 10px;
 }
 
 .form-group.full-width {
@@ -788,7 +1060,7 @@ textarea:focus-visible,
 }
 
 .form-label {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   color: #374151;
 }
@@ -799,8 +1071,8 @@ textarea:focus-visible,
   width: 100%;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-control);
-  padding: 10px 14px;
-  font-size: 13.5px;
+  padding: 9px 12px;
+  font-size: 13px;
   font-family: inherit;
   color: #111827;
   background: #FFFFFF;
@@ -819,24 +1091,24 @@ textarea:focus-visible,
 }
 
 .field-error-msg {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--color-error);
   margin-top: 2px;
 }
 
 .mobile-prefix-wrap {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .mobile-prefix {
-  width: 54px;
-  padding: 10px 0;
+  width: 50px;
+  padding: 9px 0;
   text-align: center;
   background: #F3F4F6;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-control);
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #4B5563;
   flex-shrink: 0;
@@ -845,21 +1117,20 @@ textarea:focus-visible,
 .checkbox-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 8px;
   cursor: pointer;
   user-select: none;
 }
 
 .checkbox-wrap input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   accent-color: #111827;
   cursor: pointer;
 }
 
 .checkbox-label {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #4B5563;
 }
 
@@ -875,54 +1146,53 @@ textarea:focus-visible,
 }
 
 .success-check-badge {
-  width: 58px;
-  height: 58px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: #111827;
   color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .confirmation-title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #111827;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .confirmation-subtitle {
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--color-text-muted);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .timeline-card {
   width: 100%;
   background: #FFFFFF;
   border: 1px solid var(--border-default);
-  border-radius: 16px;
-  padding: 22px 24px;
+  border-radius: 14px;
+  padding: 18px 20px;
   text-align: left;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .timeline-card-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .timeline-step {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 14px;
-  position: relative;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .timeline-step:last-child {
@@ -930,12 +1200,12 @@ textarea:focus-visible,
 }
 
 .timeline-num {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #EEF2FF;
   color: #4F46E5;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -944,9 +1214,9 @@ textarea:focus-visible,
 }
 
 .timeline-text {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #374151;
-  padding-top: 2px;
+  padding-top: 1px;
 }
 
 .actions-row {
@@ -955,7 +1225,7 @@ textarea:focus-visible,
   justify-content: center;
   gap: 12px;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .btn-whatsapp {
@@ -963,8 +1233,8 @@ textarea:focus-visible,
   color: #FFFFFF;
   border: none;
   border-radius: var(--radius-control);
-  padding: 12px 24px;
-  font-size: 13.5px;
+  padding: 11px 22px;
+  font-size: 13px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -979,7 +1249,6 @@ textarea:focus-visible,
 }
 
 .btn-download-pdf {
-  /* Markup present but hidden as per spec */
   display: none !important;
 }
 
@@ -987,7 +1256,7 @@ textarea:focus-visible,
   background: none;
   border: none;
   color: #6B7280;
-  font-size: 13px;
+  font-size: 12.5px;
   text-decoration: underline;
   cursor: pointer;
   font-family: inherit;
@@ -998,101 +1267,84 @@ textarea:focus-visible,
 }
 
 /* ==========================================================================
-   Footer & Navigation
+   In-App Exit Confirmation Modal ("Leave? Your package will be lost.")
    ========================================================================== */
-.screen-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 28px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(229, 231, 235, 0.6);
-}
-
-.prev-step-btn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: 13.5px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 0.15s ease;
-}
-
-.prev-step-btn:hover {
-  color: #111827;
-}
-
-.btn-primary {
-  background-color: var(--btn-primary-bg);
-  color: var(--btn-primary-text);
-  border: none;
-  border-radius: var(--radius-control);
-  padding: 12px 28px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: var(--btn-primary-hover);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ==========================================================================
-   Staff Login Screen
-   ========================================================================== */
-.staff-login-box {
-  max-width: 360px;
-  margin: 30px auto;
-}
-
-.pw-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.pw-toggle-btn {
+.confirm-dialog-backdrop {
   position: absolute;
-  right: 12px;
-  background: none;
-  border: none;
-  color: #9CA3AF;
-  cursor: pointer;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 
-.pw-toggle-btn:hover {
-  color: #4B5563;
+.confirm-dialog-box {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.18);
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
 }
 
-/* ==========================================================================
-   Loading & Feedback Toast
-   ========================================================================== */
+.confirm-dialog-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.confirm-dialog-msg {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+  line-height: 1.45;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-confirm-stay {
+  background: #F3F4F6;
+  color: #374151;
+  border: 1px solid var(--border-default);
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirm-leave {
+  background: #DC2626;
+  color: #FFFFFF;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Toast Notification */
 .toast-msg {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   background: #111827;
   color: #FFFFFF;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 13.5px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
   opacity: 0;
   transform: translateY(10px);
   transition: all 0.2s ease;
@@ -1104,74 +1356,179 @@ textarea:focus-visible,
   transform: translateY(0);
 }
 
-.skeleton-box {
-  background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
-  background-size: 200% 100%;
-  animation: skeletonPulse 1.5s infinite;
-  border-radius: 8px;
-}
-
-@keyframes skeletonPulse {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 /* ==========================================================================
-   Mobile Responsive (< 900px)
+   Responsive Tier 1: Short Desktop Screens (height < 720px)
    ========================================================================== */
-@media (max-width: 900px) {
-  body {
-    padding: 0;
-    align-items: flex-start;
+@media (min-width: 768px) and (max-height: 720px) {
+  .modal-overlay {
+    padding: 12px;
   }
-
   .app-container {
-    border-radius: 0;
-    box-shadow: none;
-    min-height: 100vh;
-    padding-bottom: 84px; /* Space for sticky bottom bar */
+    height: calc(100dvh - 24px);
   }
-
-  .split-card {
-    flex-direction: column;
-  }
-
   .left-panel {
-    width: 100%;
-    min-width: 100%;
-    padding: 24px 20px 20px 20px;
-    border-right: none;
-    border-bottom: 1px solid var(--border-default);
+    padding: 20px 22px;
   }
-
-  .brand-badge {
-    margin-bottom: 16px;
-  }
-
   .left-title {
-    font-size: 22px;
+    font-size: 20px;
+    margin-bottom: 6px;
   }
-
   .left-desc {
-    font-size: 13px;
-    margin-bottom: 16px;
+    font-size: 12px;
+    margin-bottom: 10px;
   }
-
   .benefit-list {
-    margin-bottom: 16px;
+    display: none; /* Hide tick lines to guarantee price card stays fully visible */
   }
-
   .price-card {
-    margin-top: 12px;
-    padding: 14px 18px;
+    padding: 12px 16px;
   }
-
   .price-card-amount {
     font-size: 24px;
   }
-
   .right-panel {
+    padding: 20px 26px 16px 26px;
+  }
+  .screen-title {
+    font-size: 19px;
+  }
+  .step-dots-container {
+    margin: 8px 0;
+  }
+}
+
+/* ==========================================================================
+   Responsive Tier 2: Tablet (768px – 1023px)
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .left-panel {
+    width: 34%;
+    min-width: 270px;
     padding: 24px 20px;
+  }
+  .left-title {
+    font-size: 22px;
+  }
+  .right-panel {
+    padding: 24px 26px 18px 26px;
+  }
+  .tiles-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Responsive Tier 3: Mobile (< 768px)
+   ========================================================================== */
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 0;
+    position: fixed;
+    inset: 0;
+  }
+
+  .app-container {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 0;
+  }
+
+  /* Desktop split panel removed on mobile */
+  .split-card {
+    display: contents; /* Allows children to participate directly in grid */
+  }
+
+  /* Left panel becomes compact mobile top header */
+  .left-panel {
+    grid-row: 1;
+    width: 100%;
+    min-width: 100%;
+    padding: 12px 16px;
+    background: var(--gradient-left);
+    border-right: none;
+    border-bottom: 1px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 20;
+    flex-shrink: 0;
+  }
+
+  .brand-badge {
+    margin-bottom: 0;
+  }
+
+  /* Hide desktop-only elements from left panel on mobile */
+  .left-panel-content,
+  .left-panel .price-card {
+    display: none !important;
+  }
+
+  /* Mobile Top Navigation Bar */
+  .mobile-top-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobile-back-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 1px solid var(--border-default);
+    color: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .mobile-step-pill {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4B5563;
+    background: #FFFFFF;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    border: 1px solid var(--border-default);
+  }
+
+  /* Right Panel on Mobile */
+  .right-panel {
+    grid-row: 2;
+    padding: 16px 16px 12px 16px;
+    background: #FFFFFF;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .screen-header-wrap {
+    margin-bottom: 12px;
+    padding-right: 0;
+  }
+
+  .screen-title {
+    font-size: 19px;
+  }
+
+  .screen-subtitle {
+    font-size: 12px;
+  }
+
+  .step-dots-container {
+    display: none; /* Progress shown via mobile-step-pill in header */
+  }
+
+  .options-scroll-area {
+    padding-right: 2px;
   }
 
   .tiles-grid-2 {
@@ -1188,25 +1545,29 @@ textarea:focus-visible,
     grid-column: span 1;
   }
 
+  /* Desktop screen footer hidden on mobile */
   .screen-footer {
-    display: none; /* Replaced by sticky mobile bar */
+    display: none !important;
   }
 
-  /* Sticky bottom bar for mobile */
-  .mobile-sticky-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
+  /* Fixed Bottom Bar on Mobile */
+  .mobile-bottom-bar {
+    grid-row: 3;
     background: #FFFFFF;
     border-top: 1px solid var(--border-default);
-    padding: 12px 20px;
+    padding: 10px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
     display: flex;
     align-items: center;
     justify-content: space-between;
-    z-index: 100;
+    z-index: 50;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+  }
+
+  .mobile-estimate-info {
+    display: flex;
+    flex-direction: column;
   }
 
   .mobile-estimate-label {
@@ -1215,16 +1576,31 @@ textarea:focus-visible,
   }
 
   .mobile-estimate-val {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     color: #111827;
   }
+
+  .mobile-bottom-bar .btn-primary {
+    padding: 10px 22px;
+    font-size: 13.5px;
+    min-height: 42px;
+  }
+
+  .modal-close-btn {
+    top: 10px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+  }
 }
 
-@media (min-width: 901px) {
-  .mobile-sticky-bar {
+@media (min-width: 768px) {
+  .mobile-bottom-bar {
+    display: none !important;
+  }
+  .mobile-top-nav {
     display: none !important;
   }
 }
 </style>
-

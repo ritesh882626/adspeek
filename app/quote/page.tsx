@@ -7,7 +7,7 @@ import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ShieldCheck, Clock, CheckCircle2 } from 'lucide-react';
 
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyx2fz5yGU06nK4UKvCZ2HxqKxat-N2vOe7vqMJA5pykbeLmH07iFWxflFOxTOQp0bYqA/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyEI8hwDUImKXXJYjvHkF0zq03ao6EUi7s9C86bkLKdFxerFI8nYZtQV7qf-TRfswMWpg/exec';
 
 export default function QuotePage() {
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -75,3 +75,4 @@ export default function QuotePage() {
     </div>
   );
 }
+

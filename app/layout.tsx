@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { JsonLd } from '@/components/ui/JsonLd';
 import { getOrganizationSchema, getWebsiteSchema } from '@/lib/schema';
@@ -33,6 +34,7 @@ export default function RootLayout({
         <JsonLd data={websiteSchema} />
       </head>
       <body className="antialiased min-h-screen flex flex-col font-sans bg-white text-gray-900 selection:bg-[#0C5A48] selection:text-white">
+        <Script src="/embed/adspeek-estimate-modal.js" strategy="afterInteractive" />
         {children}
       </body>
     </html>

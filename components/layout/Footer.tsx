@@ -134,6 +134,7 @@ export function Footer({ onOpenConsultation }: FooterProps) {
             </p>
             <Link
               href="/quote"
+              data-adspeek-estimate
               className="w-full py-3.5 px-4 rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white text-xs sm:text-sm font-medium transition-all shadow-sm flex items-center justify-center cursor-pointer min-h-[44px]"
             >
               <span>Get a Quote</span>

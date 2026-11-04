@@ -46,6 +46,7 @@ export function HeroSection({ onOpenConsultation }: HeroSectionProps) {
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
               <Link
                 href="/quote"
+                data-adspeek-estimate
                 className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white text-sm sm:text-base font-medium shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
               >
                 <span>Get a Quote</span>
