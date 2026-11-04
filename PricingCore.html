@@ -1,0 +1,334 @@
+<script>
+/**
+ * PricingCore.html
+ * PURE pricing logic - no DOM access.
+ * Shared between client (included in Index.html) and server (evaluated in Pricing.gs).
+ */
+
+function roundRupee(n) {
+  return Math.round(Number(n) || 0);
+}
+
+function roundDecimals(n, decimals) {
+  const factor = Math.pow(10, decimals || 2);
+  return Math.round((Number(n) || 0) * factor) / factor;
+}
+
+function stateCodeFromGstin(gstin) {
+  if (!gstin) return '';
+  const s = String(gstin).trim().toUpperCase();
+  const match = s.match(/^[0-9]{2}/);
+  return match ? match[0] : '';
+}
+
+/**
+ * Computes the complete quote.
+ * @param {Object} catalog - Catalog returned by getCatalog()
+ * @param {Object} payload - User selections and data
+ * @param {boolean} isStaff - Whether user has verified staff session
+ * @return {Object} QuoteResult
+ */
+function computeQuote(catalog, payload, isStaff) {
+  payload = payload || {};
+  const serviceId = payload.serviceId || 'SHOPIFY';
+  const selections = payload.selections || [];
+  const customLines = isStaff && Array.isArray(payload.customLines) ? payload.customLines : [];
+  const clientData = payload.client || {};
+
+  const services = (catalog && catalog.services) || [];
+  const components = (catalog && catalog.components) || [];
+  const settings = (catalog && catalog.settings) || {};
+
+  // Find selected service
+  const service = services.find(function(s) { return s.id === serviceId; });
+  const basePrice = service ? Number(service.basePrice) || 0 : 0;
+
+  // Build lookup of selections: { componentId: qty }
+  const selectionMap = {};
+  selections.forEach(function(sel) {
+    if (sel && sel.componentId) {
+      selectionMap[sel.componentId] = Number(sel.qty) || 0;
+    }
+  });
+
+  const lines = [];
+  const quoteOnRequestItems = [];
+
+  // 1. Service Base Package Line
+  lines.push({
+    componentId: 'SERVICE-BASE',
+    name: (service ? service.name : 'Store') + ' base package',
+    step: 'Base',
+    type: 'Included',
+    qty: 1,
+    includedQty: 1,
+    chargeableQty: 0,
+    rate: basePrice,
+    batchSize: 0,
+    expectedAmount: basePrice,
+    finalAmount: basePrice,
+    discountable: true
+  });
+
+  // 2. Component Lines
+  components.forEach(function(comp) {
+    if (comp.serviceId !== serviceId) return;
+    if (!isStaff && comp.visibleTo === 'Staff') return;
+
+    const type = comp.type;
+    const rate = Number(comp.rate) || 0;
+    const batchSize = Number(comp.batchSize) || 0;
+    const includedQty = Number(comp.includedQty) || 0;
+    const minQty = comp.minQty !== null && comp.minQty !== undefined ? Number(comp.minQty) : null;
+    const maxQty = comp.maxQty !== null && comp.maxQty !== undefined ? Number(comp.maxQty) : null;
+    const isDiscountable = Boolean(comp.discountable);
+
+    let chosenQty = selectionMap[comp.id];
+    const isSelected = chosenQty !== undefined && chosenQty !== null && chosenQty > 0;
+
+    if (type === 'Included' || comp.step === 'Base') {
+      // Included component
+      lines.push({
+        componentId: comp.id,
+        name: comp.name,
+        step: comp.step,
+        type: 'Included',
+        qty: includedQty || 1,
+        includedQty: includedQty || 1,
+        chargeableQty: 0,
+        rate: 0,
+        batchSize: 0,
+        expectedAmount: 0,
+        finalAmount: 0,
+        discountable: false,
+        monthlyCost: comp.monthlyCost || ''
+      });
+    } else if (type === 'Quantity') {
+      // Quantity stepper
+      let qty = chosenQty !== undefined ? chosenQty : includedQty;
+      if (minQty !== null && qty < minQty) qty = minQty;
+      if (maxQty !== null && qty > maxQty) qty = maxQty;
+
+      const chargeable = Math.max(0, qty - includedQty);
+      let expectedAmount = 0;
+      if (chargeable > 0) {
+        if (batchSize > 0) {
+          const batches = Math.ceil(chargeable / batchSize);
+          expectedAmount = batches * rate;
+        } else {
+          expectedAmount = chargeable * rate;
+        }
+      }
+
+      lines.push({
+        componentId: comp.id,
+        name: comp.name,
+        step: comp.step,
+        type: type,
+        qty: qty,
+        includedQty: includedQty,
+        chargeableQty: chargeable,
+        rate: rate,
+        batchSize: batchSize,
+        expectedAmount: roundRupee(expectedAmount),
+        finalAmount: roundRupee(expectedAmount),
+        discountable: isDiscountable,
+        monthlyCost: comp.monthlyCost || ''
+      });
+    } else if (type === 'Optional') {
+      if (isSelected) {
+        lines.push({
+          componentId: comp.id,
+          name: comp.name,
+          step: comp.step,
+          type: type,
+          qty: 1,
+          includedQty: 0,
+          chargeableQty: 1,
+          rate: rate,
+          batchSize: 0,
+          expectedAmount: roundRupee(rate),
+          finalAmount: roundRupee(rate),
+          discountable: isDiscountable,
+          monthlyCost: comp.monthlyCost || ''
+        });
+      }
+    } else if (type === 'Optional + Qty') {
+      if (isSelected) {
+        let qty = chosenQty;
+        if (minQty !== null && qty < minQty) qty = minQty;
+        if (maxQty !== null && qty > maxQty) qty = maxQty;
+        const expectedAmount = qty * rate;
+
+        lines.push({
+          componentId: comp.id,
+          name: comp.name,
+          step: comp.step,
+          type: type,
+          qty: qty,
+          includedQty: 0,
+          chargeableQty: qty,
+          rate: rate,
+          batchSize: 0,
+          expectedAmount: roundRupee(expectedAmount),
+          finalAmount: roundRupee(expectedAmount),
+          discountable: isDiscountable,
+          monthlyCost: comp.monthlyCost || ''
+        });
+      }
+    } else if (type === 'Quote on request') {
+      if (isSelected) {
+        quoteOnRequestItems.push(comp.name);
+        lines.push({
+          componentId: comp.id,
+          name: comp.name,
+          step: comp.step,
+          type: type,
+          qty: 1,
+          includedQty: 0,
+          chargeableQty: 0,
+          rate: 0,
+          batchSize: 0,
+          expectedAmount: 0,
+          finalAmount: 0,
+          discountable: false,
+          monthlyCost: comp.monthlyCost || ''
+        });
+      }
+    }
+  });
+
+  // 3. Custom Lines (Staff Only)
+  if (isStaff && customLines.length) {
+    customLines.forEach(function(cust, idx) {
+      const custAmount = roundRupee(cust.amount);
+      lines.push({
+        componentId: 'CUSTOM-' + (idx + 1),
+        name: cust.name || ('Custom item ' + (idx + 1)),
+        step: 'Custom',
+        type: 'Custom',
+        qty: 1,
+        includedQty: 0,
+        chargeableQty: 1,
+        rate: custAmount,
+        batchSize: 0,
+        expectedAmount: custAmount,
+        finalAmount: custAmount,
+        discountable: Boolean(cust.discountable)
+      });
+    });
+  }
+
+  // Expected price calculation
+  let expectedPrice = 0;
+  lines.forEach(function(line) {
+    expectedPrice += (Number(line.expectedAmount) || 0);
+  });
+  expectedPrice = roundRupee(expectedPrice);
+
+  // Final price & Staff Discount Allocation
+  let finalPrice = expectedPrice;
+  const hasOverride = isStaff && payload.finalPriceOverride !== null && payload.finalPriceOverride !== undefined && !isNaN(Number(payload.finalPriceOverride));
+
+  if (hasOverride) {
+    const override = Number(payload.finalPriceOverride);
+    if (override > 0) {
+      finalPrice = roundRupee(override);
+
+      // Separate discountable and non-discountable lines
+      let nonDiscountableTotal = 0;
+      let discountableTotal = 0;
+
+      lines.forEach(function(line) {
+        if (line.discountable) {
+          discountableTotal += line.expectedAmount;
+        } else {
+          nonDiscountableTotal += line.expectedAmount;
+        }
+      });
+
+      if (discountableTotal > 0 && finalPrice > nonDiscountableTotal) {
+        const factor = (finalPrice - nonDiscountableTotal) / discountableTotal;
+        let distributedSum = 0;
+        let largestDiscountableLine = null;
+        let maxExpected = -1;
+
+        lines.forEach(function(line) {
+          if (line.discountable) {
+            line.finalAmount = roundRupee(line.expectedAmount * factor);
+            distributedSum += line.finalAmount;
+            if (line.expectedAmount > maxExpected) {
+              maxExpected = line.expectedAmount;
+              largestDiscountableLine = line;
+            }
+          } else {
+            line.finalAmount = line.expectedAmount;
+          }
+        });
+
+        // Rounding difference adjustment
+        const diff = (finalPrice - nonDiscountableTotal) - distributedSum;
+        if (diff !== 0 && largestDiscountableLine) {
+          largestDiscountableLine.finalAmount += diff;
+        }
+      }
+    }
+  }
+
+  // Discount percentage
+  let discountPct = 0;
+  if (expectedPrice > 0 && finalPrice < expectedPrice) {
+    discountPct = roundDecimals(((expectedPrice - finalPrice) / expectedPrice) * 100, 2);
+  }
+
+  // GST Calculation
+  const gstRate = Number(settings.gstRate) || 0.18;
+  const homeStateCode = String(settings.homeStateCode || '06');
+
+  // Determine state code
+  let determinedStateCode = '';
+  if (clientData.gstin) {
+    determinedStateCode = stateCodeFromGstin(clientData.gstin);
+  }
+  if (!determinedStateCode && clientData.stateCode) {
+    determinedStateCode = String(clientData.stateCode).trim();
+  }
+
+  let taxType = 'GST 18%';
+  let isInterState = false;
+  if (determinedStateCode) {
+    if (determinedStateCode === homeStateCode) {
+      taxType = 'CGST+SGST';
+    } else {
+      taxType = 'IGST';
+      isInterState = true;
+    }
+  }
+
+  const gstAmount = roundDecimals(finalPrice * gstRate, 2);
+  const grandTotal = roundDecimals(finalPrice + gstAmount, 2);
+
+  const cgstAmount = taxType === 'CGST+SGST' ? roundDecimals(gstAmount / 2, 2) : 0;
+  const sgstAmount = taxType === 'CGST+SGST' ? roundDecimals(gstAmount - cgstAmount, 2) : 0;
+
+  return {
+    serviceId: serviceId,
+    serviceName: service ? service.name : 'Shopify Store',
+    basePrice: basePrice,
+    lines: lines,
+    quoteOnRequestItems: quoteOnRequestItems,
+    expectedPrice: expectedPrice,
+    finalPrice: finalPrice,
+    discountPct: discountPct,
+    taxType: taxType,
+    isInterState: isInterState,
+    stateCode: determinedStateCode,
+    gstRate: gstRate,
+    gstAmount: gstAmount,
+    cgstAmount: cgstAmount,
+    sgstAmount: sgstAmount,
+    grandTotal: grandTotal
+  };
+}
+</script>
+

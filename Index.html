@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>AdsPeek | Build your package</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Design tokens and styles -->
+    <?!= include('Styles'); ?>
+  </head>
+  <body>
+    <!-- Main Application Shell -->
+    <main class="app-container" id="app-root" role="main" aria-label="AdsPeek Package Builder">
+      <!-- Content populated dynamically by App.html -->
+      <div class="split-card" style="padding:60px;align-items:center;justify-content:center;min-height:500px;">
+        <div style="text-align:center;">
+          <div class="brand-logo-sq" style="margin:0 auto 16px auto;">AP</div>
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Loading package options…</div>
+          <div class="skeleton-box" style="width:240px;height:12px;margin:0 auto;"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Pricing core calculations (shared client & server) -->
+    <?!= include('PricingCore'); ?>
+
+    <!-- Client-side application controller -->
+    <?!= include('App'); ?>
+  </body>
+</html>

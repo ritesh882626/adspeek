@@ -1,0 +1,1640 @@
+<script>
+/**
+ * App.html
+ * Main client-side application logic for the AdsPeek Package Builder.
+ * State management, rendering of each screen, navigation, event handling.
+ */
+
+(function () {
+  'use strict';
+
+  // --- SVG Icon Library (Inline generic line icons - no brand logos) ---
+  const ICONS = {
+    check: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>',
+    checkSmall: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>',
+    lock: '<svg class="locked-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+    store: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    shoppingBag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
+    code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+    smartphone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+    megaphone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>',
+    plus: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    box: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+    fileText: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    hanger: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 1.3.8 2.4 2 2.8V10l-9 6a2 2 0 0 0 1 3h16a2 2 0 0 0 1-3l-9-6V7.8A3 3 0 0 0 12 2z"/></svg>',
+    layout: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+    users: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+    mapPin: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    star: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    heart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+    layers: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+    tag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+    gauge: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>',
+    gift: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+    barChart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+    messageSquare: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    refreshCw: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+    shieldCheck: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>',
+    rotateCcw: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+    calendar: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    creditCard: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
+    headphones: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+    eye: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    eyeOff: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
+    info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    whatsapp: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
+  };
+
+  // --- Step sequence definition ---
+  const STEP_FLOW = [
+    'service',
+    'catalogue',
+    'pages',
+    'features',
+    'integrations',
+    'summary',
+    'details'
+  ];
+
+  // --- Application State ---
+  const state = {
+    currentScreen: 'welcome',
+    role: 'client', // 'client' | 'staff'
+    isStaff: false,
+    staffToken: null,
+    selectedServiceId: 'SHOPIFY',
+    selections: {}, // { [componentId]: number }
+    featureTagFilter: 'All',
+    customLines: [], // staff only: [{ name, amount, discountable }]
+    finalPriceOverride: null, // staff only
+    discountReason: '',
+    staffName: '',
+    client: {
+      name: '',
+      businessName: '',
+      mobile: '',
+      email: '',
+      gstin: '',
+      stateCode: '',
+      address: '',
+      whatsappOptIn: true
+    },
+    fieldErrors: {},
+    submissionResult: null,
+    catalog: null,
+    quoteResult: null,
+    isSubmitting: false
+  };
+
+  // --- Helpers ---
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatRupee(n) {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(Math.round(Number(n) || 0));
+  }
+
+  function formatRupeeExact(n) {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Number(n) || 0);
+  }
+
+  function showToast(message, isError) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.className = 'toast-msg';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.background = isError ? '#DC2626' : '#111827';
+    toast.classList.add('show');
+    setTimeout(function () {
+      toast.classList.remove('show');
+    }, 3500);
+  }
+
+  // --- Client-Server Promise Wrapper ---
+  function callServer(fnName) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    return new Promise(function (resolve, reject) {
+      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+        // Fallback mock catalog for local preview outside Google Apps Script
+        return handleMockCall(fnName, args, resolve, reject);
+      }
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)[fnName].apply(google.script.run, args);
+    });
+  }
+
+  // Fallback Mock for local development
+  function handleMockCall(fnName, args, resolve, reject) {
+    if (fnName === 'getCatalog') {
+      const isStaffReq = Boolean(args[0]);
+      setTimeout(function () {
+        resolve({
+          services: [
+            { id: 'SHOPIFY', name: 'Shopify Store', basePrice: 19499, active: true, sortOrder: 1, description: 'Complete online store built on Shopify' },
+            { id: 'CUSTOM', name: 'Custom Website', basePrice: 35000, active: false, sortOrder: 2, description: 'Bespoke custom web development' },
+            { id: 'APP', name: 'App Development', basePrice: 50000, active: false, sortOrder: 3, description: 'Mobile app development' },
+            { id: 'MARKETING', name: 'Marketing', basePrice: 20000, active: false, sortOrder: 4, description: 'Full funnel performance marketing' },
+            { id: 'OTHER', name: 'Something else', basePrice: 0, active: false, sortOrder: 5, description: 'Other services' }
+          ],
+          components: [
+            { id: 'PROD', serviceId: 'SHOPIFY', step: 'Catalogue', name: 'Number of products', description: 'Product setup & upload', type: 'Quantity', rate: 1500, unit: 'products', batchSize: 25, includedQty: 20, minQty: 20, maxQty: 500, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 1 },
+            { id: 'CAT', serviceId: 'SHOPIFY', step: 'Catalogue', name: 'Number of categories', description: 'Collection setup', type: 'Quantity', rate: 250, unit: 'categories', batchSize: 1, includedQty: 5, minQty: 5, maxQty: 50, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 2 },
+            { id: 'PAGE-ABOUT', serviceId: 'SHOPIFY', step: 'Pages', name: 'About Us', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 1 },
+            { id: 'PAGE-CONTACT', serviceId: 'SHOPIFY', step: 'Pages', name: 'Contact', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 2 },
+            { id: 'PAGE-FAQ', serviceId: 'SHOPIFY', step: 'Pages', name: 'FAQ', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 3 },
+            { id: 'PAGE-SHIP', serviceId: 'SHOPIFY', step: 'Pages', name: 'Shipping Policy', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 4 },
+            { id: 'PAGE-RET', serviceId: 'SHOPIFY', step: 'Pages', name: 'Returns Policy', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 5 },
+            { id: 'PAGE-PRIV', serviceId: 'SHOPIFY', step: 'Pages', name: 'Privacy Policy', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 6 },
+            { id: 'PAGE-TERMS', serviceId: 'SHOPIFY', step: 'Pages', name: 'Terms', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 7 },
+            { id: 'PAGE-TRACK', serviceId: 'SHOPIFY', step: 'Pages', name: 'Track Order', description: '', type: 'Included', rate: 0, unit: '', batchSize: 0, includedQty: 1, minQty: 1, maxQty: 1, defaultOn: true, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 8 },
+            { id: 'PAGE-BLOG', serviceId: 'SHOPIFY', step: 'Pages', name: 'Blog', description: 'Editorial blog setup', type: 'Optional', rate: 1500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 9 },
+            { id: 'PAGE-SIZE', serviceId: 'SHOPIFY', step: 'Pages', name: 'Size guide', description: 'Interactive size popup table', type: 'Optional', rate: 750, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 10 },
+            { id: 'PAGE-LANDING', serviceId: 'SHOPIFY', step: 'Pages', name: 'Campaign landing page', description: 'Dedicated conversion page', type: 'Optional + Qty', rate: 2500, unit: 'page', batchSize: 1, includedQty: 0, minQty: 1, maxQty: 10, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 11 },
+            { id: 'PAGE-WHOLE', serviceId: 'SHOPIFY', step: 'Pages', name: 'Wholesale enquiry', description: 'B2B enquiry custom form', type: 'Optional', rate: 1500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 12 },
+            { id: 'PAGE-LOOKBOOK', serviceId: 'SHOPIFY', step: 'Pages', name: 'Lookbook', description: 'Interactive visual catalog', type: 'Optional', rate: 1500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 13 },
+            { id: 'PAGE-LOCATOR', serviceId: 'SHOPIFY', step: 'Pages', name: 'Store locator', description: 'Interactive store finder map', type: 'Optional', rate: 2000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 14 },
+            { id: 'FEAT-HOME', serviceId: 'SHOPIFY', step: 'Features', name: 'Custom homepage', description: 'A unique, conversion-focused homepage for your brand.', type: 'Optional', rate: 8000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 1, tag: 'Design' },
+            { id: 'FEAT-REV', serviceId: 'SHOPIFY', step: 'Features', name: 'Product reviews', description: 'Show real customer reviews to build trust.', type: 'Optional', rate: 1000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 2, tag: 'Sales' },
+            { id: 'FEAT-WISH', serviceId: 'SHOPIFY', step: 'Features', name: 'Wishlist', description: 'Let customers save their favourite products.', type: 'Optional', rate: 2000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 3, tag: 'Customer loyalty' },
+            { id: 'FEAT-PROD', serviceId: 'SHOPIFY', step: 'Features', name: 'Custom product page', description: 'A tailored product page to improve conversions.', type: 'Optional', rate: 2500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 4, tag: 'Design' },
+            { id: 'FEAT-BUNDLE', serviceId: 'SHOPIFY', step: 'Features', name: 'Bundles and offers', description: 'Create product bundles, deals and special offers.', type: 'Optional', rate: 1500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 5, tag: 'Sales' },
+            { id: 'FEAT-PIN', serviceId: 'SHOPIFY', step: 'Features', name: 'Pin code checker', description: 'Let customers check delivery availability by their pincode.', type: 'Optional', rate: 1000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 6, tag: 'Sales' },
+            { id: 'FEAT-SPEED', serviceId: 'SHOPIFY', step: 'Features', name: 'Speed optimisation', description: 'Make your store faster and more reliable.', type: 'Optional', rate: 2500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 7, tag: 'Design' },
+            { id: 'FEAT-LOYALTY', serviceId: 'SHOPIFY', step: 'Features', name: 'Loyalty programme', description: 'Reward customers with points, benefits and exclusive offers.', type: 'Optional', rate: 6000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: true, sortOrder: 8, tag: 'Customer loyalty' },
+            { id: 'INT-META', serviceId: 'SHOPIFY', step: 'Integrations', name: 'Meta Pixel + Conversions API', description: '', type: 'Optional', rate: 2000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: free', visibleTo: 'Public', discountable: true, sortOrder: 1 },
+            { id: 'INT-GST', serviceId: 'SHOPIFY', step: 'Integrations', name: 'GST invoice automation', description: '', type: 'Optional', rate: 5000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: ~$5–20/month', visibleTo: 'Public', discountable: true, sortOrder: 2 },
+            { id: 'INT-GA4', serviceId: 'SHOPIFY', step: 'Integrations', name: 'Google Analytics + Shopping', description: '', type: 'Optional', rate: 1500, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: free', visibleTo: 'Public', discountable: true, sortOrder: 3 },
+            { id: 'INT-WA', serviceId: 'SHOPIFY', step: 'Integrations', name: 'WhatsApp automation', description: '', type: 'Optional', rate: 12000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: ~₹2,499/month + messages', visibleTo: 'Public', discountable: true, sortOrder: 4 },
+            { id: 'INT-TALLY', serviceId: 'SHOPIFY', step: 'Integrations', name: 'Tally sync', description: '', type: 'Optional', rate: 9000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: free up to 100 orders', visibleTo: 'Public', discountable: true, sortOrder: 5 },
+            { id: 'INT-COD', serviceId: 'SHOPIFY', step: 'Integrations', name: 'COD verification checkout', description: '', type: 'Optional', rate: 6000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: % per order', visibleTo: 'Public', discountable: true, sortOrder: 6 },
+            { id: 'INT-RET', serviceId: 'SHOPIFY', step: 'Integrations', name: 'Returns portal', description: '', type: 'Optional', rate: 5000, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: 'Tool: free plan available', visibleTo: 'Public', discountable: true, sortOrder: 7 },
+            { id: 'INT-MKT', serviceId: 'SHOPIFY', step: 'Integrations', name: 'Amazon / Flipkart sync', description: '', type: 'Quote on request', rate: 0, unit: '', batchSize: 0, includedQty: 0, minQty: 0, maxQty: 1, defaultOn: false, monthlyCost: '', visibleTo: 'Public', discountable: false, sortOrder: 8 }
+          ],
+          settings: {
+            gstRate: 0.18,
+            homeStateCode: '06',
+            maxStaffDiscount: 0.15,
+            estimateValidityDays: 15,
+            whatsappNumber: '919876543210'
+          },
+          states: [
+            { code: '06', name: 'Haryana' },
+            { code: '07', name: 'Delhi' },
+            { code: '08', name: 'Rajasthan' },
+            { code: '27', name: 'Maharashtra' },
+            { code: '29', name: 'Karnataka' },
+            { code: '33', name: 'Tamil Nadu' },
+            { code: '09', name: 'Uttar Pradesh' }
+          ],
+          isStaff: isStaffReq,
+          catalogVersion: 'mock-1.0'
+        });
+      }, 100);
+      return;
+    }
+    if (fnName === 'staffLogin') {
+      setTimeout(function () {
+        if (args[0] === 'demo') {
+          resolve({ token: 'mock-staff-token', expiresInMinutes: 480 });
+        } else {
+          reject(new Error('Incorrect password. Try again.'));
+        }
+      }, 150);
+      return;
+    }
+    if (fnName === 'staffLogout') {
+      setTimeout(function () { resolve({ ok: true }); }, 50);
+      return;
+    }
+    reject(new Error('Unknown function ' + fnName));
+  }
+
+  // --- Recalculate Quote ---
+  function recalc() {
+    if (!state.catalog) return;
+
+    // Build selections array
+    const selections = [];
+    Object.keys(state.selections).forEach(function (cid) {
+      const q = state.selections[cid];
+      if (q > 0) {
+        selections.push({ componentId: cid, qty: q });
+      }
+    });
+
+    const payload = {
+      serviceId: state.selectedServiceId,
+      selections: selections,
+      customLines: state.customLines,
+      finalPriceOverride: state.finalPriceOverride,
+      client: state.client
+    };
+
+    state.quoteResult = computeQuote(state.catalog, payload, state.isStaff);
+    updateLeftPanelPrice();
+  }
+
+  // --- Left Panel Price & Details Update ---
+  function updateLeftPanelPrice() {
+    const priceEl = document.getElementById('lp-price-val');
+    const noteEl = document.getElementById('lp-price-note');
+    const mobilePriceEl = document.getElementById('mobile-estimate-price');
+    if (!priceEl || !state.quoteResult) return;
+
+    const res = state.quoteResult;
+    let formatted = '';
+    let note = '';
+
+    if (state.currentScreen === 'welcome') {
+      formatted = '₹0';
+      note = '';
+    } else if (state.currentScreen === 'service') {
+      formatted = formatRupee(res.basePrice);
+      note = 'Base package · GST extra';
+    } else if (state.currentScreen === 'catalogue') {
+      formatted = formatRupee(res.expectedPrice);
+      const extraCatalogue = res.expectedPrice - res.basePrice;
+      note = extraCatalogue > 0 ? '+' + formatRupee(extraCatalogue) + ' for extra products and categories' : 'Included in base package';
+    } else if (state.currentScreen === 'features') {
+      formatted = formatRupee(res.expectedPrice);
+      let featCount = 0;
+      state.catalog.components.forEach(function (c) {
+        if (c.step === 'Features' && state.selections[c.id] > 0) featCount++;
+      });
+      note = featCount > 0 ? featCount + ' feature' + (featCount > 1 ? 's' : '') + ' added' : 'Optional upgrades';
+    } else if (state.currentScreen === 'integrations') {
+      formatted = formatRupee(res.expectedPrice);
+      note = 'Setup charges only';
+    } else if (state.currentScreen === 'summary' || state.currentScreen === 'details' || state.currentScreen === 'confirmation') {
+      formatted = formatRupeeExact(res.grandTotal);
+      note = 'Including GST';
+    } else {
+      formatted = formatRupee(res.expectedPrice);
+      note = 'GST extra';
+    }
+
+    if (priceEl.textContent !== formatted) {
+      priceEl.textContent = formatted;
+      priceEl.classList.remove('price-pulse');
+      void priceEl.offsetWidth; // trigger reflow
+      priceEl.classList.add('price-pulse');
+    }
+    if (noteEl) noteEl.textContent = note;
+    if (mobilePriceEl) mobilePriceEl.textContent = formatted;
+  }
+
+  // --- Screen Navigation ---
+  function navigate(screenName) {
+    state.currentScreen = screenName;
+    recalc();
+    renderApp();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // --- Step Dots Component ---
+  function renderStepDots(activeScreenName) {
+    const currentIndex = STEP_FLOW.indexOf(activeScreenName);
+    if (currentIndex === -1) return '';
+
+    const totalSteps = STEP_FLOW.length;
+    const progressPct = (currentIndex / (totalSteps - 1)) * 100;
+
+    let dotsHtml = '';
+    for (let i = 0; i < totalSteps; i++) {
+      let cls = 'step-dot';
+      if (i === currentIndex) cls += ' active';
+      else if (i < currentIndex) cls += ' completed';
+      dotsHtml += '<div class="' + cls + '" data-step-index="' + i + '"></div>';
+    }
+
+    return (
+      '<div class="step-dots-container">' +
+        '<div class="step-dots-line"></div>' +
+        '<div class="step-dots-progress" style="width: ' + progressPct + '%;"></div>' +
+        '<div class="step-dots-wrapper">' + dotsHtml + '</div>' +
+      '</div>'
+    );
+  }
+
+  // --- Left Panel Content Renderer ---
+  function renderLeftPanel() {
+    const sc = state.currentScreen;
+    let title = 'Get your store estimate';
+    let desc = 'Build your package in a few steps and see the exact price as you go.';
+    let extraHtml = '';
+
+    if (sc === 'welcome') {
+      title = 'Get your store estimate';
+      desc = 'Build your package in a few steps and see the exact price as you go.';
+      extraHtml =
+        '<div class="benefit-list">' +
+          '<div class="benefit-item">' + ICONS.check + '<span>Fixed, transparent pricing</span></div>' +
+          '<div class="benefit-item">' + ICONS.check + '<span>Takes about 3 minutes</span></div>' +
+          '<div class="benefit-item">' + ICONS.check + '<span>No sign-up needed</span></div>' +
+        '</div>';
+    } else if (sc === 'staff_login') {
+      title = 'Staff portal';
+      desc = 'Log in with your team password to create, customize, and discount client quotes.';
+    } else if (sc === 'service') {
+      title = 'Build your package';
+      desc = 'Pick a service to see its base price. You can add pages, features and integrations next.';
+    } else if (sc === 'catalogue') {
+      title = 'Your catalogue';
+      desc = 'Tell us how many products and categories your store will launch with.';
+    } else if (sc === 'pages') {
+      title = 'Store pages';
+      desc = 'Essential pages are already included. Add any extra pages your brand needs.';
+    } else if (sc === 'features') {
+      title = 'Features';
+      desc = 'Add design upgrades and tools that help your store sell more.';
+    } else if (sc === 'integrations') {
+      title = 'Integrations';
+      desc = 'Connect your store to the tools that run your business. Tool subscriptions are paid directly to the provider.';
+    } else if (sc === 'summary') {
+      if (state.isStaff) {
+        title = 'Quote for client';
+        desc = 'Adjust the final price if needed. The difference is spread across discountable items automatically.';
+      } else {
+        title = 'Your package';
+        desc = 'Here\'s everything included. Prices are fixed; GST is added at 18%.';
+        extraHtml =
+          '<div class="benefit-list">' +
+            '<div class="benefit-item">' + ICONS.calendar + '<span>Delivery in about 20 working days</span></div>' +
+            '<div class="benefit-item">' + ICONS.creditCard + '<span>50% advance to start</span></div>' +
+            '<div class="benefit-item">' + ICONS.headphones + '<span>Free support after launch</span></div>' +
+          '</div>';
+      }
+    } else if (sc === 'details') {
+      title = 'Almost done';
+      desc = 'Share your details and we\'ll email your estimate right away.';
+    } else if (sc === 'confirmation') {
+      const clientName = state.client.name ? escapeHtml(state.client.name) : 'there';
+      const clientEmail = state.client.email ? escapeHtml(state.client.email) : 'your email';
+      title = 'Thank you, ' + clientName;
+      desc = 'Your estimate is on its way to ' + clientEmail + '.';
+    }
+
+    return (
+      '<div class="left-panel">' +
+        '<div>' +
+          '<div class="brand-badge">' +
+            '<div class="brand-logo-sq">AP</div>' +
+            '<span class="brand-text">AdsPeek</span>' +
+          '</div>' +
+          '<h1 class="left-title">' + title + '</h1>' +
+          '<p class="left-desc">' + desc + '</p>' +
+          extraHtml +
+        '</div>' +
+        '<div class="price-card">' +
+          '<div class="price-card-label">Your estimate</div>' +
+          '<div class="price-card-amount" id="lp-price-val">₹0</div>' +
+          '<div class="price-card-subtext" id="lp-price-note">Base package · GST extra</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  // ==========================================================================
+  // Screen Renderers
+  // ==========================================================================
+
+  // 1. Welcome Screen
+  function renderWelcome() {
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">How would you like to start?</h2>' +
+        '<p class="screen-subtitle">Choose one option to continue</p>' +
+      '</div>' +
+      '<div class="tiles-grid-1" role="radiogroup">' +
+        '<div class="tile ' + (state.role === 'client' ? 'selected' : '') + '" id="tile-role-client" tabindex="0" role="radio" aria-checked="' + (state.role === 'client') + '">' +
+          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
+          '<div class="tile-icon-box">' + ICONS.store + '</div>' +
+          '<div class="tile-content">' +
+            '<div class="tile-title">I\'m a business owner</div>' +
+            '<div class="tile-desc">Build my package and get an instant estimate</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tile ' + (state.role === 'staff' ? 'selected' : '') + '" id="tile-role-staff" tabindex="0" role="radio" aria-checked="' + (state.role === 'staff') + '">' +
+          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
+          '<div class="tile-icon-box">' + ICONS.lock + '</div>' +
+          '<div class="tile-content">' +
+            '<div class="tile-title">AdsPeek team</div>' +
+            '<div class="tile-desc">Log in to create a quote for a client</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="screen-footer">' +
+        '<div></div>' +
+        '<button class="btn-primary" id="btn-welcome-continue">Continue</button>' +
+      '</div>'
+    );
+  }
+
+  // 2. Staff Login Screen
+  function renderStaffLogin() {
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Team Login</h2>' +
+        '<p class="screen-subtitle">Enter your password to unlock quote generation & custom discounts</p>' +
+      '</div>' +
+      '<div class="staff-login-box">' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="staff-pw-input">Password</label>' +
+          '<div class="pw-input-wrap">' +
+            '<input type="password" id="staff-pw-input" class="form-input" placeholder="Enter staff password" autocomplete="current-password">' +
+            '<button type="button" class="pw-toggle-btn" id="pw-toggle-btn" aria-label="Toggle password visibility">' + ICONS.eye + '</button>' +
+          '</div>' +
+          '<div class="field-error-msg" id="staff-login-error" style="display:none;"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-staff-back">Previous step</button>' +
+        '<button class="btn-primary" id="btn-staff-login">Log in</button>' +
+      '</div>'
+    );
+  }
+
+  // 3. Choose a Service (Step 1)
+  function renderService() {
+    const services = state.catalog.services || [];
+    let tilesHtml = '';
+
+    services.forEach(function (s) {
+      const isSelected = state.selectedServiceId === s.id;
+      let icon = ICONS.shoppingBag;
+      if (s.id === 'CUSTOM') icon = ICONS.code;
+      else if (s.id === 'APP') icon = ICONS.smartphone;
+      else if (s.id === 'MARKETING') icon = ICONS.megaphone;
+      else if (s.id === 'OTHER') icon = ICONS.plus;
+
+      if (s.active) {
+        tilesHtml += (
+          '<div class="tile ' + (isSelected ? 'selected' : '') + '" data-service-id="' + s.id + '" tabindex="0" role="button">' +
+            '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
+            '<div class="tile-icon-box">' + icon + '</div>' +
+            '<div class="tile-content">' +
+              '<div class="tile-title">' + escapeHtml(s.name) + '</div>' +
+              '<div class="tile-desc">From ' + formatRupee(s.basePrice) + '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      } else {
+        tilesHtml += (
+          '<div class="tile disabled" aria-disabled="true">' +
+            '<div class="tile-icon-box">' + icon + '</div>' +
+            '<div class="tile-content">' +
+              '<div class="tile-title">' + escapeHtml(s.name) + '</div>' +
+              '<span class="tile-pill" style="margin-top:4px;">Coming soon</span>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+    });
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Choose a service</h2>' +
+        '<p class="screen-subtitle">More services are coming soon</p>' +
+      '</div>' +
+      renderStepDots('service') +
+      '<div class="tiles-grid-2">' + tilesHtml + '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-service-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-service-next">Continue</button>' +
+      '</div>'
+    );
+  }
+
+  // 4. Products and Categories (Step 2)
+  function renderCatalogue() {
+    const comps = state.catalog.components.filter(function (c) {
+      return c.serviceId === state.selectedServiceId && c.step === 'Catalogue';
+    });
+
+    let steppersHtml = '';
+    comps.forEach(function (c) {
+      const currentQty = state.selections[c.id] !== undefined ? state.selections[c.id] : c.includedQty;
+      const extra = Math.max(0, currentQty - c.includedQty);
+      let helper = '';
+
+      if (c.batchSize > 0) {
+        const batches = Math.ceil(extra / c.batchSize);
+        const extraCost = batches * c.rate;
+        helper = c.includedQty + ' included · ' + extra + ' extra = ' + formatRupee(extraCost) + ' (' + formatRupee(c.rate) + ' per ' + c.batchSize + ' ' + (c.unit || 'items') + ')';
+      } else {
+        const extraCost = extra * c.rate;
+        helper = c.includedQty + ' included · ' + extra + ' extra × ' + formatRupee(c.rate) + ' = ' + formatRupee(extraCost);
+      }
+
+      const icon = c.id.indexOf('CAT') !== -1 ? ICONS.grid : ICONS.box;
+
+      steppersHtml += (
+        '<div class="stepper-card">' +
+          '<div class="stepper-header">' +
+            '<div class="stepper-left">' +
+              '<div class="tile-icon-box" style="margin-right:0;">' + icon + '</div>' +
+              '<span class="stepper-title">' + escapeHtml(c.name) + '</span>' +
+            '</div>' +
+            '<div class="stepper-control">' +
+              '<button type="button" class="stepper-btn" data-stepper-act="dec" data-comp-id="' + c.id + '" ' + (currentQty <= (c.minQty || c.includedQty) ? 'disabled' : '') + '>−</button>' +
+              '<input type="number" class="stepper-input" data-comp-id="' + c.id + '" value="' + currentQty + '" min="' + (c.minQty || c.includedQty) + '" max="' + (c.maxQty || 1000) + '">' +
+              '<button type="button" class="stepper-btn" data-stepper-act="inc" data-comp-id="' + c.id + '" ' + (c.maxQty && currentQty >= c.maxQty ? 'disabled' : '') + '>+</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="stepper-helper">' + helper + '</div>' +
+        '</div>'
+      );
+    });
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Products and categories</h2>' +
+        '<p class="screen-subtitle">The first 20 products and 5 categories are included</p>' +
+      '</div>' +
+      renderStepDots('catalogue') +
+      steppersHtml +
+      '<div class="info-callout">' +
+        ICONS.info +
+        '<span>Not sure yet? You can change this later with our team.</span>' +
+      '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-catalogue-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-catalogue-next">Continue</button>' +
+      '</div>'
+    );
+  }
+
+  // 5. Choose Your Pages (Step 3)
+  function renderPages() {
+    const allPages = state.catalog.components.filter(function (c) {
+      return c.serviceId === state.selectedServiceId && c.step === 'Pages';
+    });
+
+    const includedPages = allPages.filter(function (c) { return c.type === 'Included'; });
+    const optionalPages = allPages.filter(function (c) { return c.type !== 'Included'; });
+
+    let includedChipsHtml = '';
+    includedPages.forEach(function (c) {
+      includedChipsHtml += (
+        '<div class="locked-chip">' +
+          ICONS.checkSmall +
+          '<span>' + escapeHtml(c.name) + '</span>' +
+          ICONS.lock +
+        '</div>'
+      );
+    });
+
+    let optionalTilesHtml = '';
+    optionalPages.forEach(function (c) {
+      const isSelected = Boolean(state.selections[c.id]);
+      let icon = ICONS.fileText;
+      if (c.name.toLowerCase().indexOf('size') !== -1) icon = ICONS.hanger;
+      else if (c.name.toLowerCase().indexOf('landing') !== -1) icon = ICONS.layout;
+      else if (c.name.toLowerCase().indexOf('wholesale') !== -1) icon = ICONS.users;
+      else if (c.name.toLowerCase().indexOf('lookbook') !== -1) icon = ICONS.image;
+      else if (c.name.toLowerCase().indexOf('locator') !== -1) icon = ICONS.mapPin;
+
+      let priceLabel = formatRupee(c.rate);
+      if (c.type === 'Optional + Qty') priceLabel += ' per ' + (c.unit || 'page');
+
+      optionalTilesHtml += (
+        '<div class="tile ' + (isSelected ? 'selected' : '') + '" data-comp-id="' + c.id + '" tabindex="0" role="checkbox" aria-checked="' + isSelected + '">' +
+          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
+          '<div class="tile-icon-box">' + icon + '</div>' +
+          '<div class="tile-content">' +
+            '<div class="tile-title">' + escapeHtml(c.name) + '</div>' +
+          '</div>' +
+          '<div class="tile-side">' +
+            '<span class="tile-price">' + priceLabel + '</span>' +
+          '</div>' +
+        '</div>'
+      );
+    });
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Choose your pages</h2>' +
+        '<p class="screen-subtitle">Essential pages are already included. Add any extra pages your brand needs.</p>' +
+      '</div>' +
+      renderStepDots('pages') +
+      '<div class="section-group-label">Included in your package</div>' +
+      '<div class="locked-chips-grid">' + includedChipsHtml + '</div>' +
+      '<div class="section-group-label">Add more pages</div>' +
+      '<div class="tiles-grid-2">' + optionalTilesHtml + '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-pages-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-pages-next">Continue</button>' +
+      '</div>'
+    );
+  }
+
+  // 6. Add Features (Step 4)
+  function renderFeatures() {
+    const features = state.catalog.components.filter(function (c) {
+      if (c.serviceId !== state.selectedServiceId || c.step !== 'Features') return false;
+      if (!state.isStaff && c.visibleTo === 'Staff') return false;
+      return true;
+    });
+
+    // Check tags for filter pills
+    const tags = ['All'];
+    features.forEach(function (f) {
+      if (f.tag && tags.indexOf(f.tag) === -1) tags.push(f.tag);
+    });
+
+    let pillsHtml = '';
+    if (tags.length > 1) {
+      pillsHtml = '<div class="filter-pills">';
+      tags.forEach(function (tag) {
+        const activeCls = state.featureTagFilter === tag ? 'active' : '';
+        pillsHtml += '<button type="button" class="filter-pill ' + activeCls + '" data-tag="' + escapeHtml(tag) + '">' + escapeHtml(tag) + '</button>';
+      });
+      pillsHtml += '</div>';
+    }
+
+    const filtered = features.filter(function (f) {
+      if (state.featureTagFilter === 'All') return true;
+      return f.tag === state.featureTagFilter;
+    });
+
+    let tilesHtml = '';
+    filtered.forEach(function (f) {
+      const isSelected = Boolean(state.selections[f.id]);
+      let icon = ICONS.star;
+      if (f.name.toLowerCase().indexOf('homepage') !== -1) icon = ICONS.layout;
+      else if (f.name.toLowerCase().indexOf('review') !== -1) icon = ICONS.star;
+      else if (f.name.toLowerCase().indexOf('wishlist') !== -1) icon = ICONS.heart;
+      else if (f.name.toLowerCase().indexOf('product page') !== -1) icon = ICONS.layers;
+      else if (f.name.toLowerCase().indexOf('bundle') !== -1) icon = ICONS.tag;
+      else if (f.name.toLowerCase().indexOf('pin code') !== -1) icon = ICONS.mapPin;
+      else if (f.name.toLowerCase().indexOf('speed') !== -1) icon = ICONS.gauge;
+      else if (f.name.toLowerCase().indexOf('loyalty') !== -1) icon = ICONS.gift;
+
+      tilesHtml += (
+        '<div class="tile ' + (isSelected ? 'selected' : '') + '" data-comp-id="' + f.id + '" tabindex="0" role="checkbox" aria-checked="' + isSelected + '">' +
+          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
+          '<div class="tile-icon-box">' + icon + '</div>' +
+          '<div class="tile-content">' +
+            '<div class="tile-title">' +
+              escapeHtml(f.name) +
+              (f.visibleTo === 'Staff' ? '<span class="staff-pill">Staff</span>' : '') +
+            '</div>' +
+            (f.description ? '<div class="tile-desc">' + escapeHtml(f.description) + '</div>' : '') +
+          '</div>' +
+          '<div class="tile-side">' +
+            '<span class="tile-price">' + formatRupee(f.rate) + '</span>' +
+          '</div>' +
+        '</div>'
+      );
+    });
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Add features</h2>' +
+        '<p class="screen-subtitle">All optional. Pick what fits your brand.</p>' +
+      '</div>' +
+      renderStepDots('features') +
+      pillsHtml +
+      '<div class="tiles-grid-2">' + tilesHtml + '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-features-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-features-next">Continue</button>' +
+      '</div>'
+    );
+  }
+
+  // 7. Connect Your Tools (Step 5)
+  function renderIntegrations() {
+    const integrations = state.catalog.components.filter(function (c) {
+      if (c.serviceId !== state.selectedServiceId || c.step !== 'Integrations') return false;
+      if (!state.isStaff && c.visibleTo === 'Staff') return false;
+      return true;
+    });
+
+    let tilesHtml = '';
+    integrations.forEach(function (intg) {
+      const isSelected = Boolean(state.selections[intg.id]);
+      const isLockedIncluded = intg.type === 'Included';
+      const isQuoteOnReq = intg.type === 'Quote on request';
+
+      let icon = ICONS.code;
+      if (intg.name.toLowerCase().indexOf('gst') !== -1) icon = ICONS.fileText;
+      else if (intg.name.toLowerCase().indexOf('analytics') !== -1) icon = ICONS.barChart;
+      else if (intg.name.toLowerCase().indexOf('whatsapp') !== -1) icon = ICONS.messageSquare;
+      else if (intg.name.toLowerCase().indexOf('tally') !== -1) icon = ICONS.refreshCw;
+      else if (intg.name.toLowerCase().indexOf('cod') !== -1) icon = ICONS.shieldCheck;
+      else if (intg.name.toLowerCase().indexOf('return') !== -1) icon = ICONS.rotateCcw;
+      else if (intg.name.toLowerCase().indexOf('amazon') !== -1 || intg.name.toLowerCase().indexOf('sync') !== -1) icon = ICONS.layers;
+
+      let sideHtml = '';
+      if (isLockedIncluded) {
+        sideHtml = '<span class="tile-pill">Included</span>';
+      } else if (isQuoteOnReq) {
+        sideHtml = '<span class="tile-pill">Price on request</span>';
+      } else {
+        sideHtml = '<span class="tile-price">' + formatRupee(intg.rate) + '</span>';
+      }
+
+      tilesHtml += (
+        '<div class="tile ' + (isSelected || isLockedIncluded ? 'selected' : '') + ' ' + (isLockedIncluded ? 'disabled' : '') + '" data-comp-id="' + intg.id + '" tabindex="0" role="checkbox" aria-checked="' + (isSelected || isLockedIncluded) + '">' +
+          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
+          '<div class="tile-icon-box">' + icon + '</div>' +
+          '<div class="tile-content">' +
+            '<div class="tile-title">' + escapeHtml(intg.name) + '</div>' +
+            (intg.monthlyCost ? '<div class="tile-desc">' + escapeHtml(intg.monthlyCost) + '</div>' : '') +
+          '</div>' +
+          '<div class="tile-side">' + sideHtml + '</div>' +
+        '</div>'
+      );
+    });
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Connect your tools</h2>' +
+        '<p class="screen-subtitle">WhatsApp chat button is already included</p>' +
+      '</div>' +
+      renderStepDots('integrations') +
+      '<div class="tiles-grid-2">' + tilesHtml + '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-integrations-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-integrations-next">Review package</button>' +
+      '</div>'
+    );
+  }
+
+  // 8. Review Package (Step 6 - Client & Staff)
+  function renderSummary() {
+    const res = state.quoteResult;
+    const isStaff = state.isStaff;
+
+    // Group items by step
+    const groups = [
+      { name: 'Base package', step: 'Base', jump: 'service', items: [] },
+      { name: 'Catalogue', step: 'Catalogue', jump: 'catalogue', items: [] },
+      { name: 'Pages', step: 'Pages', jump: 'pages', items: [] },
+      { name: 'Features', step: 'Features', jump: 'features', items: [] },
+      { name: 'Integrations', step: 'Integrations', jump: 'integrations', items: [] }
+    ];
+
+    if (isStaff && state.customLines.length) {
+      groups.push({ name: 'Custom items', step: 'Custom', jump: 'summary', items: [] });
+    }
+
+    res.lines.forEach(function (l) {
+      let grp = groups.find(function (g) { return g.step === l.step; });
+      if (!grp && l.step === 'Custom') {
+        grp = groups[groups.length - 1];
+      }
+      if (grp) {
+        grp.items.push(l);
+      }
+    });
+
+    let groupsHtml = '';
+    groups.forEach(function (g) {
+      if (g.items.length === 0) return;
+      let itemsHtml = '';
+      g.items.forEach(function (item) {
+        let displayAmount = item.expectedAmount > 0 ? formatRupee(item.expectedAmount) : 'Included';
+        if (isStaff && item.finalAmount !== item.expectedAmount && item.finalAmount !== undefined) {
+          displayAmount = formatRupee(item.finalAmount) + ' <span style="font-size:11px;color:#9CA3AF;text-decoration:line-through;">' + formatRupee(item.expectedAmount) + '</span>';
+        }
+
+        let itemName = item.name;
+        if (item.step === 'Catalogue' && item.chargeableQty > 0) {
+          itemName = item.chargeableQty + ' extra ' + (item.componentId.indexOf('CAT') !== -1 ? 'categories' : 'products');
+        }
+
+        itemsHtml += (
+          '<div class="summary-item-row">' +
+            '<span class="summary-item-name">' + escapeHtml(itemName) + '</span>' +
+            '<span class="summary-item-amount">' + displayAmount + '</span>' +
+          '</div>'
+        );
+      });
+
+      groupsHtml += (
+        '<div class="summary-group">' +
+          '<div class="summary-group-title-col">' +
+            '<div class="summary-group-name">' +
+              escapeHtml(g.name) +
+              '<span class="summary-edit-link" data-jump-screen="' + g.jump + '">Edit</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="summary-group-items-col">' + itemsHtml + '</div>' +
+        '</div>'
+      );
+    });
+
+    // Staff custom lines builder
+    let staffAdjustHtml = '';
+    if (isStaff) {
+      let customRowsHtml = '';
+      state.customLines.forEach(function (cust, idx) {
+        customRowsHtml += (
+          '<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">' +
+            '<input type="text" class="form-input" style="flex:2;" placeholder="Item name" value="' + escapeHtml(cust.name) + '" data-custom-idx="' + idx + '" data-field="name">' +
+            '<input type="number" class="form-input" style="flex:1;" placeholder="Amount ₹" value="' + cust.amount + '" data-custom-idx="' + idx + '" data-field="amount">' +
+            '<label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;">' +
+              '<input type="checkbox" ' + (cust.discountable ? 'checked' : '') + ' data-custom-idx="' + idx + '" data-field="discountable"> Disc.' +
+            '</label>' +
+            '<button type="button" class="prev-step-btn" style="color:#DC2626;font-size:16px;" data-remove-custom-idx="' + idx + '">×</button>' +
+          '</div>'
+        );
+      });
+
+      const maxDisc = (state.catalog.settings.maxStaffDiscount || 0.15) * 100;
+      const requiresReason = res.discountPct > maxDisc;
+
+      staffAdjustHtml = (
+        '<button type="button" class="custom-line-dashed-btn" id="btn-add-custom-line">+ Add custom line item</button>' +
+        customRowsHtml +
+        '<div class="staff-pricing-box">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+            '<span style="font-size:13.5px;font-weight:600;color:#111827;">Pricing</span>' +
+            '<div style="display:flex;align-items:center;gap:14px;">' +
+              '<span style="font-size:13px;color:#6B7280;">Expected: <strong>' + formatRupee(res.expectedPrice) + '</strong></span>' +
+              '<div style="display:flex;align-items:center;gap:6px;">' +
+                '<span style="font-size:13px;font-weight:600;">Final price:</span>' +
+                '<input type="number" id="input-final-price" class="form-input" style="width:110px;padding:6px 10px;" value="' + (state.finalPriceOverride !== null ? state.finalPriceOverride : res.expectedPrice) + '">' +
+                (res.discountPct > 0 ? '<span class="tile-pill" style="background:#FEF3C7;color:#B45309;">Discount ' + res.discountPct + '%</span>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          (requiresReason ?
+            '<div class="form-group" style="margin-top:10px;">' +
+              '<label class="form-label" style="color:#B45309;">Reason for discount (required above ' + maxDisc + '%)</label>' +
+              '<input type="text" id="input-discount-reason" class="form-input" placeholder="e.g. Founder approval / annual bundle" value="' + escapeHtml(state.discountReason) + '">' +
+            '</div>' : '') +
+          '<div class="form-group" style="margin-top:10px;">' +
+            '<label class="form-label">Staff name</label>' +
+            '<input type="text" id="input-staff-name" class="form-input" placeholder="Your name" value="' + escapeHtml(state.staffName) + '">' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    // Quote on request note
+    let quoteReqHtml = '';
+    if (res.quoteOnRequestItems.length) {
+      quoteReqHtml = (
+        '<div class="info-callout" style="margin-top:14px;">' +
+          ICONS.info +
+          '<span>Plus items priced after consultation: <strong>' + escapeHtml(res.quoteOnRequestItems.join(', ')) + '</strong></span>' +
+        '</div>'
+      );
+    }
+
+    const nextBtnText = isStaff ? 'Continue to client details' : 'Get my estimate';
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">' + (isStaff ? 'Review and adjust' : 'Review your package') + '</h2>' +
+        '<p class="screen-subtitle">A final look at what you\'re getting and the total cost.</p>' +
+      '</div>' +
+      renderStepDots('summary') +
+      '<div class="summary-card">' +
+        groupsHtml +
+        staffAdjustHtml +
+        '<div class="summary-totals-box">' +
+          '<div class="summary-total-row">' +
+            '<span>Subtotal</span>' +
+            '<span>' + formatRupee(res.finalPrice) + '</span>' +
+          '</div>' +
+          '<div class="summary-total-row">' +
+            '<span>' + escapeHtml(res.taxType) + '</span>' +
+            '<span>' + formatRupeeExact(res.gstAmount) + '</span>' +
+          '</div>' +
+          '<div class="summary-total-row grand-total">' +
+            '<span>Total</span>' +
+            '<span>' + formatRupeeExact(res.grandTotal) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      quoteReqHtml +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-summary-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-summary-next">' + nextBtnText + '</button>' +
+      '</div>'
+    );
+  }
+
+  // 9. Your Details (Step 7)
+  function renderDetails() {
+    const cl = state.client;
+    const errors = state.fieldErrors || {};
+    const statesList = state.catalog.states || [];
+    const res = state.quoteResult;
+
+    let stateOptionsHtml = '<option value="">Select your state</option>';
+    statesList.forEach(function (st) {
+      const isSel = cl.stateCode === st.code;
+      stateOptionsHtml += '<option value="' + st.code + '" ' + (isSel ? 'selected' : '') + '>' + escapeHtml(st.name) + '</option>';
+    });
+
+    // Tax split breakdown text
+    let taxBreakdownText = 'GST 18%: ' + formatRupeeExact(res.gstAmount);
+    if (res.taxType === 'CGST+SGST') {
+      taxBreakdownText = 'CGST 9%: ' + formatRupeeExact(res.cgstAmount) + ' · SGST 9%: ' + formatRupeeExact(res.sgstAmount);
+    } else if (res.taxType === 'IGST') {
+      taxBreakdownText = 'IGST 18%: ' + formatRupeeExact(res.gstAmount);
+    }
+
+    const primaryBtnLabel = state.isStaff ? 'Save quote' : 'Send my estimate';
+
+    return (
+      '<div class="screen-header">' +
+        '<h2 class="screen-title">Your details</h2>' +
+        '<p class="screen-subtitle">We\'ll only use these to send your estimate</p>' +
+      '</div>' +
+      renderStepDots('details') +
+      '<div class="form-grid-2">' +
+        // Honeypot field (hidden from real users)
+        '<input type="text" id="field-honeypot" name="company_website" style="display:none !important;" tabindex="-1" autocomplete="off">' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="field-client-name">Full name</label>' +
+          '<input type="text" id="field-client-name" class="form-input ' + (errors.name ? 'error' : '') + '" placeholder="Enter your full name" value="' + escapeHtml(cl.name) + '">' +
+          (errors.name ? '<span class="field-error-msg">' + errors.name + '</span>' : '') +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="field-business-name">Business name</label>' +
+          '<input type="text" id="field-business-name" class="form-input" placeholder="Enter your business name" value="' + escapeHtml(cl.businessName) + '">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="field-mobile">Mobile number</label>' +
+          '<div class="mobile-prefix-wrap">' +
+            '<span class="mobile-prefix">+91</span>' +
+            '<input type="tel" id="field-mobile" maxlength="10" class="form-input ' + (errors.mobile ? 'error' : '') + '" placeholder="Enter 10-digit mobile number" value="' + escapeHtml(cl.mobile) + '">' +
+          '</div>' +
+          (errors.mobile ? '<span class="field-error-msg">' + errors.mobile + '</span>' : '') +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="field-email">Email</label>' +
+          '<input type="email" id="field-email" class="form-input ' + (errors.email ? 'error' : '') + '" placeholder="Enter your email address" value="' + escapeHtml(cl.email) + '">' +
+          (errors.email ? '<span class="field-error-msg">' + errors.email + '</span>' : '') +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="field-gstin">GSTIN <span style="font-weight:400;color:#6B7280;">(optional)</span></label>' +
+          '<input type="text" id="field-gstin" maxlength="15" class="form-input ' + (errors.gstin ? 'error' : '') + '" placeholder="Enter your GSTIN" value="' + escapeHtml(cl.gstin) + '" style="text-transform:uppercase;">' +
+          (errors.gstin ? '<span class="field-error-msg">' + errors.gstin + '</span>' : '') +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label" for="field-state">State</label>' +
+          '<select id="field-state" class="form-select">' + stateOptionsHtml + '</select>' +
+        '</div>' +
+        '<div class="form-group full-width">' +
+          '<label class="form-label" for="field-address">Address</label>' +
+          '<textarea id="field-address" class="form-textarea" rows="2" placeholder="Enter your full address">' + escapeHtml(cl.address) + '</textarea>' +
+        '</div>' +
+        '<div class="form-group full-width">' +
+          '<label class="checkbox-wrap">' +
+            '<input type="checkbox" id="field-whatsapp" ' + (cl.whatsappOptIn ? 'checked' : '') + '>' +
+            '<span class="checkbox-label">Send updates about my estimate on WhatsApp</span>' +
+          '</label>' +
+        '</div>' +
+      '</div>' +
+      '<div class="info-callout" style="margin-top:14px;">' +
+        ICONS.info +
+        '<span>' + taxBreakdownText + ' · Grand Total: <strong>' + formatRupeeExact(res.grandTotal) + '</strong></span>' +
+      '</div>' +
+      '<div class="screen-footer">' +
+        '<button class="prev-step-btn" id="btn-details-prev">Previous step</button>' +
+        '<button class="btn-primary" id="btn-submit-estimate" ' + (state.isSubmitting ? 'disabled' : '') + '>' +
+          (state.isSubmitting ? 'Saving…' : primaryBtnLabel) +
+        '</button>' +
+      '</div>'
+    );
+  }
+
+  // 10. Confirmation Screen
+  function renderConfirmation() {
+    const sub = state.submissionResult || {
+      submissionId: 'EST-041126-01',
+      grandTotal: (state.quoteResult && state.quoteResult.grandTotal) || 49558.82
+    };
+    const isStaff = state.isStaff;
+    const titleText = isStaff ? 'Quote saved' : 'Estimate sent';
+    const subText = (isStaff ? 'Quote number ' : 'Estimate number ') + escapeHtml(sub.submissionId) + ' · Total ' + formatRupeeExact(sub.grandTotal) + ' incl. GST';
+
+    const whatsappNumber = state.catalog.settings.whatsappNumber;
+    let waHtml = '';
+    if (whatsappNumber) {
+      const waMsg = encodeURIComponent('Hi AdsPeek, I just configured package ' + sub.submissionId + ' for ₹' + sub.grandTotal + '. Let\'s discuss!');
+      const waUrl = 'https://wa.me/' + whatsappNumber + '?text=' + waMsg;
+      waHtml = (
+        '<a href="' + waUrl + '" target="_blank" class="btn-whatsapp">' +
+          ICONS.whatsapp +
+          '<span>Chat with us on WhatsApp</span>' +
+        '</a>'
+      );
+    }
+
+    return (
+      '<div class="confirmation-container">' +
+        '<div class="success-check-badge">' + ICONS.check + '</div>' +
+        '<h2 class="confirmation-title">' + titleText + '</h2>' +
+        '<p class="confirmation-subtitle">' + subText + '</p>' +
+        (!isStaff ?
+          '<div class="timeline-card">' +
+            '<div class="timeline-card-title">What happens next</div>' +
+            '<div class="timeline-step">' +
+              '<div class="timeline-num">1</div>' +
+              '<div class="timeline-text">Our team reviews your package within 24 hours</div>' +
+            '</div>' +
+            '<div class="timeline-step">' +
+              '<div class="timeline-num">2</div>' +
+              '<div class="timeline-text">We call you to confirm the details</div>' +
+            '</div>' +
+            '<div class="timeline-step">' +
+              '<div class="timeline-num">3</div>' +
+              '<div class="timeline-text">You receive a formal proposal to approve</div>' +
+            '</div>' +
+          '</div>' : '') +
+        '<div class="actions-row">' +
+          // Hidden Download PDF button (present in markup as required by spec)
+          '<button type="button" class="btn-primary btn-download-pdf">Download estimate (PDF)</button>' +
+          waHtml +
+        '</div>' +
+        '<button type="button" class="reset-link-btn" id="btn-build-another">Build another package</button>' +
+      '</div>'
+    );
+  }
+
+  // --- Main Application Shell Renderer ---
+  function renderApp() {
+    const root = document.getElementById('app-root');
+    if (!root) return;
+
+    if (!state.catalog) {
+      root.innerHTML =
+        '<div class="split-card" style="padding:60px;align-items:center;justify-content:center;min-height:500px;">' +
+          '<div style="text-align:center;">' +
+            '<div class="brand-logo-sq" style="margin:0 auto 16px auto;">AP</div>' +
+            '<div style="font-size:16px;font-weight:600;margin-bottom:8px;">Loading package options…</div>' +
+            '<div class="skeleton-box" style="width:240px;height:12px;margin:0 auto;"></div>' +
+          '</div>' +
+        '</div>';
+      return;
+    }
+
+    // Top staff banner
+    let staffBannerHtml = '';
+    if (state.isStaff) {
+      staffBannerHtml = (
+        '<div class="staff-strip">' +
+          '<span>Staff mode</span>' +
+          '<button type="button" class="logout-btn" id="btn-staff-logout">Log out</button>' +
+        '</div>'
+      );
+    }
+
+    // Right panel content based on screen
+    let rightContentHtml = '';
+    const sc = state.currentScreen;
+    if (sc === 'welcome') rightContentHtml = renderWelcome();
+    else if (sc === 'staff_login') rightContentHtml = renderStaffLogin();
+    else if (sc === 'service') rightContentHtml = renderService();
+    else if (sc === 'catalogue') rightContentHtml = renderCatalogue();
+    else if (sc === 'pages') rightContentHtml = renderPages();
+    else if (sc === 'features') rightContentHtml = renderFeatures();
+    else if (sc === 'integrations') rightContentHtml = renderIntegrations();
+    else if (sc === 'summary') rightContentHtml = renderSummary();
+    else if (sc === 'details') rightContentHtml = renderDetails();
+    else if (sc === 'confirmation') rightContentHtml = renderConfirmation();
+
+    // Mobile sticky bottom bar
+    let mobileBarHtml = '';
+    if (sc !== 'welcome' && sc !== 'staff_login' && sc !== 'confirmation') {
+      let mobileBtnLabel = 'Continue';
+      if (sc === 'integrations') mobileBtnLabel = 'Review package';
+      else if (sc === 'summary') mobileBtnLabel = state.isStaff ? 'Continue' : 'Get estimate';
+      else if (sc === 'details') mobileBtnLabel = state.isStaff ? 'Save quote' : 'Send estimate';
+
+      mobileBarHtml = (
+        '<div class="mobile-sticky-bar">' +
+          '<div>' +
+            '<div class="mobile-estimate-label">Your estimate</div>' +
+            '<div class="mobile-estimate-val" id="mobile-estimate-price">₹0</div>' +
+          '</div>' +
+          '<button class="btn-primary" id="mobile-btn-action">' + mobileBtnLabel + '</button>' +
+        '</div>'
+      );
+    }
+
+    root.innerHTML =
+      staffBannerHtml +
+      '<div class="split-card">' +
+        renderLeftPanel() +
+        '<div class="right-panel">' + rightContentHtml + '</div>' +
+      '</div>' +
+      mobileBarHtml;
+
+    updateLeftPanelPrice();
+    attachEventListeners();
+  }
+
+  // ==========================================================================
+  // Event Delegation & Interactions
+  // ==========================================================================
+  function attachEventListeners() {
+    const root = document.getElementById('app-root');
+    if (!root) return;
+
+    // Staff logout
+    const logoutBtn = document.getElementById('btn-staff-logout');
+    if (logoutBtn) {
+      logoutBtn.onclick = function () {
+        if (state.staffToken) {
+          callServer('staffLogout', state.staffToken).catch(function () {});
+        }
+        state.isStaff = false;
+        state.staffToken = null;
+        state.role = 'client';
+        state.customLines = [];
+        state.finalPriceOverride = null;
+        // Reload public catalog
+        callServer('getCatalog', null).then(function (cat) {
+          state.catalog = cat;
+          navigate('welcome');
+        });
+      };
+    }
+
+    // 1. Welcome Screen Actions
+    const roleClient = document.getElementById('tile-role-client');
+    const roleStaff = document.getElementById('tile-role-staff');
+    if (roleClient) {
+      roleClient.onclick = function () {
+        state.role = 'client';
+        renderApp();
+      };
+    }
+    if (roleStaff) {
+      roleStaff.onclick = function () {
+        state.role = 'staff';
+        renderApp();
+      };
+    }
+    const welcomeContinue = document.getElementById('btn-welcome-continue');
+    if (welcomeContinue) {
+      welcomeContinue.onclick = function () {
+        if (state.role === 'staff' && !state.isStaff) {
+          navigate('staff_login');
+        } else {
+          navigate('service');
+        }
+      };
+    }
+
+    // 2. Staff Login Actions
+    const staffPwInput = document.getElementById('staff-pw-input');
+    const staffLoginBtn = document.getElementById('btn-staff-login');
+    const pwToggleBtn = document.getElementById('pw-toggle-btn');
+    const staffBackBtn = document.getElementById('btn-staff-back');
+
+    if (pwToggleBtn && staffPwInput) {
+      pwToggleBtn.onclick = function () {
+        const isPw = staffPwInput.type === 'password';
+        staffPwInput.type = isPw ? 'text' : 'password';
+        pwToggleBtn.innerHTML = isPw ? ICONS.eyeOff : ICONS.eye;
+      };
+    }
+    if (staffBackBtn) {
+      staffBackBtn.onclick = function () {
+        navigate('welcome');
+      };
+    }
+    if (staffLoginBtn && staffPwInput) {
+      const doLogin = function () {
+        const pw = staffPwInput.value.trim();
+        const errEl = document.getElementById('staff-login-error');
+        if (!pw) {
+          errEl.textContent = 'Please enter password.';
+          errEl.style.display = 'block';
+          return;
+        }
+        staffLoginBtn.disabled = true;
+        staffLoginBtn.textContent = 'Verifying…';
+        errEl.style.display = 'none';
+
+        callServer('staffLogin', pw)
+          .then(function (res) {
+            state.staffToken = res.token;
+            state.isStaff = true;
+            return callServer('getCatalog', res.token);
+          })
+          .then(function (newCat) {
+            state.catalog = newCat;
+            navigate('service');
+          })
+          .catch(function (err) {
+            errEl.textContent = err.message || 'Incorrect password.';
+            errEl.style.display = 'block';
+            staffLoginBtn.disabled = false;
+            staffLoginBtn.textContent = 'Log in';
+          });
+      };
+      staffLoginBtn.onclick = doLogin;
+      staffPwInput.onkeydown = function (e) {
+        if (e.key === 'Enter') doLogin();
+      };
+    }
+
+    // 3. Service Screen Actions
+    const serviceTiles = root.querySelectorAll('[data-service-id]');
+    serviceTiles.forEach(function (tile) {
+      tile.onclick = function () {
+        const sid = tile.getAttribute('data-service-id');
+        state.selectedServiceId = sid;
+        recalc();
+        renderApp();
+      };
+    });
+    const svcPrev = document.getElementById('btn-service-prev');
+    const svcNext = document.getElementById('btn-service-next');
+    if (svcPrev) svcPrev.onclick = function () { navigate('welcome'); };
+    if (svcNext) svcNext.onclick = function () { navigate('catalogue'); };
+
+    // 4. Catalogue Screen Actions
+    const stepperBtns = root.querySelectorAll('[data-stepper-act]');
+    stepperBtns.forEach(function (btn) {
+      btn.onclick = function () {
+        const act = btn.getAttribute('data-stepper-act');
+        const cid = btn.getAttribute('data-comp-id');
+        const comp = state.catalog.components.find(function (c) { return c.id === cid; });
+        if (!comp) return;
+
+        let cur = state.selections[cid] !== undefined ? state.selections[cid] : comp.includedQty;
+        const stepAmt = comp.batchSize > 0 ? comp.batchSize : 1;
+        const min = comp.minQty !== null ? comp.minQty : comp.includedQty;
+        const max = comp.maxQty !== null ? comp.maxQty : 1000;
+
+        if (act === 'inc') cur = Math.min(max, cur + stepAmt);
+        else if (act === 'dec') cur = Math.max(min, cur - stepAmt);
+
+        state.selections[cid] = cur;
+        recalc();
+        renderApp();
+      };
+    });
+    const stepperInputs = root.querySelectorAll('.stepper-input');
+    stepperInputs.forEach(function (inp) {
+      inp.onchange = function () {
+        const cid = inp.getAttribute('data-comp-id');
+        const comp = state.catalog.components.find(function (c) { return c.id === cid; });
+        if (!comp) return;
+
+        let val = parseInt(inp.value, 10);
+        const min = comp.minQty !== null ? comp.minQty : comp.includedQty;
+        const max = comp.maxQty !== null ? comp.maxQty : 1000;
+        if (isNaN(val) || val < min) val = min;
+        if (val > max) val = max;
+
+        state.selections[cid] = val;
+        recalc();
+        renderApp();
+      };
+    });
+    const catPrev = document.getElementById('btn-catalogue-prev');
+    const catNext = document.getElementById('btn-catalogue-next');
+    if (catPrev) catPrev.onclick = function () { navigate('service'); };
+    if (catNext) catNext.onclick = function () { navigate('pages'); };
+
+    // 5. Pages Screen Actions
+    const pageTiles = root.querySelectorAll('.right-panel [data-comp-id]');
+    pageTiles.forEach(function (tile) {
+      tile.onclick = function () {
+        const cid = tile.getAttribute('data-comp-id');
+        const comp = state.catalog.components.find(function (c) { return c.id === cid; });
+        if (!comp || comp.type === 'Included') return;
+
+        if (state.selections[cid]) {
+          delete state.selections[cid];
+        } else {
+          state.selections[cid] = 1;
+        }
+        recalc();
+        renderApp();
+      };
+    });
+    const pagesPrev = document.getElementById('btn-pages-prev');
+    const pagesNext = document.getElementById('btn-pages-next');
+    if (pagesPrev) pagesPrev.onclick = function () { navigate('catalogue'); };
+    if (pagesNext) pagesNext.onclick = function () { navigate('features'); };
+
+    // 6. Features Screen Actions
+    const tagPills = root.querySelectorAll('.filter-pill');
+    tagPills.forEach(function (pill) {
+      pill.onclick = function () {
+        state.featureTagFilter = pill.getAttribute('data-tag');
+        renderApp();
+      };
+    });
+    const featPrev = document.getElementById('btn-features-prev');
+    const featNext = document.getElementById('btn-features-next');
+    if (featPrev) featPrev.onclick = function () { navigate('pages'); };
+    if (featNext) featNext.onclick = function () { navigate('integrations'); };
+
+    // 7. Integrations Screen Actions
+    const intgPrev = document.getElementById('btn-integrations-prev');
+    const intgNext = document.getElementById('btn-integrations-next');
+    if (intgPrev) intgPrev.onclick = function () { navigate('features'); };
+    if (intgNext) intgNext.onclick = function () { navigate('summary'); };
+
+    // 8. Summary Screen Actions
+    const editLinks = root.querySelectorAll('[data-jump-screen]');
+    editLinks.forEach(function (link) {
+      link.onclick = function () {
+        navigate(link.getAttribute('data-jump-screen'));
+      };
+    });
+    const sumPrev = document.getElementById('btn-summary-prev');
+    const sumNext = document.getElementById('btn-summary-next');
+    if (sumPrev) sumPrev.onclick = function () { navigate('integrations'); };
+    if (sumNext) sumNext.onclick = function () {
+      if (state.isStaff) {
+        // Validation for discount reason if discount > max discount
+        const maxDisc = (state.catalog.settings.maxStaffDiscount || 0.15) * 100;
+        if (state.quoteResult.discountPct > maxDisc && !state.discountReason.trim()) {
+          showToast('Please enter a reason for discount above ' + maxDisc + '%.', true);
+          return;
+        }
+      }
+      navigate('details');
+    };
+
+    // Staff custom line actions
+    const addCustomBtn = document.getElementById('btn-add-custom-line');
+    if (addCustomBtn) {
+      addCustomBtn.onclick = function () {
+        state.customLines.push({
+          name: 'Custom service ' + (state.customLines.length + 1),
+          amount: 1000,
+          discountable: true
+        });
+        recalc();
+        renderApp();
+      };
+    }
+    const customInputs = root.querySelectorAll('[data-custom-idx]');
+    customInputs.forEach(function (inp) {
+      inp.onchange = function () {
+        const idx = parseInt(inp.getAttribute('data-custom-idx'), 10);
+        const fld = inp.getAttribute('data-field');
+        if (fld === 'name') state.customLines[idx].name = inp.value;
+        else if (fld === 'amount') state.customLines[idx].amount = Number(inp.value) || 0;
+        else if (fld === 'discountable') state.customLines[idx].discountable = inp.checked;
+        recalc();
+        renderApp();
+      };
+    });
+    const removeCustomBtns = root.querySelectorAll('[data-remove-custom-idx]');
+    removeCustomBtns.forEach(function (b) {
+      b.onclick = function () {
+        const idx = parseInt(b.getAttribute('data-remove-custom-idx'), 10);
+        state.customLines.splice(idx, 1);
+        recalc();
+        renderApp();
+      };
+    });
+    const finalPriceInput = document.getElementById('input-final-price');
+    if (finalPriceInput) {
+      finalPriceInput.onchange = function () {
+        const v = finalPriceInput.value.trim();
+        state.finalPriceOverride = v !== '' ? Number(v) : null;
+        recalc();
+        renderApp();
+      };
+    }
+    const discountReasonInput = document.getElementById('input-discount-reason');
+    if (discountReasonInput) {
+      discountReasonInput.onchange = function () {
+        state.discountReason = discountReasonInput.value;
+      };
+    }
+    const staffNameInput = document.getElementById('input-staff-name');
+    if (staffNameInput) {
+      staffNameInput.onchange = function () {
+        state.staffName = staffNameInput.value;
+      };
+    }
+
+    // 9. Details Screen Actions
+    const bindField = function (id, prop, transform) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.oninput = function () {
+          let val = el.value;
+          if (transform) val = transform(val);
+          state.client[prop] = val;
+          if (state.fieldErrors[prop]) {
+            delete state.fieldErrors[prop];
+          }
+          if (prop === 'gstin') {
+            const sc = stateCodeFromGstin(val);
+            if (sc) {
+              state.client.stateCode = sc;
+              const selState = document.getElementById('field-state');
+              if (selState) selState.value = sc;
+            }
+          }
+          recalc();
+        };
+      }
+    };
+    bindField('field-client-name', 'name');
+    bindField('field-business-name', 'businessName');
+    bindField('field-mobile', 'mobile', function (v) { return v.replace(/\D/g, '').slice(0, 10); });
+    bindField('field-email', 'email');
+    bindField('field-gstin', 'gstin', function (v) { return v.toUpperCase().slice(0, 15); });
+    bindField('field-address', 'address');
+
+    const stateSelect = document.getElementById('field-state');
+    if (stateSelect) {
+      stateSelect.onchange = function () {
+        state.client.stateCode = stateSelect.value;
+        recalc();
+        renderApp();
+      };
+    }
+    const waCheck = document.getElementById('field-whatsapp');
+    if (waCheck) {
+      waCheck.onchange = function () {
+        state.client.whatsappOptIn = waCheck.checked;
+      };
+    }
+
+    const detailsPrev = document.getElementById('btn-details-prev');
+    if (detailsPrev) detailsPrev.onclick = function () { navigate('summary'); };
+
+    const submitBtn = document.getElementById('btn-submit-estimate');
+    if (submitBtn) {
+      submitBtn.onclick = function () {
+        handleSubmitForm();
+      };
+    }
+
+    // 10. Confirmation Screen Actions
+    const buildAnotherBtn = document.getElementById('btn-build-another');
+    if (buildAnotherBtn) {
+      buildAnotherBtn.onclick = function () {
+        // Reset selections while keeping staff token if in staff session
+        state.selections = {};
+        state.customLines = [];
+        state.finalPriceOverride = null;
+        state.discountReason = '';
+        state.client = {
+          name: '',
+          businessName: '',
+          mobile: '',
+          email: '',
+          gstin: '',
+          stateCode: '',
+          address: '',
+          whatsappOptIn: true
+        };
+        state.submissionResult = null;
+        navigate('service');
+      };
+    }
+
+    // Mobile sticky bar action button
+    const mobileActionBtn = document.getElementById('mobile-btn-action');
+    if (mobileActionBtn) {
+      mobileActionBtn.onclick = function () {
+        const sc = state.currentScreen;
+        if (sc === 'service') navigate('catalogue');
+        else if (sc === 'catalogue') navigate('pages');
+        else if (sc === 'pages') navigate('features');
+        else if (sc === 'features') navigate('integrations');
+        else if (sc === 'integrations') navigate('summary');
+        else if (sc === 'summary') navigate('details');
+        else if (sc === 'details') handleSubmitForm();
+      };
+    }
+  }
+
+  // --- Form Validation and Submission ---
+  function handleSubmitForm() {
+    const honeypot = (document.getElementById('field-honeypot') || {}).value;
+    if (honeypot) {
+      // Spam detected
+      console.warn('Bot detected via honeypot.');
+      return;
+    }
+
+    const errors = {};
+    if (!state.client.name.trim()) {
+      errors.name = 'Please enter your name.';
+    }
+    const mobilePattern = /^[6-9][0-9]{9}$/;
+    if (!mobilePattern.test(state.client.mobile)) {
+      errors.mobile = 'Enter a valid 10-digit mobile number starting with 6-9.';
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailPattern.test(state.client.email)) {
+      errors.email = 'Enter a valid email address.';
+    }
+    if (state.client.gstin) {
+      const gstinPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+      if (!gstinPattern.test(state.client.gstin)) {
+        errors.gstin = 'Enter a valid 15-character GSTIN.';
+      }
+    }
+
+    state.fieldErrors = errors;
+    if (Object.keys(errors).length > 0) {
+      renderApp();
+      showToast('Please fix the errors highlighted below.', true);
+      return;
+    }
+
+    // Prepare payload
+    const selections = [];
+    Object.keys(state.selections).forEach(function (cid) {
+      const q = state.selections[cid];
+      if (q > 0) selections.push({ componentId: cid, qty: q });
+    });
+
+    const payload = {
+      serviceId: state.selectedServiceId,
+      selections: selections,
+      customLines: state.isStaff ? state.customLines : [],
+      finalPriceOverride: state.isStaff ? state.finalPriceOverride : null,
+      discountReason: state.discountReason,
+      staffName: state.staffName,
+      client: state.client,
+      honeypot: ''
+    };
+
+    state.isSubmitting = true;
+    renderApp();
+
+    callServer('saveSubmission', payload, state.staffToken)
+      .then(function (result) {
+        state.isSubmitting = false;
+        state.submissionResult = result;
+        navigate('confirmation');
+      })
+      .catch(function (err) {
+        state.isSubmitting = false;
+        renderApp();
+        showToast(err.message || 'Submission failed. Please try again.', true);
+      });
+  }
+
+  // --- Initialization ---
+  function init() {
+    callServer('getCatalog', null)
+      .then(function (cat) {
+        state.catalog = cat;
+        recalc();
+        renderApp();
+      })
+      .catch(function (err) {
+        const root = document.getElementById('app-root');
+        if (root) {
+          root.innerHTML = (
+            '<div style="padding:40px;text-align:center;">' +
+              '<h3 style="color:#DC2626;margin-bottom:8px;">Failed to load catalog</h3>' +
+              '<p style="color:#6B7280;margin-bottom:16px;">' + escapeHtml(err.message) + '</p>' +
+              '<button class="btn-primary" onclick="window.location.reload()">Try again</button>' +
+            '</div>'
+          );
+        }
+      });
+  }
+
+  // Start on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
