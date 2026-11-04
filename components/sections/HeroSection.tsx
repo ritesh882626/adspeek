@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { HeroInquiryCard } from './HeroInquiryCard';
 import { IconHeroCheck, IconHeroMobile, IconHeroZap } from '@/components/ui/PremiumIcons';
 
@@ -43,12 +44,12 @@ export function HeroSection({ onOpenConsultation }: HeroSectionProps) {
 
             {/* CTAs - Stack full-width on mobile */}
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <button
-                onClick={onOpenConsultation}
+              <Link
+                href="/quote"
                 className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white text-sm sm:text-base font-medium shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
               >
-                <span>Start Your Shopify Project</span>
-              </button>
+                <span>Get a Quote</span>
+              </Link>
 
               <a
                 href="#portfolio"

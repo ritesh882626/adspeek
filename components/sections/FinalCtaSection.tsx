@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ShieldCheck, Clock, FileText } from 'lucide-react';
 
 interface FinalCtaSectionProps {
@@ -37,12 +38,12 @@ export function FinalCtaSection({ onOpenConsultation }: FinalCtaSectionProps) {
             <span>Start Your Project</span>
           </button>
 
-          <button
-            onClick={onOpenConsultation}
+          <Link
+            href="/quote"
             className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-full border-2 border-white/20 hover:border-white/40 text-white text-base font-medium transition-all cursor-pointer min-h-[48px] flex items-center justify-center"
           >
-            Book a Consultation
-          </button>
+            Get a Quote
+          </Link>
         </div>
 
         {/* 3 Guarantees */}

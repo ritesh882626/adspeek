@@ -132,21 +132,12 @@ export function Footer({ onOpenConsultation }: FooterProps) {
             <p className="text-xs sm:text-sm text-[#A8B1B1] mb-4 leading-relaxed font-light">
               Ready to build, redesign, or migrate your Shopify store? Schedule a free discovery session.
             </p>
-            {onOpenConsultation ? (
-              <button
-                onClick={onOpenConsultation}
-                className="w-full py-3.5 px-4 rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white text-xs sm:text-sm font-medium transition-all shadow-sm flex items-center justify-center cursor-pointer min-h-[44px]"
-              >
-                <span>Request Consultation</span>
-              </button>
-            ) : (
-              <a
-                href="#hero-inquiry"
-                className="w-full py-3.5 px-4 rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white text-xs sm:text-sm font-medium transition-all shadow-sm flex items-center justify-center cursor-pointer min-h-[44px]"
-              >
-                <span>Request Consultation</span>
-              </a>
-            )}
+            <Link
+              href="/quote"
+              className="w-full py-3.5 px-4 rounded-full bg-[#0C5A48] hover:bg-[#084537] text-white text-xs sm:text-sm font-medium transition-all shadow-sm flex items-center justify-center cursor-pointer min-h-[44px]"
+            >
+              <span>Get a Quote</span>
+            </Link>
 
             <div className="mt-6 pt-4 border-t border-white/[0.08]">
               <span className="text-[11px] font-mono text-[#71717A] uppercase block mb-1">
