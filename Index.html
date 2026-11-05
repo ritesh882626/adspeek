@@ -10,6 +10,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Mode detection: embedded (inside iframe popup) vs standalone -->
+    <script>
+      (function() {
+        try {
+          if (window.self !== window.top) {
+            document.documentElement.classList.add('is-embedded');
+          } else {
+            document.documentElement.classList.add('is-standalone');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('is-embedded');
+        }
+      })();
+    </script>
+
     <!-- Design tokens and styles -->
     <?!= include('Styles'); ?>
   </head>

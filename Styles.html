@@ -82,34 +82,89 @@ textarea:focus-visible,
 }
 
 /* ==========================================================================
-   Modal Overlay Container (Full Screen Overlay)
+   Popup Frame & Card Container (Embedded in Modal vs Standalone)
    ========================================================================== */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100dvh;
+
+/* Default app-container */
+.app-container {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-card);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg-page);
+  flex-direction: column;
+  position: relative;
   overflow: hidden;
-  z-index: 100;
-  padding: 24px;
 }
 
-/* Main Card Shell - Fixed Size on Desktop */
-.app-container {
-  width: min(1180px, 100vw - 48px);
-  height: min(760px, 100dvh - 48px);
+/* Embedded in iframe popup (fills modal dialog 100% exactly) */
+html.is-embedded,
+html.is-embedded body {
+  background: transparent !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html.is-embedded .app-container {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #FFFFFF;
+}
+
+/* Standalone (directly opened in browser tab) */
+html.is-standalone body {
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+html.is-standalone .app-container {
+  width: 70vw;
+  height: 70vh;
+  min-width: min(880px, 94vw);
+  min-height: min(600px, 94vh);
+  max-width: 94vw;
+  max-height: 94vh;
   background-color: var(--bg-card);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(17, 24, 39, 0.25);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 767px) {
+  html.is-standalone body,
+  html.is-standalone .app-container {
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
 }
 
 /* Top Right Close Button (✕) */
@@ -269,10 +324,11 @@ textarea:focus-visible,
 
 /* Left Panel - Fixed Grid (Auto / 1fr / Auto) */
 .left-panel {
-  width: 38%;
-  min-width: 320px;
+  width: 36%;
+  min-width: 280px;
+  max-width: 440px;
   background: var(--gradient-left);
-  padding: 34px 30px;
+  padding: clamp(24px, 3.5vh, 40px) clamp(20px, 2.4vw, 34px);
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 0;

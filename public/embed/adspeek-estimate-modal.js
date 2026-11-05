@@ -1,35 +1,79 @@
 /**
  * AdsPeek Package Builder Modal Embed Script
- * Enables full-screen popup quote builder on any website with a single script tag.
+ * Enables centered popup quote builder on any website with a single script tag.
+ *
+ * Desktop: Centered modal (70vw × 70vh, min 880×600, max 94vw×94vh) with dimmed backdrop
+ * Mobile: Full-screen modal (100vw × 100dvh)
  *
  * Usage:
  *   <script src="/embed/adspeek-estimate-modal.js"></script>
  *   <button data-adspeek-estimate>Get a Quote</button>
+ *
+ * Auto-open option:
+ *   <script src="/embed/adspeek-estimate-modal.js" data-adspeek-estimate-autoopen></script>
+ *   or window.AdsPeekEstimate.open();
  */
 
 (function () {
   'use strict';
 
   // Config: The deployed Google Apps Script Web App URL
-  const ADSPEEK_ESTIMATE_URL = 'https://script.google.com/macros/s/AKfycbyEI8hwDUImKXXJYjvHkF0zq03ao6EUi7s9C86bkLKdFxerFI8nYZtQV7qf-TRfswMWpg/exec';
+  const ADSPEEK_ESTIMATE_URL = 'https://script.google.com/macros/s/AKfycbyEQdZQMOxO6wR-zZxt5Cs3ZKDK9oYg9eZ0gJO7PwRULz1ecXd2SvKPHnQ07afmT5tXcw/exec';
 
-  let modalEl = null;
+  let overlayEl = null;
+  let dialogEl = null;
   let iframeEl = null;
   let previousFocusedElement = null;
   let scrollYBeforeLock = 0;
 
+  function isMobile() {
+    return window.innerWidth < 768;
+  }
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function applyResponsiveDialogStyles() {
+    if (!dialogEl) return;
+    const mobile = isMobile();
+
+    if (mobile) {
+      Object.assign(dialogEl.style, {
+        width: '100vw',
+        height: '100dvh',
+        minWidth: '0',
+        minHeight: '0',
+        maxWidth: '100vw',
+        maxHeight: '100dvh',
+        borderRadius: '0',
+        boxShadow: 'none'
+      });
+    } else {
+      Object.assign(dialogEl.style, {
+        width: '70vw',
+        height: '70vh',
+        minWidth: 'min(880px, 94vw)',
+        minHeight: 'min(600px, 94vh)',
+        maxWidth: '94vw',
+        maxHeight: '94vh',
+        borderRadius: '20px',
+        boxShadow: '0 24px 80px rgba(17, 24, 39, 0.25)'
+      });
+    }
+  }
+
   function createModal() {
-    if (modalEl) return modalEl;
+    if (overlayEl) return overlayEl;
 
-    // Overlay container
-    modalEl = document.createElement('div');
-    modalEl.id = 'adspeek-estimate-overlay';
-    modalEl.setAttribute('role', 'dialog');
-    modalEl.setAttribute('aria-modal', 'true');
-    modalEl.setAttribute('aria-label', 'AdsPeek Package Builder');
+    // 1. Overlay Backdrop covering full page
+    overlayEl = document.createElement('div');
+    overlayEl.id = 'adspeek-estimate-overlay';
+    overlayEl.setAttribute('role', 'dialog');
+    overlayEl.setAttribute('aria-modal', 'true');
+    overlayEl.setAttribute('aria-label', 'AdsPeek Package Builder');
 
-    // Inline critical styling
-    Object.assign(modalEl.style, {
+    Object.assign(overlayEl.style, {
       position: 'fixed',
       top: '0',
       left: '0',
@@ -38,24 +82,40 @@
       width: '100vw',
       height: '100dvh',
       zIndex: '2147483000',
-      backgroundColor: 'rgba(15, 23, 42, 0.45)',
+      backgroundColor: 'rgba(17, 24, 39, 0.55)',
       backdropFilter: 'blur(4px)',
       WebkitBackdropFilter: 'blur(4px)',
       display: 'none',
+      placeItems: 'center',
       opacity: '0',
-      transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-      alignItems: 'center',
-      justifyContent: 'center',
+      transition: 'opacity 180ms ease',
       padding: '0',
       margin: '0',
       boxSizing: 'border-box',
       overflow: 'hidden'
     });
 
-    // Web App Iframe
+    // 2. Centered Modal Dialog Card
+    dialogEl = document.createElement('div');
+    dialogEl.id = 'adspeek-estimate-dialog';
+    Object.assign(dialogEl.style, {
+      position: 'relative',
+      backgroundColor: '#FFFFFF',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      transition: prefersReducedMotion() ? 'none' : 'transform 180ms cubic-bezier(0.16, 1, 0.3, 1)',
+      transform: 'scale(0.98)'
+    });
+
+    applyResponsiveDialogStyles();
+    window.addEventListener('resize', applyResponsiveDialogStyles);
+
+    // 3. Web App Iframe (Fills dialog card 100%)
     iframeEl = document.createElement('iframe');
     iframeEl.id = 'adspeek-estimate-iframe';
-    iframeEl.setAttribute('title', 'AdsPeek Package Builder');
+    iframeEl.setAttribute('aria-label', 'AdsPeek Package Builder'); // Accessible name without tooltip
     iframeEl.setAttribute('allow', 'clipboard-write');
     iframeEl.setAttribute('loading', 'lazy');
 
@@ -67,31 +127,25 @@
       backgroundColor: 'transparent'
     });
 
-    modalEl.appendChild(iframeEl);
-    document.body.appendChild(modalEl);
+    dialogEl.appendChild(iframeEl);
+    overlayEl.appendChild(dialogEl);
+    document.body.appendChild(overlayEl);
 
-    // Close on backdrop click (if target is modal itself)
-    modalEl.addEventListener('click', function (e) {
-      if (e.target === modalEl) {
-        closeModal();
+    // Close on backdrop click (click outside dialog)
+    overlayEl.addEventListener('click', function (e) {
+      if (e.target === overlayEl) {
+        requestModalClose();
       }
     });
 
     // Listen for postMessage events from the Google Apps Script Web App iframe
     window.addEventListener('message', function (event) {
-      // Validate origin if coming from Google Apps Script
-      const isGoogle = typeof event.origin === 'string' && (
-        event.origin.endsWith('.googleusercontent.com') ||
-        event.origin.endsWith('script.google.com')
-      );
-      
       const data = event.data;
       if (!data || data.source !== 'adspeek-estimate') return;
 
       if (data.action === 'close') {
-        closeModal();
+        forceCloseModal();
       } else if (data.action === 'submitted') {
-        // Broadcast custom DOM event for analytics/conversions
         const customEvt = new CustomEvent('adspeek:estimate-submitted', {
           detail: { submissionId: data.submissionId }
         });
@@ -99,45 +153,88 @@
       }
     });
 
-    return modalEl;
+    return overlayEl;
+  }
+
+  function requestModalClose() {
+    // Notify iframe so it can display unsaved changes confirm dialog if needed
+    try {
+      if (iframeEl && iframeEl.contentWindow) {
+        iframeEl.contentWindow.postMessage({
+          source: 'adspeek-estimate-host',
+          action: 'request-close'
+        }, '*');
+        return;
+      }
+    } catch (e) {}
+    forceCloseModal();
   }
 
   function openModal() {
     createModal();
     previousFocusedElement = document.activeElement;
 
-    // Load iframe URL on first open or reload
+    // Load iframe URL on first open
     if (!iframeEl.src || iframeEl.src === 'about:blank') {
       iframeEl.src = ADSPEEK_ESTIMATE_URL;
     }
 
-    // Lock page scroll cleanly
+    // Lock page scroll
     scrollYBeforeLock = window.scrollY;
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
 
-    modalEl.style.display = 'flex';
+    applyResponsiveDialogStyles();
+
+    overlayEl.style.display = 'grid';
+
+    // Animate open
+    const mobile = isMobile();
+    const reducedMotion = prefersReducedMotion();
+
+    if (mobile) {
+      dialogEl.style.transform = reducedMotion ? 'none' : 'translateY(100%)';
+      dialogEl.style.transition = reducedMotion ? 'none' : 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)';
+    } else {
+      dialogEl.style.transform = reducedMotion ? 'none' : 'scale(0.98)';
+      dialogEl.style.transition = reducedMotion ? 'none' : 'transform 180ms cubic-bezier(0.16, 1, 0.3, 1)';
+    }
+
     requestAnimationFrame(function () {
-      modalEl.style.opacity = '1';
+      overlayEl.style.opacity = '1';
+      if (mobile) {
+        dialogEl.style.transform = 'translateY(0)';
+      } else {
+        dialogEl.style.transform = 'scale(1)';
+      }
     });
 
-    // Keyboard trap & escape handler
     window.addEventListener('keydown', handleKeyDown);
 
-    // Focus iframe
     if (iframeEl) {
       setTimeout(function () {
-        iframeEl.focus();
-      }, 100);
+        try { iframeEl.focus(); } catch (e) {}
+      }, 120);
     }
   }
 
-  function closeModal() {
-    if (!modalEl || modalEl.style.display === 'none') return;
+  function forceCloseModal() {
+    if (!overlayEl || overlayEl.style.display === 'none') return;
 
-    modalEl.style.opacity = '0';
+    const mobile = isMobile();
+    const reducedMotion = prefersReducedMotion();
+
+    overlayEl.style.opacity = '0';
+    if (!reducedMotion) {
+      if (mobile) {
+        dialogEl.style.transform = 'translateY(100%)';
+      } else {
+        dialogEl.style.transform = 'scale(0.98)';
+      }
+    }
+
     setTimeout(function () {
-      modalEl.style.display = 'none';
+      overlayEl.style.display = 'none';
 
       // Restore scroll
       document.documentElement.style.overflow = '';
@@ -146,20 +243,18 @@
 
       window.removeEventListener('keydown', handleKeyDown);
 
-      // Restore focus
       if (previousFocusedElement && typeof previousFocusedElement.focus === 'function') {
         previousFocusedElement.focus();
       }
-    }, 200);
+    }, 180);
   }
 
   function handleKeyDown(e) {
     if (e.key === 'Escape' || e.keyCode === 27) {
-      closeModal();
+      requestModalClose();
     }
   }
 
-  // Auto-bind any elements with data-adspeek-estimate
   function bindTriggers() {
     document.addEventListener('click', function (e) {
       const trigger = e.target.closest('[data-adspeek-estimate]');
@@ -168,13 +263,32 @@
         openModal();
       }
     });
+
+    // Auto-open if script has data-adspeek-estimate-autoopen or on /quote path
+    const isQuoteRoute = typeof window !== 'undefined' && (
+      window.location.pathname === '/quote' ||
+      window.location.pathname === '/quote/'
+    );
+
+    let hasAutoOpenAttr = false;
+    const currentScript = document.currentScript || document.querySelector('script[src*="adspeek-estimate-modal"]');
+    if (currentScript && currentScript.hasAttribute('data-adspeek-estimate-autoopen')) {
+      hasAutoOpenAttr = true;
+    }
+
+    if (isQuoteRoute || hasAutoOpenAttr) {
+      setTimeout(openModal, 150);
+    }
   }
 
-  // Public API on window
-  window.AdsPeekEstimateModal = {
+  // Public API
+  window.AdsPeekEstimate = {
     open: openModal,
-    close: closeModal
+    close: requestModalClose,
+    forceClose: forceCloseModal
   };
+  // Backward compatibility
+  window.AdsPeekEstimateModal = window.AdsPeekEstimate;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bindTriggers);

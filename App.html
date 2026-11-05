@@ -1861,6 +1861,15 @@
         bottomBar.style.display = isKeyboardOpen ? 'none' : '';
       });
     }
+
+    // 8. Host window communication (close requested by host backdrop / Esc)
+    window.addEventListener('message', function (event) {
+      const data = event.data;
+      if (!data || data.source !== 'adspeek-estimate-host') return;
+      if (data.action === 'request-close') {
+        requestClose();
+      }
+    });
   }
 
   // --- Initialization ---
