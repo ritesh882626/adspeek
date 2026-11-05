@@ -24,6 +24,11 @@ function onOpen() {
     .createMenu('AdsPeek')
     .addItem('Check price sheet', 'menuCheckPriceSheet')
     .addItem('Refresh form prices now', 'menuRefreshForm')
+    .addSeparator()
+    .addItem('Set up documents and email', 'setupDocuments')
+    .addItem('Rebuild document templates (new design)', 'rebuildDocumentTemplates')
+    .addItem('Resend documents for selected row', 'menuResendSelected')
+    .addItem('Process pending documents now', 'menuProcessPendingNow')
     .addToUi();
 }
 
