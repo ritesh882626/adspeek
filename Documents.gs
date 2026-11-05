@@ -19,20 +19,48 @@ function generateDocuments_(submissionId) {
   }
 
   const data = buildDocumentData_(submissionId, settings);
-  const folder = getMonthFolder_(DriveApp.getFolderById(folderId), data.createdAt);
+  const root = DriveApp.getFolderById(folderId);
+  const proposalFolder = getOutputFolder_(root, data.createdAt, 'Proposals');
+  const quotationFolder = getOutputFolder_(root, data.createdAt, 'Quotations');
 
-  const proposal = fillTemplate_(proposalTpl, folder, data.proposalNumber + ' - ' + data.fileLabel, data, 'proposal');
-  const quotation = fillTemplate_(quotationTpl, folder, data.quotationNumber + ' - ' + data.fileLabel, data, 'quotation');
+  const proposal = fillTemplate_(proposalTpl, proposalFolder, data.proposalNumber.replace(/\//g, '-') + ' - ' + data.fileLabel, data, 'proposal');
+  const quotation = fillTemplate_(quotationTpl, quotationFolder, data.quotationNumber.replace(/\//g, '-') + ' - ' + data.fileLabel, data, 'quotation');
   proposal.number = data.proposalNumber;
   quotation.number = data.quotationNumber;
   return { proposal: proposal, quotation: quotation, data: data };
 }
 
-/** Subfolder per month, e.g. "2026-11", created when needed. */
-function getMonthFolder_(root, date) {
-  const name = Utilities.formatDate(date, DOCS_CONFIG.TZ, 'yyyy-MM');
-  const it = root.getFoldersByName(name);
-  return it.hasNext() ? it.next() : root.createFolder(name);
+/**
+ * Month-wise storage:  <root>/2026-11 November/Proposals | Quotations | Invoices
+ * An older folder named just "2026-11" is renamed and reused.
+ */
+function getOutputFolder_(root, date, kind) {
+  const short = Utilities.formatDate(date, DOCS_CONFIG.TZ, 'yyyy-MM');
+  const full = short + ' ' + Utilities.formatDate(date, DOCS_CONFIG.TZ, 'MMMM');
+  let month;
+  const itFull = root.getFoldersByName(full);
+  if (itFull.hasNext()) {
+    month = itFull.next();
+  } else {
+    const itShort = root.getFoldersByName(short);
+    month = itShort.hasNext() ? itShort.next().setName(full) : root.createFolder(full);
+  }
+  return kind ? docSubFolder_(month, kind) : month;
+}
+
+/** Plural of a unit: category -> categories, box -> boxes, product -> products. */
+function docPlural_(unit, qty) {
+  if (!unit || qty === 1) return unit || '';
+  if (/[^aeiou]y$/i.test(unit)) return unit.slice(0, -1) + 'ies';
+  if (/(s|x|z|ch|sh)$/i.test(unit)) return unit + 'es';
+  return unit + 's';
+}
+
+/** "A | B" or multi-line text -> clean lines, without [ ] brackets. */
+function docSplitLines_(text) {
+  return String(text || '').split(/\s*\|\s*|\r?\n/)
+    .map(function (s) { return s.replace(/[\[\]]/g, '').replace(/\s+/g, ' ').replace(/\s+:/g, ':').trim(); })
+    .filter(function (s) { return s !== ''; });
 }
 
 /** Collects everything the templates need for one submission. */
@@ -86,7 +114,7 @@ function buildDocumentData_(submissionId, settings) {
     const amount = toNum_(r[L.FINAL_AMOUNT], toNum_(r[L.EXPECTED_AMOUNT], 0));
     const onRequest = type === 'Quote on request';
     let qtyLabel = '1';
-    if (type === 'Quantity' || type === 'Optional + Qty') qtyLabel = qty + (comp.unit ? ' ' + comp.unit + (qty === 1 ? '' : 's') : '');
+    if (type === 'Quantity' || type === 'Optional + Qty') qtyLabel = qty + (comp.unit ? ' ' + docPlural_(comp.unit, qty) : '');
     return {
       id: id,
       name: id === 'SERVICE-BASE' ? (service.name + ': base package') : (toStr_(r[L.NAME]) || comp.name || id),
@@ -95,6 +123,7 @@ function buildDocumentData_(submissionId, settings) {
       qtyLabel: qtyLabel,
       amount: amount,
       onRequest: onRequest,
+      included: !onRequest && amount === 0 && id !== 'SERVICE-BASE',
       monthlyCost: comp.monthlyCost || ''
     };
   }).sort(function (a, b) {
@@ -203,27 +232,32 @@ function fillTemplate_(templateId, folder, fileName, data, kind) {
   };
 
   // Tables and lists first (they replace whole marker paragraphs)
-  const R = 'right', Lft = 'left', C = 'center';
+  const amountText = function (it) {
+    if (it.onRequest) return 'On request';
+    if (it.included) return 'Included';
+    return docFormatINR_(it.amount, 0);
+  };
   replaceMarkerWithTable_(body, '{{SCOPE_TABLE}}',
-    ['Deliverable', 'Qty'],
-    data.items.map(function (it) { return { cells: [it.name, it.onRequest ? 'On request' : it.qtyLabel], details: it.details }; }),
-    [400, 87], [Lft, R]);
+    ['#', 'Deliverable', 'Qty'],
+    data.items.map(function (it, i) { return { cells: [String(i + 1), it.name, it.onRequest ? 'On request' : it.qtyLabel], details: it.details }; }),
+    [28, 369, 90], ['center', 'left', 'center'], 1);
 
   replaceMarkerWithTable_(body, '{{PRICE_TABLE}}',
-    ['Item description', 'Qty', 'Amount'],
-    data.items.map(function (it) {
-      return { cells: [it.name, it.onRequest ? '-' : it.qtyLabel, it.onRequest ? 'On request' : docFormatINR_(it.amount, 0)], details: it.details };
+    ['#', 'Item description', 'Qty', 'Amount'],
+    data.items.map(function (it, i) {
+      return { cells: [String(i + 1), it.name, it.onRequest ? '-' : it.qtyLabel, amountText(it)], details: it.details, muteLast: it.included || it.onRequest };
     }),
-    [300, 90, 97], [Lft, C, R]);
+    [28, 279, 85, 95], ['center', 'left', 'center', 'right'], 1);
 
   replaceMarkerWithTable_(body, '{{MILESTONE_TABLE}}',
-    ['Milestone', 'Share', 'Amount (incl. GST)'],
-    data.milestones.map(function (m) { return { cells: [m.name, m.pct + '%', docFormatINR_(m.amount, 2)] }; }),
-    [300, 70, 117], [Lft, C, R]);
+    ['#', 'Milestone', 'Share', 'Amount (incl. GST)'],
+    data.milestones.map(function (m, i) { return { cells: [String(i + 1), m.name, m.pct + '%', docFormatINR_(m.amount, 2)] }; }),
+    [28, 279, 70, 110], ['center', 'left', 'center', 'right'], 1);
 
   replaceMarkerWithList_(body, '{{INCLUDED_LIST}}', data.included);
   replaceMarkerWithList_(body, '{{MONTHLY_COSTS}}',
-    data.monthly.length ? ['Estimated monthly tool costs for the selected integrations (paid to the provider):'].concat(data.monthly) : []);
+    data.monthly.length ? data.monthly : ['No monthly tool costs for the selected package (Shopify plan and domain are billed by Shopify).']);
+  replaceMarkerWithLines_(body, '{{BANK_DETAILS}}', docSplitLines_(data.bankDetails));
 
   // Paragraphs that contain only a placeholder with no value are removed
   Object.keys(values).forEach(function (key) {
@@ -240,6 +274,7 @@ function fillTemplate_(templateId, folder, fileName, data, kind) {
     body.replaceText(pattern, value);
     if (footer) footer.replaceText(pattern, value);
   });
+  docTightenEmptyParagraphs_(body);
   doc.saveAndClose();
 
   const pdfBlob = copy.getAs(MimeType.PDF).setName(fileName + '.pdf');
@@ -248,50 +283,47 @@ function fillTemplate_(templateId, folder, fileName, data, kind) {
 }
 
 /**
- * Replaces the paragraph containing marker with a minimal table:
- * header row, thin rule, item rows (optional grey detail line under the first column), thin rule.
- * rows: [{ cells: [..], details: 'optional' }]. aligns: 'left' | 'center' | 'right' per column.
+ * Replaces the paragraph holding `marker` with ONE bordered table:
+ * dark header row, then one row per item (optional grey detail line under the main column).
+ * rows: [{ cells: [..], details: 'optional', muteLast: bool }]
+ * aligns: 'left' | 'center' | 'right' per column. detailCol: column that gets the detail line.
  */
-function replaceMarkerWithTable_(body, marker, header, rows, widths, aligns) {
+function replaceMarkerWithTable_(body, marker, header, rows, widths, aligns, detailCol) {
   const found = body.findText(docRegexEscape_(marker));
   if (!found) return;
   const paragraph = found.getElement().getParent();
-  let index = body.getChildIndex(paragraph);
+  const container = paragraph.getParent();
+  const index = container.getChildIndex(paragraph);
   const H = DocumentApp.HorizontalAlignment;
   const alignOf = function (c) { return aligns && aligns[c] === 'right' ? H.RIGHT : (aligns && aligns[c] === 'center' ? H.CENTER : H.LEFT); };
-  const ink = '#1C1C1C', muted = '#6B6B6B';
+  const dc = detailCol === undefined ? 0 : detailCol;
 
-  const styleRow = function (row, isHeader) {
+  const data = rows.length ? rows : [{ cells: header.map(function (h, i) { return i === dc ? 'Nothing selected' : ''; }) }];
+  const table = container.insertTable(index, [header].concat(data.map(function (r) { return r.cells; })));
+  table.setBorderWidth(0.75).setBorderColor(DOC_DS.LINE);
+
+  for (let r = 0; r < table.getNumRows(); r++) {
+    const row = table.getRow(r), isHead = r === 0, item = isHead ? null : data[r - 1];
     for (let c = 0; c < row.getNumCells(); c++) {
       const cell = row.getCell(c);
       if (widths && widths[c]) cell.setWidth(widths[c]);
-      cell.setPaddingTop(isHeader ? 2 : 5).setPaddingBottom(isHeader ? 2 : 5).setPaddingLeft(0).setPaddingRight(c === row.getNumCells() - 1 ? 0 : 8);
-      const p = cell.getChild(0).asParagraph();
-      p.setAlignment(alignOf(c));
-      p.editAsText().setFontFamily('Inter').setFontSize(isHeader ? 9 : 9.5).setBold(isHeader).setForegroundColor(isHeader ? ink : ink);
-    }
-  };
-
-  // Header table
-  const headTable = body.insertTable(index++, [header]);
-  headTable.setBorderWidth(0);
-  styleRow(headTable.getRow(0), true);
-  body.insertHorizontalRule(index++);
-
-  // Body table
-  const data = rows.length ? rows : [{ cells: header.map(function () { return ''; }) }];
-  const bodyTable = body.insertTable(index++, data.map(function (r) { return r.cells; }));
-  bodyTable.setBorderWidth(0);
-  for (let r = 0; r < bodyTable.getNumRows(); r++) {
-    const row = bodyTable.getRow(r);
-    styleRow(row, false);
-    const details = data[r].details;
-    if (details) {
-      const dp = row.getCell(0).appendParagraph(details);
-      dp.editAsText().setFontFamily('Inter').setFontSize(8).setBold(false).setForegroundColor(muted);
+      docPad_(cell, isHead ? 6 : 7, 8, isHead ? 6 : 7, 8);
+      cell.setVerticalAlignment(DocumentApp.VerticalAlignment.TOP);
+      if (isHead) cell.setBackgroundColor(DOC_DS.HEAD_FILL);
+      const muted = !isHead && (c === 0 || (item.muteLast && c === row.getNumCells() - 1));
+      docStyleEl_(cell.getChild(0).asParagraph(), {
+        size: isHead ? 8 : 9.5,
+        bold: isHead || (!isHead && c === dc),
+        color: isHead ? DOC_DS.HEAD_TEXT : (muted ? DOC_DS.MUTED : DOC_DS.INK),
+        align: alignOf(c)
+      });
+      if (!isHead && c === dc) {
+        if (item.details) {
+          docStyleEl_(cell.appendParagraph(item.details), { size: 8, color: DOC_DS.MUTED, before: 2, lineSpacing: 1.15 });
+        }
+      }
     }
   }
-  body.insertHorizontalRule(index++);
   paragraph.removeFromParent();
 }
 
@@ -300,13 +332,30 @@ function replaceMarkerWithList_(body, marker, items) {
   const found = body.findText(docRegexEscape_(marker));
   if (!found) return;
   const paragraph = found.getElement().getParent();
-  let index = body.getChildIndex(paragraph);
+  const container = paragraph.getParent();
+  let index = container.getChildIndex(paragraph);
   items.forEach(function (text) {
-    const li = body.insertListItem(index++, text);
+    const li = container.insertListItem(index++, text);
     li.setGlyphType(DocumentApp.GlyphType.BULLET);
-    li.editAsText().setFontFamily('Inter').setFontSize(10).setBold(false).setForegroundColor('#111827');
+    docStyleEl_(li, { size: 9, after: 2, lineSpacing: 1.15 });
   });
   paragraph.removeFromParent();
+}
+
+/** Replaces the paragraph containing marker with plain lines, keeping that paragraph's style (works inside table cells). */
+function replaceMarkerWithLines_(body, marker, lines) {
+  const found = body.findText(docRegexEscape_(marker));
+  if (!found) return;
+  const paragraph = found.getElement().getParent().asParagraph();
+  if (!lines.length) { paragraph.setText('[Add bank details in Settings]'); return; }
+  paragraph.setText(lines[0]);
+  const container = paragraph.getParent();
+  let index = container.getChildIndex(paragraph);
+  for (let i = 1; i < lines.length; i++) {
+    const p = paragraph.copy();
+    p.setText(lines[i]);
+    container.insertParagraph(++index, p);
+  }
 }
 
 /** Removes body paragraphs whose whole text is exactly the given placeholder. */

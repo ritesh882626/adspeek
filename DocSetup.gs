@@ -72,6 +72,7 @@ function rebuildDocumentTemplates() {
     if (oldId && docDriveItemExists_(oldId, false)) {
       const f = DriveApp.getFileById(oldId);
       if (f.getName().indexOf('OLD - ') !== 0) f.setName('OLD - ' + f.getName());
+      f.moveTo(docSubFolder_(getTemplatesFolder_(folder), 'Old templates'));
     }
     const newId = t.build(folder);
     docSetSetting_(t.key, newId);
@@ -89,18 +90,7 @@ function setupDocumentsSettingsOnly_() {
   docEnsureColumns_(CONFIG.SHEETS.SUBMISSIONS, DOCS_CONFIG.NEW_SUB_COLUMNS);
 }
 
-function ensureDocumentsFolder_(report) {
-  const K = DOCS_CONFIG.SETTING_KEYS;
-  const settings = getSettingsMap_();
-  let folderId = toStr_(settings[K.OUTPUT_FOLDER]);
-  if (!folderId || !docDriveItemExists_(folderId, true)) {
-    const folder = DriveApp.createFolder('AdsPeek Proposals, Quotations & Invoices');
-    folderId = folder.getId();
-    docSetSetting_(K.OUTPUT_FOLDER, folderId);
-    report.push('Created Drive folder: ' + folder.getUrl());
-  }
-  return DriveApp.getFolderById(folderId);
-}
+
 
 function docShowSetupReport_(title, lines, footer) {
   const msg = lines.join('\n') + (footer ? '\n\n' + footer : '');
@@ -127,14 +117,43 @@ function ensureSafetyTrigger_() {
   return true;
 }
 
+
+function ensureDocumentsFolder_(report) {
+  const K = DOCS_CONFIG.SETTING_KEYS;
+  const settings = getSettingsMap_();
+  let folderId = toStr_(settings[K.OUTPUT_FOLDER]);
+  if (!folderId || !docDriveItemExists_(folderId, true)) {
+    const folder = DriveApp.createFolder('AdsPeek Proposals, Quotations & Invoices');
+    folderId = folder.getId();
+    docSetSetting_(K.OUTPUT_FOLDER, folderId);
+    report.push('Created Drive folder: ' + folder.getUrl());
+  }
+  return DriveApp.getFolderById(folderId);
+}
+
+/** Returns (and creates when needed) a named subfolder. */
+function docSubFolder_(parent, name) {
+  const it = parent.getFoldersByName(name);
+  return it.hasNext() ? it.next() : parent.createFolder(name);
+}
+
+/** Templates live in "<root>/Templates". */
+function getTemplatesFolder_(root) {
+  return docSubFolder_(root, 'Templates');
+}
+
 // ======================================================================= design system
 
 const DOC_DS = {
   FONT: 'Inter',
-  INK: '#1C1C1C',     // main text
-  MUTED: '#6B6B6B',   // secondary text
-  LABEL: '#8A8A8A',   // small labels
-  CONTENT_WIDTH: 487  // A4 width (595pt) minus 54pt margins
+  INK: '#1C1C1C',      // main text
+  MUTED: '#6B6B6B',    // secondary text
+  LABEL: '#8A8A8A',    // small labels
+  LINE: '#DADADA',     // table borders
+  FILL: '#F4F4F4',     // light panels
+  HEAD_FILL: '#1C1C1C',// table header background
+  HEAD_TEXT: '#FFFFFF',
+  CONTENT_WIDTH: 487   // A4 width (595pt) minus 54pt margins
 };
 
 /** Applies text styling through attributes (works on Paragraph and ListItem). */
@@ -146,11 +165,11 @@ function docStyleEl_(el, opts) {
   st[A.BOLD] = !!opts.bold;
   st[A.ITALIC] = !!opts.italic;
   st[A.FOREGROUND_COLOR] = opts.color || DOC_DS.INK;
-  if (opts.before !== undefined) st[A.SPACING_BEFORE] = opts.before;
-  if (opts.after !== undefined) st[A.SPACING_AFTER] = opts.after;
+  st[A.SPACING_BEFORE] = opts.before !== undefined ? opts.before : 0;
+  st[A.SPACING_AFTER] = opts.after !== undefined ? opts.after : 0;
+  st[A.LINE_SPACING] = opts.lineSpacing || 1.1;
   el.setAttributes(st);
-  if (opts.align) el.setAlignment(opts.align);
-  if (opts.lineSpacing) el.setLineSpacing(opts.lineSpacing);
+  el.setAlignment(opts.align || DocumentApp.HorizontalAlignment.LEFT);
   return el;
 }
 
@@ -158,46 +177,24 @@ function docNewDoc_(name) {
   const doc = DocumentApp.create(name);
   const body = doc.getBody();
   body.clear();
-  body.setMarginTop(48).setMarginBottom(48).setMarginLeft(54).setMarginRight(54);
+  body.setMarginTop(42).setMarginBottom(42).setMarginLeft(54).setMarginRight(54);
   body.setPageWidth(595.28).setPageHeight(841.89); // A4
   return doc;
 }
 
 function docPara_(body, text, opts) {
-  return docStyleEl_(body.appendParagraph(text), Object.assign({ size: 10, after: 3 }, opts || {}));
+  return docStyleEl_(body.appendParagraph(text), Object.assign({ size: 9.5, after: 3 }, opts || {}));
 }
 
+/** Small grey section heading, e.g. "PAYMENT SCHEDULE". */
 function docLabel_(body, text) {
-  return docPara_(body, text.toUpperCase(), { size: 8, bold: true, color: DOC_DS.LABEL, before: 18, after: 6 });
-}
-
-function docRule_(body) {
-  return body.appendHorizontalRule();
-}
-
-function docSpacer_(body, size) {
-  return docStyleEl_(body.appendParagraph(''), { size: size || 6, after: 0 });
+  return docPara_(body, text.toUpperCase(), { size: 8, bold: true, color: DOC_DS.LABEL, before: 16, after: 6 });
 }
 
 function docBullet_(body, text, numbered) {
   const li = body.appendListItem(text);
   li.setGlyphType(numbered ? DocumentApp.GlyphType.NUMBER : DocumentApp.GlyphType.BULLET);
-  return docStyleEl_(li, { size: 9.5, after: 2, color: DOC_DS.INK });
-}
-
-/** Borderless table with fixed column widths. rows = array of arrays of strings. */
-function docPlainTable_(body, rows, widths) {
-  const t = body.appendTable(rows);
-  t.setBorderWidth(0);
-  for (let r = 0; r < t.getNumRows(); r++) {
-    for (let c = 0; c < t.getRow(r).getNumCells(); c++) {
-      const cell = t.getRow(r).getCell(c);
-      if (r === 0 && widths && widths[c]) cell.setWidth(widths[c]);
-      cell.setPaddingTop(3).setPaddingBottom(3).setPaddingLeft(0).setPaddingRight(8);
-      docStyleCell_(cell, { size: 9.5 });
-    }
-  }
-  return t;
+  return docStyleEl_(li, { size: 9, after: 2, color: DOC_DS.INK, lineSpacing: 1.15 });
 }
 
 /** Styles every paragraph in a cell. */
@@ -218,117 +215,138 @@ function docFillCell_(cell, lines, first, rest, align) {
   }
 }
 
-/** Bold label + value inside a cell, e.g. "Date:  05-11-2026". */
-function docKvCell_(cell, labelText, valueText) {
-  cell.setText(labelText + '  ' + valueText);
-  const p = cell.getChild(0).asParagraph();
-  docStyleEl_(p, { size: 9.5, after: 0 });
-  p.editAsText().setBold(0, labelText.length - 1, true);
+/** Sets padding on a cell in one call. */
+function docPad_(cell, top, right, bottom, left) {
+  cell.setPaddingTop(top).setPaddingRight(right).setPaddingBottom(bottom).setPaddingLeft(left);
+  return cell;
 }
 
-/** Header: logo left, company name + GSTIN right. */
-function docWriteHeader_(doc, body, showPartners) {
-  const t = body.appendTable([['', '']]);
+/** Borderless table with no visible frame. */
+function docLayoutTable_(body, rows) {
+  const t = body.appendTable(rows);
   t.setBorderWidth(0);
-  const left = t.getRow(0).getCell(0), right = t.getRow(0).getCell(1);
-  left.setWidth(200).setPaddingLeft(0).setPaddingTop(0).setPaddingBottom(0);
-  right.setPaddingRight(0).setPaddingTop(0).setPaddingBottom(0);
+  return t;
+}
 
-  const img = left.getChild(0).asParagraph().appendInlineImage(getLogoBlob_());
-  const h = 30;
-  img.setWidth(Math.round(h * img.getWidth() / img.getHeight())).setHeight(h);
-
-  docFillCell_(right, ['{{COMPANY_NAME}}', 'GSTIN {{COMPANY_GSTIN}}', '{{COMPANY_WEBSITE}}'],
-    { size: 9, bold: true, color: DOC_DS.INK }, { size: 8.5, color: DOC_DS.MUTED }, DocumentApp.HorizontalAlignment.RIGHT);
-
-  if (showPartners) {
-    docSpacer_(body, 4);
-    const p = body.appendParagraph('');
-    const strip = p.appendInlineImage(getPartnerStripBlob_());
-    const w = DOC_DS.CONTENT_WIDTH;
-    strip.setHeight(Math.round(w * strip.getHeight() / strip.getWidth())).setWidth(w);
-    docStyleEl_(p, { size: 6, after: 0, align: DocumentApp.HorizontalAlignment.CENTER });
+/**
+ * Removes the big gaps Google Docs leaves around tables: every empty body paragraph
+ * (no text, no image) is shrunk to a 1pt line with no spacing.
+ */
+function docTightenEmptyParagraphs_(body) {
+  const P = DocumentApp.ElementType.PARAGRAPH;
+  for (let i = 0; i < body.getNumChildren(); i++) {
+    const el = body.getChild(i);
+    if (el.getType() !== P) continue;
+    const p = el.asParagraph();
+    if (p.getText() !== '') continue;
+    let hasObject = false;
+    for (let c = 0; c < p.getNumChildren(); c++) {
+      if (p.getChild(c).getType() !== DocumentApp.ElementType.TEXT) { hasObject = true; break; }
+    }
+    if (hasObject) continue;
+    const A = DocumentApp.Attribute, st = {};
+    st[A.FONT_SIZE] = 1; st[A.SPACING_BEFORE] = 0; st[A.SPACING_AFTER] = 0; st[A.LINE_SPACING] = 1;
+    p.setAttributes(st);
   }
 }
 
-/** Large title with a small line above it (service name / milestone). */
-function docWriteTitle_(body, kicker, title) {
-  docPara_(body, kicker, { size: 12, color: DOC_DS.INK, before: 26, after: 0 });
-  docPara_(body, title, { size: 54, color: DOC_DS.INK, before: 0, after: 8, lineSpacing: 0.9 });
+/** Header: logo left, company name + GSTIN + website right. Partner badges below (proposal only). */
+function docWriteHeader_(doc, body, showPartners) {
+  const t = docLayoutTable_(body, [['', '']]);
+  const left = t.getRow(0).getCell(0), right = t.getRow(0).getCell(1);
+  docPad_(left, 0, 0, 0, 0).setWidth(200);
+  docPad_(right, 0, 0, 0, 0);
+  left.setVerticalAlignment(DocumentApp.VerticalAlignment.CENTER);
+
+  const lp = left.getChild(0).asParagraph();
+  docStyleEl_(lp, { size: 6 });
+  const img = lp.appendInlineImage(getLogoBlob_());
+  const h = 28;
+  img.setWidth(Math.round(h * img.getWidth() / img.getHeight())).setHeight(h);
+
+  docFillCell_(right, ['{{COMPANY_NAME}}', 'GSTIN {{COMPANY_GSTIN}}', '{{COMPANY_WEBSITE}}'],
+    { size: 9, bold: true }, { size: 8, color: DOC_DS.MUTED }, DocumentApp.HorizontalAlignment.RIGHT);
+
+  if (showPartners) {
+    const p = body.appendParagraph('');
+    const strip = p.appendInlineImage(getPartnerStripBlob_());
+    const w = 380;
+    strip.setHeight(Math.round(w * strip.getHeight() / strip.getWidth())).setWidth(w);
+    docStyleEl_(p, { size: 6, before: 14, align: DocumentApp.HorizontalAlignment.LEFT });
+  }
 }
 
-/** Thin-ruled row with three label/value pairs. */
+/** Title block: small kicker line + large document title. */
+function docWriteTitle_(body, kicker, title) {
+  docPara_(body, kicker, { size: 10, color: DOC_DS.MUTED, before: 22, after: 2 });
+  docPara_(body, title, { size: 32, bold: true, before: 0, after: 12, lineSpacing: 1 });
+}
+
+/** Light grey strip with three label/value pairs (date, valid until, number). */
 function docWriteInfoRow_(body, pairs) {
-  docRule_(body);
-  const t = body.appendTable([['', '', '']]);
-  t.setBorderWidth(0);
-  const widths = [150, 170, 167];
+  const t = docLayoutTable_(body, [['', '', '']]);
+  const widths = [150, 160, 177];
   pairs.forEach(function (pair, i) {
     const cell = t.getRow(0).getCell(i);
-    cell.setWidth(widths[i]).setPaddingLeft(0).setPaddingTop(4).setPaddingBottom(4);
-    docKvCell_(cell, pair[0], pair[1]);
+    cell.setWidth(widths[i]).setBackgroundColor(DOC_DS.FILL);
+    docPad_(cell, 8, 8, 8, i === 0 ? 10 : 8);
+    docFillCell_(cell, [pair[0].replace(':', '').toUpperCase(), pair[1]],
+      { size: 7.5, bold: true, color: DOC_DS.LABEL }, { size: 10, bold: true });
   });
-  docRule_(body);
 }
 
 /** Billed-to (left) and From (right) blocks. */
 function docWriteParties_(body, leftTitle, extraLeft) {
-  const t = body.appendTable([['', '']]);
-  t.setBorderWidth(0);
+  const t = docLayoutTable_(body, [['', '']]);
   const left = t.getRow(0).getCell(0), right = t.getRow(0).getCell(1);
-  left.setWidth(260).setPaddingLeft(0).setPaddingTop(8);
-  right.setPaddingRight(0).setPaddingTop(8);
-  docFillCell_(left, [leftTitle, '{{BUSINESS_NAME}}', '{{CLIENT_NAME}}', '{{CLIENT_ADDRESS}}', 'GSTIN: {{CLIENT_GSTIN}}', '{{CLIENT_EMAIL}}  ·  {{CLIENT_MOBILE}}'].concat(extraLeft || []),
-    { size: 8, bold: true, color: DOC_DS.LABEL }, { size: 9.5, color: DOC_DS.INK });
-  left.getChild(1).asParagraph().editAsText().setBold(true);
-  docFillCell_(right, ['FROM', '{{COMPANY_NAME}}', '{{COMPANY_ADDRESS}}', 'GSTIN: {{COMPANY_GSTIN}}'],
-    { size: 8, bold: true, color: DOC_DS.LABEL }, { size: 9.5, color: DOC_DS.INK }, DocumentApp.HorizontalAlignment.RIGHT);
-  right.getChild(1).asParagraph().editAsText().setBold(true);
+  docPad_(left, 14, 10, 0, 0).setWidth(250);
+  docPad_(right, 14, 0, 0, 10);
+  const label = { size: 7.5, bold: true, color: DOC_DS.LABEL, after: 4 };
+  const text = { size: 9, color: DOC_DS.INK, lineSpacing: 1.2 };
+  docFillCell_(left, [leftTitle, '{{BUSINESS_NAME}}', '{{CLIENT_NAME}}', '{{CLIENT_ADDRESS}}', 'GSTIN: {{CLIENT_GSTIN}}', '{{CLIENT_EMAIL}}', '{{CLIENT_MOBILE}}'].concat(extraLeft || []), label, text);
+  left.getChild(1).asParagraph().editAsText().setBold(true).setFontSize(10);
+  docFillCell_(right, ['FROM', '{{COMPANY_NAME}}', '{{COMPANY_ADDRESS}}', 'GSTIN: {{COMPANY_GSTIN}}'], label, text, DocumentApp.HorizontalAlignment.RIGHT);
+  right.getChild(1).asParagraph().editAsText().setBold(true).setFontSize(10);
 }
 
-/** Right-aligned totals block. */
+/** Right-aligned totals: value, tax rows and a highlighted total row. */
 function docWriteTotals_(body, firstLabel, totalLabel) {
-  docSpacer_(body, 4);
-  const t = body.appendTable([
+  const t = docLayoutTable_(body, [
     ['', firstLabel, '{{FINAL_PRICE}}'],
     ['', '{{TAX_LABEL_1}}', '{{TAX_VALUE_1}}'],
-    ['', '{{TAX_LABEL_2}}', '{{TAX_VALUE_2}}']
+    ['', '{{TAX_LABEL_2}}', '{{TAX_VALUE_2}}'],
+    ['', totalLabel, '{{GRAND_TOTAL}}']
   ]);
-  t.setBorderWidth(0);
+  const R = DocumentApp.HorizontalAlignment.RIGHT;
   for (let r = 0; r < t.getNumRows(); r++) {
-    const row = t.getRow(r);
-    if (r === 0) { row.getCell(0).setWidth(237); row.getCell(1).setWidth(140); }
+    const row = t.getRow(r), isTotal = r === t.getNumRows() - 1;
+    if (r === 0) { row.getCell(0).setWidth(247); row.getCell(1).setWidth(130); }
     for (let c = 0; c < 3; c++) {
       const cell = row.getCell(c);
-      cell.setPaddingTop(2).setPaddingBottom(2).setPaddingLeft(0).setPaddingRight(0);
-      docStyleCell_(cell, { size: 9.5, color: c === 1 ? DOC_DS.MUTED : DOC_DS.INK, align: DocumentApp.HorizontalAlignment.RIGHT });
+      docPad_(cell, isTotal ? 8 : 3, c === 2 ? 8 : 6, isTotal ? 8 : 3, 6);
+      if (isTotal && c > 0) cell.setBackgroundColor(DOC_DS.HEAD_FILL);
+      docStyleCell_(cell, {
+        size: isTotal ? (c === 2 ? 12 : 9.5) : 9.5,
+        bold: isTotal,
+        color: isTotal ? DOC_DS.HEAD_TEXT : (c === 1 ? DOC_DS.MUTED : DOC_DS.INK),
+        align: R
+      });
     }
-  }
-  docRule_(body);
-  const total = body.appendTable([['', totalLabel, '{{GRAND_TOTAL}}']]);
-  total.setBorderWidth(0);
-  const tr = total.getRow(0);
-  tr.getCell(0).setWidth(237); tr.getCell(1).setWidth(140);
-  for (let c = 0; c < 3; c++) {
-    const cell = tr.getCell(c);
-    cell.setPaddingLeft(0).setPaddingRight(0).setPaddingTop(4);
-    docStyleCell_(cell, { size: c === 2 ? 18 : 10, bold: c === 2, color: c === 1 ? DOC_DS.MUTED : DOC_DS.INK, align: DocumentApp.HorizontalAlignment.RIGHT });
   }
 }
 
-/** Two columns at the bottom: payment details | note. */
+/** Two columns at the bottom: payment details | notes. Left column holds a {{BANK_DETAILS}} marker line. */
 function docWriteBottomColumns_(body, leftTitle, leftLines, rightTitle, rightLines) {
-  docSpacer_(body, 14);
-  const t = body.appendTable([['', ''], ['', '']]);
-  t.setBorderWidth(0);
-  const widths = [245, 242];
+  const t = docLayoutTable_(body, [['', '']]);
   [[leftTitle, leftLines], [rightTitle, rightLines]].forEach(function (col, i) {
-    const head = t.getRow(0).getCell(i), content = t.getRow(1).getCell(i);
-    head.setWidth(widths[i]).setPaddingLeft(i === 1 ? 14 : 0).setPaddingBottom(4);
-    content.setPaddingLeft(i === 1 ? 14 : 0).setPaddingTop(6);
-    docFillCell_(head, [col[0]], { size: 9.5, bold: true, color: DOC_DS.INK }, {});
-    docFillCell_(content, col[1], { size: 9.5, color: DOC_DS.INK }, { size: 9.5, color: DOC_DS.INK });
+    const cell = t.getRow(0).getCell(i);
+    cell.setWidth(i === 0 ? 243 : 244).setBackgroundColor(DOC_DS.FILL);
+    docPad_(cell, 10, 10, 10, 10);
+    docFillCell_(cell, [col[0].toUpperCase()].concat(col[1]),
+      { size: 7.5, bold: true, color: DOC_DS.LABEL, after: 5 }, { size: 9, color: DOC_DS.INK, lineSpacing: 1.2, after: 2 });
   });
+  // the two cells sit side by side with a white gap between them
+  t.setBorderWidth(6).setBorderColor('#FFFFFF');
 }
 
 /** Footer: company line + website. */
@@ -336,12 +354,23 @@ function docWriteFooter_(doc) {
   const footer = doc.addFooter();
   const p = footer.getChild(0).asParagraph();
   p.setText('{{COMPANY_NAME}}  ·  GSTIN {{COMPANY_GSTIN}}  ·  SAC {{SAC_CODE}}  ·  {{COMPANY_WEBSITE}}');
-  docStyleEl_(p, { size: 7.5, color: DOC_DS.LABEL, align: DocumentApp.HorizontalAlignment.LEFT });
+  docStyleEl_(p, { size: 7, color: DOC_DS.LABEL, align: DocumentApp.HorizontalAlignment.CENTER });
+}
+
+/** Small visible gap (a single space, so it is never shrunk by docTightenEmptyParagraphs_). */
+function docSpacer_(body, size) {
+  return docStyleEl_(body.appendParagraph(' '), { size: size || 6 });
+}
+
+/** A marker paragraph that the filling step replaces with a table or list. */
+function docMarker_(body, marker) {
+  return docPara_(body, marker, { size: 9.5 });
 }
 
 function docSaveTemplate_(doc, folder) {
+  docTightenEmptyParagraphs_(doc.getBody());
   doc.saveAndClose();
-  DriveApp.getFileById(doc.getId()).moveTo(folder);
+  DriveApp.getFileById(doc.getId()).moveTo(getTemplatesFolder_(folder));
   return doc.getId();
 }
 
@@ -357,31 +386,30 @@ function createProposalTemplate_(folder) {
   docWriteParties_(body, 'PREPARED FOR');
 
   docLabel_(body, 'Project overview');
-  docPara_(body, '{{PROJECT_SUMMARY}}', { size: 10, lineSpacing: 1.15 });
+  docPara_(body, '{{PROJECT_SUMMARY}}', { size: 9.5, lineSpacing: 1.25 });
 
   docLabel_(body, 'Scope of work');
-  docPara_(body, '{{SCOPE_TABLE}}');
-
-  docLabel_(body, 'Included in every package');
-  docPara_(body, '{{INCLUDED_LIST}}');
+  docMarker_(body, '{{SCOPE_TABLE}}');
 
   docLabel_(body, 'Investment');
   docWriteTotals_(body, 'Project value', 'Total incl. GST');
-  docPara_(body, 'The detailed price breakup is in quotation {{QUOTATION_NUMBER}}, sent with this proposal.', { size: 8.5, color: DOC_DS.MUTED, before: 6 });
-
-  docLabel_(body, 'Timeline');
-  docPara_(body, 'About {{DELIVERY_DAYS}} working days from the date we receive the advance payment and all content (logo, product details, images and policies). Delays in content or approvals move the launch date by the same number of days.', { size: 10, lineSpacing: 1.15 });
+  docPara_(body, 'The item-wise price breakup is in quotation {{QUOTATION_NUMBER}}, attached with this proposal.', { size: 8, color: DOC_DS.MUTED, before: 6, align: DocumentApp.HorizontalAlignment.RIGHT });
 
   docLabel_(body, 'Payment terms');
-  docPara_(body, '{{MILESTONE_TABLE}}');
+  docMarker_(body, '{{MILESTONE_TABLE}}');
+
+  docLabel_(body, 'Timeline');
+  docPara_(body, 'About {{DELIVERY_DAYS}} working days from the date we receive the advance payment and all content (logo, product details, images and policies). Delays in content or approvals move the launch date by the same number of days.', { size: 9.5, lineSpacing: 1.25 });
 
   docLabel_(body, 'Not included');
   [
     'Domain and Shopify subscription, paid by the customer.',
     'Product information, descriptions, prices and images, provided by the customer.',
     'Third-party app, tool and payment gateway fees, paid by the customer to each provider. Setting them up is included.'
-  ].forEach(function (t) { docBullet_(body, t, true); });
-  docPara_(body, '{{MONTHLY_COSTS}}');
+  ].forEach(function (t) { docBullet_(body, t, false); });
+
+  docLabel_(body, 'Monthly costs paid to providers');
+  docMarker_(body, '{{MONTHLY_COSTS}}');
 
   docLabel_(body, 'Terms and conditions');
   [
@@ -393,15 +421,20 @@ function createProposalTemplate_(folder) {
   ].forEach(function (t) { docBullet_(body, t, true); });
 
   docLabel_(body, 'Acceptance');
-  docPara_(body, 'By signing below, both parties agree to the scope, price and terms in this proposal.', { size: 9.5 });
-  docSpacer_(body, 10);
-  const sign = docPlainTable_(body, [
-    ['For {{COMPANY_NAME}}', 'For {{BUSINESS_NAME}}'],
-    ['\n\n______________________________', '\n\n______________________________'],
-    ['Name and signature', 'Name and signature'],
-    ['Date:', 'Date:']
-  ], [245, 242]);
-  for (let c = 0; c < 2; c++) sign.getRow(0).getCell(c).editAsText().setBold(true);
+  docPara_(body, 'By signing below, both parties agree to the scope, price and terms in this proposal.', { size: 9.5, after: 8 });
+  const sign = docLayoutTable_(body, [['For {{COMPANY_NAME}}', 'For {{BUSINESS_NAME}}'], ['', ''], ['Name and signature', 'Name and signature'], ['Date:', 'Date:']]);
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 2; c++) {
+      const cell = sign.getRow(r).getCell(c);
+      if (r === 0) cell.setWidth(c === 0 ? 243 : 244);
+      docPad_(cell, r === 1 ? 34 : 3, 10, 3, 0);
+      docStyleCell_(cell, { size: 9, bold: r === 0, color: r >= 2 ? DOC_DS.MUTED : DOC_DS.INK });
+    }
+  }
+  sign.getRow(1).getCell(0).setText('______________________________');
+  sign.getRow(1).getCell(1).setText('______________________________');
+  docStyleCell_(sign.getRow(1).getCell(0), { size: 9, color: DOC_DS.LABEL });
+  docStyleCell_(sign.getRow(1).getCell(1), { size: 9, color: DOC_DS.LABEL });
 
   docWriteFooter_(doc);
   return docSaveTemplate_(doc, folder);
@@ -413,18 +446,21 @@ function createQuotationTemplate_(folder) {
   docWriteHeader_(doc, body, false);
   docWriteTitle_(body, '{{SERVICE_NAME}}', 'Quotation');
   docWriteInfoRow_(body, [['Date:', '{{DATE}}'], ['Valid until:', '{{VALID_UNTIL}}'], ['Quotation no.:', '{{DOC_NUMBER}}']]);
-  docWriteParties_(body, 'TO');
-  docSpacer_(body, 6);
-  docPara_(body, '{{PRICE_TABLE}}');
+  docWriteParties_(body, 'QUOTATION FOR');
+
+  docLabel_(body, 'Price breakup');
+  docMarker_(body, '{{PRICE_TABLE}}');
+  docSpacer_(body, 4);
   docWriteTotals_(body, 'Subtotal', 'Total due');
-  docPara_(body, '{{ON_REQUEST_NOTE}}', { size: 8.5, color: DOC_DS.MUTED, before: 6 });
+  docPara_(body, '{{ON_REQUEST_NOTE}}', { size: 8, color: DOC_DS.MUTED, before: 6 });
 
   docLabel_(body, 'Payment schedule');
-  docPara_(body, '{{MILESTONE_TABLE}}');
+  docMarker_(body, '{{MILESTONE_TABLE}}');
 
+  docSpacer_(body, 10);
   docWriteBottomColumns_(body,
-    'Payment details', ['Pay via bank transfer or UPI:', '{{BANK_DETAILS}}'],
-    'Notes', ['GST is charged at 18% as shown. Third-party app and tool fees are paid to each provider.', 'Scope details are in proposal {{PROPOSAL_NUMBER}}. Valid until {{VALID_UNTIL}}.']);
+    'Payment details', ['Pay by bank transfer or UPI:', '{{BANK_DETAILS}}'],
+    'Notes', ['GST is charged as shown above.', 'Third-party app and tool fees are paid directly to each provider.', 'Scope details are in proposal {{PROPOSAL_NUMBER}}.', 'This quotation is valid until {{VALID_UNTIL}}.']);
 
   docWriteFooter_(doc);
   return docSaveTemplate_(doc, folder);
@@ -437,15 +473,18 @@ function createInvoiceTemplate_(folder) {
   docWriteTitle_(body, '{{MILESTONE_NAME}}', '{{INVOICE_TITLE}}');
   docWriteInfoRow_(body, [['Invoice no.:', '{{DOC_NUMBER}}'], ['Date:', '{{DATE}}'], ['Due date:', '{{DUE_DATE}}']]);
   docWriteParties_(body, 'BILLED TO', ['Place of supply: {{PLACE_OF_SUPPLY}}']);
-  docSpacer_(body, 6);
-  docPara_(body, '{{INVOICE_TABLE}}');
-  docWriteTotals_(body, 'Taxable value', 'Total amount due');
-  docPara_(body, 'Amount in words: {{AMOUNT_IN_WORDS}}', { size: 8.5, color: DOC_DS.MUTED, before: 8, align: DocumentApp.HorizontalAlignment.RIGHT });
-  docPara_(body, 'Project: {{PROJECT_REF}}  ·  Quotation: {{QUOTATION_NUMBER}}', { size: 8.5, color: DOC_DS.MUTED, align: DocumentApp.HorizontalAlignment.RIGHT });
 
+  docLabel_(body, 'Invoice details');
+  docMarker_(body, '{{INVOICE_TABLE}}');
+  docSpacer_(body, 4);
+  docWriteTotals_(body, 'Taxable value', 'Total amount due');
+  docPara_(body, 'Amount in words: {{AMOUNT_IN_WORDS}}', { size: 8, color: DOC_DS.MUTED, before: 8, align: DocumentApp.HorizontalAlignment.RIGHT });
+  docPara_(body, 'Project: {{PROJECT_REF}}  ·  Quotation: {{QUOTATION_NUMBER}}', { size: 8, color: DOC_DS.MUTED, align: DocumentApp.HorizontalAlignment.RIGHT });
+
+  docSpacer_(body, 10);
   docWriteBottomColumns_(body,
-    'Payment details', ['Pay via bank transfer or UPI:', '{{BANK_DETAILS}}', 'Please mention {{DOC_NUMBER}} as the payment reference.'],
-    'Thank you!', ['{{THANK_YOU_NOTE}}']);
+    'Payment details', ['Pay by bank transfer or UPI:', '{{BANK_DETAILS}}', 'Please mention {{DOC_NUMBER}} as the payment reference.'],
+    'Thank you', ['{{THANK_YOU_NOTE}}']);
 
   docWriteFooter_(doc);
   return docSaveTemplate_(doc, folder);
