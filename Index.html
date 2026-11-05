@@ -34,7 +34,10 @@
       <!-- Content populated dynamically by App.html -->
       <div class="split-card" style="padding:60px;align-items:center;justify-content:center;min-height:500px;">
         <div style="text-align:center;">
-          <div class="brand-logo-sq" style="margin:0 auto 16px auto;">AP</div>
+          <div class="brand-badge" style="justify-content:center;margin:0 auto 16px auto;">
+            <?!= include('Logo'); ?>
+            <span class="brand-text">AdsPeek</span>
+          </div>
           <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Loading package options…</div>
           <div class="skeleton-box" style="width:240px;height:12px;margin:0 auto;"></div>
         </div>
@@ -43,6 +46,11 @@
 
     <!-- Pricing core calculations (shared client & server) -->
     <?!= include('PricingCore'); ?>
+
+    <!-- Global Logo definition for dynamic client rendering in App.html -->
+    <script>
+      window.ADSPEEK_LOGO_HTML = <?!= JSON.stringify(include('Logo')) ?>;
+    </script>
 
     <!-- Client-side application controller -->
     <?!= include('App'); ?>

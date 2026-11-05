@@ -167,31 +167,27 @@ html.is-standalone .app-container {
   }
 }
 
-/* Top Right Close Button (✕) */
+/* Top Right Close Button (Text button) */
 .modal-close-btn {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  border: 1px solid var(--border-default);
-  color: #4B5563;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: clamp(16px, 2.5vh, 24px);
+  right: clamp(16px, 2.5vw, 28px);
+  background: transparent;
+  border: none;
+  color: #6B7280;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   z-index: 60;
-  transition: all 0.15s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 6px 10px;
+  line-height: 1;
+  font-family: inherit;
+  transition: color 0.15s ease;
 }
 
 .modal-close-btn:hover {
-  background: #F3F4F6;
   color: #111827;
-  border-color: #9CA3AF;
-  transform: scale(1.05);
+  text-decoration: underline;
 }
 
 /* In-app Leave Confirm Modal Overlay */
@@ -341,26 +337,20 @@ html.is-standalone .app-container {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  height: 32px;
+  margin-bottom: clamp(16px, 2.5vh, 24px);
 }
 
-.brand-logo-sq {
-  width: 32px;
+.brand-logo-img {
   height: 32px;
-  border: 1.5px solid #111827;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: -0.02em;
-  color: #111827;
-  background: #FFFFFF;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-text {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #111827;
@@ -400,17 +390,19 @@ html.is-standalone .app-container {
 .benefit-item {
   display: flex;
   align-items: center;
-  gap: 10px;
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: #4B5563;
+  margin-bottom: 8px;
 }
 
-.benefit-icon {
-  width: 17px;
-  height: 17px;
-  stroke-width: 2.2;
-  color: #111827;
+.benefit-item::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 1.5px;
+  background-color: #9CA3AF;
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
@@ -657,24 +649,34 @@ html.is-standalone .app-container {
 }
 
 .tile {
-  background-color: var(--tile-bg);
-  border: 1px solid var(--tile-border);
-  border-radius: var(--radius-tile);
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
   position: relative;
   transition: all 0.15s ease;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  min-height: 96px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.tile.tile-large {
+  min-height: 140px;
+  padding: 24px;
 }
 
 .tile:hover:not(.disabled) {
-  border-color: #94A3B8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: #9CA3AF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
 .tile.selected {
-  border: 1.5px solid var(--tile-selected-border);
-  background-color: var(--tile-selected-bg);
+  border: 2px solid #111827;
+  background-color: #F9FAFB;
 }
 
 .tile.disabled {
@@ -689,7 +691,7 @@ html.is-standalone .app-container {
   width: 100%;
   background: none;
   border: none;
-  padding: 14px 16px;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -698,46 +700,67 @@ html.is-standalone .app-container {
   font-family: inherit;
   position: relative;
   min-height: 64px;
+  box-sizing: border-box;
+}
+
+.tile.tile-with-stepper {
+  padding: 0;
+  cursor: default;
+}
+
+.tile-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #F9FAFB;
+  border-top: 1px solid #E5E7EB;
+  box-sizing: border-box;
 }
 
 .tile.disabled .tile-main-btn {
   cursor: not-allowed;
 }
 
-.tile-check-badge {
+.tile-pill-selected {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+  top: 12px;
+  right: 12px;
   background-color: #111827;
   color: #FFFFFF;
-  display: none;
-  align-items: center;
-  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
   pointer-events: none;
+  line-height: 1.2;
+  display: none;
+  z-index: 10;
 }
 
-.tile.selected .tile-check-badge {
-  display: flex;
+.tile.selected .tile-pill-selected {
+  display: inline-block;
 }
 
-.tile-icon-box {
-  width: 38px;
-  height: 38px;
-  border-radius: 9px;
+.chip-pill-included {
+  background-color: #E5E7EB;
+  color: #4B5563;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-left: auto;
+}
+
+.tile-pill-coming-soon {
   background-color: #F3F4F6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  flex-shrink: 0;
-  color: #111827;
-}
-
-.tile.selected .tile-icon-box {
-  background-color: #FFFFFF;
+  color: #6B7280;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
 }
 
 .tile-content {
@@ -911,19 +934,14 @@ html.is-standalone .app-container {
   background: #FFFFFF;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-control);
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #374151;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.locked-chip-icon {
-  width: 13px;
-  height: 13px;
-  color: #6B7280;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 /* Filter Pills */
@@ -1529,20 +1547,43 @@ html.is-standalone .app-container {
   .mobile-top-nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
   }
 
   .mobile-back-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #FFFFFF;
-    border: 1px solid var(--border-default);
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4B5563;
+    padding: 6px 4px;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1;
+  }
+
+  .mobile-back-btn:hover {
     color: #111827;
+    text-decoration: underline;
+  }
+
+  .mobile-brand-wrap {
     display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    gap: 6px;
+    height: 26px;
+  }
+
+  .mobile-brand-wrap .brand-logo-img {
+    height: 24px;
+    width: auto;
+  }
+
+  .mobile-brand-wrap .brand-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
   }
 
   .mobile-step-pill {
@@ -1646,8 +1687,7 @@ html.is-standalone .app-container {
   .modal-close-btn {
     top: 10px;
     right: 12px;
-    width: 32px;
-    height: 32px;
+    padding: 6px;
   }
 }
 
@@ -1660,3 +1700,29 @@ html.is-standalone .app-container {
   }
 }
 </style>
+
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pw-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #4B5563;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.pw-toggle-btn:hover {
+  color: #111827;
+  text-decoration: underline;
+}

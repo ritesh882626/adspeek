@@ -9,44 +9,6 @@
 (function () {
   'use strict';
 
-  // --- SVG Icon Library (Generic line icons - Shopify/Inter style) ---
-  const ICONS = {
-    check: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>',
-    checkSmall: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>',
-    lock: '<svg class="locked-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
-    store: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
-    shoppingBag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>',
-    code: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-    smartphone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
-    megaphone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>',
-    plus: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-    box: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
-    grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-    fileText: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
-    hanger: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3c0 1.3.8 2.4 2 2.8V10l-9 6a2 2 0 0 0 1 3h16a2 2 0 0 0 1-3l-9-6V7.8A3 3 0 0 0 12 2z"/></svg>',
-    layout: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
-    users: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-    image: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-    mapPin: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-    star: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-    heart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
-    layers: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
-    tag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
-    gauge: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>',
-    gift: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
-    barChart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
-    messageSquare: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-    refreshCw: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
-    shieldCheck: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>',
-    rotateCcw: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
-    calendar: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-    creditCard: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
-    headphones: '<svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
-    eye: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
-    eyeOff: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
-    info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
-    whatsapp: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
-  };
 
   // --- Step sequence definition ---
   const STEP_FLOW = [
@@ -286,9 +248,9 @@
     let formatted = '';
     let note = '';
 
-    if (sc === 'welcome') {
-      formatted = '₹0';
-      note = '';
+    if (sc === 'welcome' || sc === 'staff_login' || !state.selectedServiceId) {
+      formatted = '—';
+      note = 'Select a service to start';
     } else if (sc === 'service') {
       formatted = formatRupee(res.basePrice);
       note = 'Base package · GST extra';
@@ -410,9 +372,9 @@
       desc = 'Build your package in a few steps and see the exact price as you go.';
       extraHtml = (
         '<div class="benefit-list">' +
-          '<div class="benefit-item">' + ICONS.check + '<span>Fixed, transparent pricing</span></div>' +
-          '<div class="benefit-item">' + ICONS.check + '<span>Takes about 3 minutes</span></div>' +
-          '<div class="benefit-item">' + ICONS.check + '<span>No sign-up needed</span></div>' +
+          '<div class="benefit-item"><span>Fixed, transparent pricing</span></div>' +
+          '<div class="benefit-item"><span>Takes about 3 minutes</span></div>' +
+          '<div class="benefit-item"><span>No sign-up needed</span></div>' +
         '</div>'
       );
     } else if (sc === 'staff_login') {
@@ -442,9 +404,9 @@
         desc = 'Here\'s everything included. Prices are fixed; GST is added at 18%.';
         extraHtml = (
           '<div class="benefit-list">' +
-            '<div class="benefit-item">' + ICONS.calendar + '<span>Delivery in about 20 working days</span></div>' +
-            '<div class="benefit-item">' + ICONS.creditCard + '<span>50% advance to start</span></div>' +
-            '<div class="benefit-item">' + ICONS.headphones + '<span>Free support after launch</span></div>' +
+            '<div class="benefit-item"><span>Delivery in about 20 working days</span></div>' +
+            '<div class="benefit-item"><span>50% advance to start</span></div>' +
+            '<div class="benefit-item"><span>Free support after launch</span></div>' +
           '</div>'
         );
       }
@@ -462,7 +424,7 @@
       '<div class="left-panel">' +
         '<div>' +
           '<div class="brand-badge">' +
-            '<div class="brand-logo-sq">AP</div>' +
+            (window.ADSPEEK_LOGO_HTML || '') +
             '<span class="brand-text">AdsPeek</span>' +
           '</div>' +
           '<h1 class="left-title">' + title + '</h1>' +
@@ -471,8 +433,8 @@
         '</div>' +
         '<div class="price-card">' +
           '<div class="price-card-label">Your estimate</div>' +
-          '<div class="price-card-amount" id="lp-price-val">₹0</div>' +
-          '<div class="price-card-subtext" id="lp-price-note">Base package · GST extra</div>' +
+          '<div class="price-card-amount" id="lp-price-val">—</div>' +
+          '<div class="price-card-subtext" id="lp-price-note">Select a service to start</div>' +
         '</div>' +
       '</div>'
     );
@@ -494,20 +456,18 @@
       '</div>' +
       '<div class="options-scroll-area">' +
         '<div class="tiles-grid-2">' +
-          '<div class="tile ' + (isClient ? 'selected' : '') + '" data-action="set-role" data-role="client" tabindex="0" role="checkbox" aria-checked="' + isClient + '">' +
-            '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
-            '<div class="tile-icon-box">' + ICONS.shoppingBag + '</div>' +
+          '<div class="tile tile-large ' + (isClient ? 'selected' : '') + '" data-action="set-role" data-role="client" tabindex="0" role="checkbox" aria-checked="' + isClient + '">' +
+            '<span class="tile-pill-selected">Selected</span>' +
             '<div class="tile-content">' +
-              '<div class="tile-title">I am a client</div>' +
-              '<div class="tile-desc">Explore packages, customise options, and get an instant estimate.</div>' +
+              '<div class="tile-title" style="font-size:16px;margin-bottom:6px;">I am a client</div>' +
+              '<div class="tile-desc" style="font-size:13px;line-height:1.5;">Explore packages, customise options, and get an instant estimate.</div>' +
             '</div>' +
           '</div>' +
-          '<div class="tile ' + (isStaff ? 'selected' : '') + '" data-action="set-role" data-role="staff" tabindex="0" role="checkbox" aria-checked="' + isStaff + '">' +
-            '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
-            '<div class="tile-icon-box">' + ICONS.store + '</div>' +
+          '<div class="tile tile-large ' + (isStaff ? 'selected' : '') + '" data-action="set-role" data-role="staff" tabindex="0" role="checkbox" aria-checked="' + isStaff + '">' +
+            '<span class="tile-pill-selected">Selected</span>' +
             '<div class="tile-content">' +
-              '<div class="tile-title">AdsPeek team</div>' +
-              '<div class="tile-desc">Log in to create custom quotes and apply staff discounts.</div>' +
+              '<div class="tile-title" style="font-size:16px;margin-bottom:6px;">AdsPeek team</div>' +
+              '<div class="tile-desc" style="font-size:13px;line-height:1.5;">Log in to create custom quotes and apply staff discounts.</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -533,7 +493,7 @@
             '<label class="form-label" for="staff-pw-input">Team password</label>' +
             '<div class="password-input-wrap">' +
               '<input type="password" id="staff-pw-input" class="form-input" placeholder="Enter staff password" autocomplete="current-password">' +
-              '<button type="button" class="pw-toggle-btn" data-action="toggle-password" aria-label="Toggle password visibility">' + ICONS.eye + '</button>' +
+              '<button type="button" class="pw-toggle-btn" data-action="toggle-password">Show</button>' +
             '</div>' +
             '<span class="field-error-msg" id="staff-login-error" style="display:none;"></span>' +
           '</div>' +
@@ -555,18 +515,16 @@
 
     services.forEach(function (s) {
       const isSel = s.id === state.selectedServiceId;
-      const icon = s.id === 'SHOPIFY' ? ICONS.shoppingBag : ICONS.code;
 
       tilesHtml += (
-        '<div class="tile ' + (isSel ? 'selected' : '') + '" data-action="select-service" data-service-id="' + s.id + '" tabindex="0" role="checkbox" aria-checked="' + isSel + '">' +
-          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
-          '<div class="tile-icon-box">' + icon + '</div>' +
+        '<div class="tile tile-large ' + (isSel ? 'selected' : '') + '" data-action="select-service" data-service-id="' + s.id + '" tabindex="0" role="checkbox" aria-checked="' + isSel + '">' +
+          '<span class="tile-pill-selected">Selected</span>' +
           '<div class="tile-content">' +
-            '<div class="tile-title">' + escapeHtml(s.name) + '</div>' +
-            '<div class="tile-desc">' + escapeHtml(s.description || '') + '</div>' +
+            '<div class="tile-title" style="font-size:16px;margin-bottom:6px;">' + escapeHtml(s.name) + '</div>' +
+            '<div class="tile-desc" style="font-size:13px;line-height:1.5;">' + escapeHtml(s.description || '') + '</div>' +
           '</div>' +
           '<div class="tile-side">' +
-            '<span class="tile-price">' + formatRupee(s.basePrice) + '</span>' +
+            '<span class="tile-price" style="font-size:16px;">' + formatRupee(s.basePrice) + '</span>' +
           '</div>' +
         '</div>'
       );
@@ -613,13 +571,10 @@
         helper = c.includedQty + ' included · ' + extra + ' extra × ' + formatRupee(c.rate) + ' = ' + formatRupee(extraCost);
       }
 
-      const icon = c.id.indexOf('CAT') !== -1 ? ICONS.grid : ICONS.box;
-
       steppersHtml += (
         '<div class="stepper-card" data-comp-id="' + c.id + '">' +
           '<div class="stepper-header">' +
             '<div class="stepper-left">' +
-              '<div class="tile-icon-box" style="margin-right:0;">' + icon + '</div>' +
               '<span class="stepper-title">' + escapeHtml(c.name) + '</span>' +
             '</div>' +
             '<div class="stepper-control">' +
@@ -642,7 +597,6 @@
       '<div class="options-scroll-area">' +
         steppersHtml +
         '<div class="info-callout">' +
-          ICONS.info +
           '<span>Not sure yet? You can change this later with our team.</span>' +
         '</div>' +
       '</div>' +
@@ -668,9 +622,8 @@
     includedPages.forEach(function (c) {
       includedChipsHtml += (
         '<div class="locked-chip" aria-disabled="true">' +
-          ICONS.checkSmall +
           '<span>' + escapeHtml(c.name) + '</span>' +
-          ICONS.lock +
+          '<span class="chip-pill-included">Included</span>' +
         '</div>'
       );
     });
@@ -678,14 +631,8 @@
     let optionalTilesHtml = '';
     optionalPages.forEach(function (c) {
       const isSelected = Boolean(state.selections[c.id]);
-      let icon = ICONS.fileText;
-      if (c.name.toLowerCase().indexOf('size') !== -1) icon = ICONS.hanger;
-      else if (c.name.toLowerCase().indexOf('landing') !== -1) icon = ICONS.layout;
-      else if (c.name.toLowerCase().indexOf('wholesale') !== -1) icon = ICONS.users;
-      else if (c.name.toLowerCase().indexOf('lookbook') !== -1) icon = ICONS.image;
-      else if (c.name.toLowerCase().indexOf('locator') !== -1) icon = ICONS.mapPin;
-
       let priceLabel = formatRupee(c.rate);
+
       if (c.type === 'Optional + Qty') {
         priceLabel += ' per ' + (c.unit || 'page');
         const currentQty = state.selections[c.id] || 1;
@@ -693,8 +640,7 @@
         optionalTilesHtml += (
           '<div class="tile tile-with-stepper ' + (isSelected ? 'selected' : '') + '" data-comp-id="' + c.id + '">' +
             '<button type="button" class="tile-main-btn" data-action="toggle-opt-qty" data-comp-id="' + c.id + '" role="checkbox" aria-checked="' + isSelected + '">' +
-              '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
-              '<div class="tile-icon-box">' + icon + '</div>' +
+              '<span class="tile-pill-selected">Selected</span>' +
               '<div class="tile-content">' +
                 '<div class="tile-title">' + escapeHtml(c.name) + '</div>' +
               '</div>' +
@@ -715,8 +661,7 @@
       } else {
         optionalTilesHtml += (
           '<div class="tile ' + (isSelected ? 'selected' : '') + '" data-action="toggle-tile" data-comp-id="' + c.id + '" tabindex="0" role="checkbox" aria-checked="' + isSelected + '">' +
-            '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
-            '<div class="tile-icon-box">' + icon + '</div>' +
+            '<span class="tile-pill-selected">Selected</span>' +
             '<div class="tile-content">' +
               '<div class="tile-title">' + escapeHtml(c.name) + '</div>' +
             '</div>' +
@@ -777,20 +722,9 @@
       const isSelected = Boolean(state.selections[f.id]);
       const isVisible = state.featureTagFilter === 'All' || f.tag === state.featureTagFilter;
 
-      let icon = ICONS.star;
-      if (f.name.toLowerCase().indexOf('homepage') !== -1) icon = ICONS.layout;
-      else if (f.name.toLowerCase().indexOf('review') !== -1) icon = ICONS.star;
-      else if (f.name.toLowerCase().indexOf('wishlist') !== -1) icon = ICONS.heart;
-      else if (f.name.toLowerCase().indexOf('product page') !== -1) icon = ICONS.layers;
-      else if (f.name.toLowerCase().indexOf('bundle') !== -1) icon = ICONS.tag;
-      else if (f.name.toLowerCase().indexOf('pin code') !== -1) icon = ICONS.mapPin;
-      else if (f.name.toLowerCase().indexOf('speed') !== -1) icon = ICONS.gauge;
-      else if (f.name.toLowerCase().indexOf('loyalty') !== -1) icon = ICONS.gift;
-
       tilesHtml += (
         '<div class="tile ' + (isSelected ? 'selected' : '') + '" data-action="toggle-tile" data-comp-id="' + f.id + '" data-tag="' + escapeHtml(f.tag || 'All') + '" style="' + (isVisible ? '' : 'display:none;') + '" tabindex="0" role="checkbox" aria-checked="' + isSelected + '">' +
-          '<div class="tile-check-badge">' + ICONS.checkSmall + '</div>' +
-          '<div class="tile-icon-box">' + icon + '</div>' +
+          '<span class="tile-pill-selected">Selected</span>' +
           '<div class="tile-content">' +
             '<div class="tile-title">' +
               escapeHtml(f.name) +
@@ -838,24 +772,14 @@
       const isLockedIncluded = intg.type === 'Included';
       const isQuoteOnReq = intg.type === 'Quote on request';
 
-      let icon = ICONS.code;
-      if (intg.name.toLowerCase().indexOf('gst') !== -1) icon = ICONS.fileText;
-      else if (intg.name.toLowerCase().indexOf('analytics') !== -1) icon = ICONS.barChart;
-      else if (intg.name.toLowerCase().indexOf('whatsapp') !== -1) icon = ICONS.messageSquare;
-      else if (intg.name.toLowerCase().indexOf('tally') !== -1) icon = ICONS.refreshCw;
-      else if (intg.name.toLowerCase().indexOf('cod') !== -1) icon = ICONS.shieldCheck;
-      else if (intg.name.toLowerCase().indexOf('return') !== -1) icon = ICONS.rotateCcw;
-      else if (intg.name.toLowerCase().indexOf('amazon') !== -1 || intg.name.toLowerCase().indexOf('sync') !== -1) icon = ICONS.layers;
-
       let sideLabel = '';
-      if (isLockedIncluded) sideLabel = 'Included';
-      else if (isQuoteOnReq) sideLabel = 'Quote on req.';
-      else sideLabel = formatRupee(intg.rate);
+      if (isLockedIncluded) sideLabel = '<span class="chip-pill-included">Included</span>';
+      else if (isQuoteOnReq) sideLabel = '<span class="tile-pill-coming-soon">Quote on req.</span>';
+      else sideLabel = '<span class="tile-price">' + formatRupee(intg.rate) + '</span>';
 
       tilesHtml += (
         '<div class="tile ' + (isSelected || isLockedIncluded ? 'selected' : '') + ' ' + (isLockedIncluded ? 'is-included' : '') + '" ' + (isLockedIncluded ? 'aria-disabled="true"' : 'data-action="toggle-tile" data-comp-id="' + intg.id + '" tabindex="0" role="checkbox" aria-checked="' + isSelected + '"') + '>' +
-          '<div class="tile-check-badge">' + (isLockedIncluded ? ICONS.lock : ICONS.checkSmall) + '</div>' +
-          '<div class="tile-icon-box">' + icon + '</div>' +
+          (isLockedIncluded ? '<span class="tile-pill-selected" style="background:#4B5563;">Included</span>' : '<span class="tile-pill-selected">Selected</span>') +
           '<div class="tile-content">' +
             '<div class="tile-title">' +
               escapeHtml(intg.name) +
@@ -864,7 +788,7 @@
             (intg.monthlyCost ? '<div class="tile-desc">Sub: ' + escapeHtml(intg.monthlyCost) + '</div>' : '') +
           '</div>' +
           '<div class="tile-side">' +
-            '<span class="tile-price">' + sideLabel + '</span>' +
+            sideLabel +
           '</div>' +
         '</div>'
       );
@@ -959,7 +883,7 @@
             '<label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;">' +
               '<input type="checkbox" ' + (cust.discountable ? 'checked' : '') + ' data-action="custom-field" data-custom-idx="' + idx + '" data-field="discountable"> Disc.' +
             '</label>' +
-            '<button type="button" class="prev-step-btn" style="color:#DC2626;font-size:18px;padding:2px 8px;" data-action="remove-custom-line" data-custom-idx="' + idx + '">×</button>' +
+            '<button type="button" class="btn-text-danger" style="color:#DC2626;font-size:12px;padding:4px 8px;background:none;border:none;cursor:pointer;font-weight:600;" data-action="remove-custom-line" data-custom-idx="' + idx + '">Remove</button>' +
           '</div>'
         );
       });
@@ -977,7 +901,6 @@
     if (res.quoteOnRequestItems.length) {
       quoteReqHtml = (
         '<div class="info-callout" style="margin-top:12px;">' +
-          ICONS.info +
           '<span>Plus items priced after consultation: <strong>' + escapeHtml(res.quoteOnRequestItems.join(', ')) + '</strong></span>' +
         '</div>'
       );
@@ -1118,7 +1041,6 @@
         '<div class="checkbox-row" style="margin-top:10px;">' +
           '<input type="checkbox" id="field-whatsapp" data-field="whatsappOptIn" ' + (cl.whatsappOptIn ? 'checked' : '') + '>' +
           '<label for="field-whatsapp" class="checkbox-label">' +
-            ICONS.whatsapp +
             '<span>Receive estimate PDF and updates on WhatsApp</span>' +
           '</label>' +
         '</div>' +
@@ -1151,10 +1073,7 @@
       '</div>' +
       '<div class="options-scroll-area">' +
         '<div class="confirm-box">' +
-          '<div class="confirm-icon-wrap">' +
-            ICONS.check +
-          '</div>' +
-          '<h3 class="confirm-heading">Package estimate delivered</h3>' +
+          '<h3 class="confirm-heading" style="margin-top:0;">Package estimate delivered</h3>' +
           '<p class="confirm-msg">' +
             'We\'ve sent a copy of your estimate totaling <strong>' + formatRupeeExact(res.grandTotal) + '</strong> to <strong>' + escapeHtml(cl.email || 'your email') + '</strong>.' +
             (cl.whatsappOptIn ? ' A copy has also been sent to your WhatsApp number.' : '') +
@@ -1186,7 +1105,10 @@
       root.innerHTML = (
         '<div class="split-card" style="padding:60px;align-items:center;justify-content:center;min-height:500px;">' +
           '<div style="text-align:center;">' +
-            '<div class="brand-logo-sq" style="margin:0 auto 16px auto;">AP</div>' +
+            '<div class="brand-badge" style="justify-content:center;margin:0 auto 16px auto;">' +
+              (window.ADSPEEK_LOGO_HTML || '') +
+              '<span class="brand-text">AdsPeek</span>' +
+            '</div>' +
             '<div style="font-size:16px;font-weight:600;margin-bottom:8px;">Loading package options…</div>' +
             '<div class="skeleton-box" style="width:240px;height:12px;margin:0 auto;"></div>' +
           '</div>' +
@@ -1230,9 +1152,13 @@
 
     const mobileTopNavHtml = (
       '<div class="mobile-top-nav">' +
-        '<button type="button" class="mobile-back-btn" data-action="' + (sc === 'welcome' ? 'close' : 'nav-prev') + '" aria-label="Back">' +
-          (sc === 'welcome' ? '✕' : '←') +
+        '<button type="button" class="mobile-back-btn" data-action="' + (sc === 'welcome' ? 'close' : 'nav-prev') + '" aria-label="' + (sc === 'welcome' ? 'Close' : 'Back') + '">' +
+          (sc === 'welcome' ? 'Close' : 'Back') +
         '</button>' +
+        '<div class="mobile-brand-wrap">' +
+          (window.ADSPEEK_LOGO_HTML || '') +
+          '<span class="brand-text">AdsPeek</span>' +
+        '</div>' +
         '<span class="mobile-step-pill">' + stepPillText + '</span>' +
       '</div>'
     );
@@ -1249,7 +1175,7 @@
         '<div class="mobile-bottom-bar">' +
           '<div class="mobile-estimate-info">' +
             '<div class="mobile-estimate-label">Your estimate</div>' +
-            '<div class="mobile-estimate-val" id="mobile-estimate-price">₹0</div>' +
+            '<div class="mobile-estimate-val" id="mobile-estimate-price">—</div>' +
           '</div>' +
           '<button type="button" class="btn-primary" data-action="mobile-next">' + mobileBtnLabel + '</button>' +
         '</div>'
@@ -1273,7 +1199,7 @@
     root.innerHTML = (
       staffBannerHtml +
       '<div class="split-card">' +
-        '<button type="button" class="modal-close-btn" data-action="close" aria-label="Close">✕</button>' +
+        '<button type="button" class="modal-close-btn" data-action="close" aria-label="Close">Close</button>' +
         mobileTopNavHtml +
         renderLeftPanel() +
         '<div class="right-panel">' + rightContentHtml + '</div>' +
@@ -1602,7 +1528,7 @@
         if (pwInp) {
           const isPw = pwInp.type === 'password';
           pwInp.type = isPw ? 'text' : 'password';
-          target.innerHTML = isPw ? ICONS.eyeOff : ICONS.eye;
+          target.textContent = isPw ? 'Hide' : 'Show';
         }
       } else if (action === 'staff-login') {
         const pwInp = document.getElementById('staff-pw-input');
