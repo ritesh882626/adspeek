@@ -18,7 +18,7 @@
   'use strict';
 
   // Config: The deployed Google Apps Script Web App URL
-  const ADSPEEK_ESTIMATE_URL = 'https://script.google.com/macros/s/AKfycbzOhPzuRqJCINEMVs2JZ1MyYEaH9m7gPnR0vxV4b_LT22tvDPAhSePYxG7199xjCx4SOA/exec';
+  const ADSPEEK_ESTIMATE_URL = 'https://script.google.com/macros/s/AKfycbxk8BVBXoQFdkff_JikoQgrz--CfKobeNndRG3Q5NTMf_DA5kFHnN3uxMNI_Fq0w7jeFQ/exec';
 
   let overlayEl = null;
   let dialogEl = null;
