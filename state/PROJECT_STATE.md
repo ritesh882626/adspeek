@@ -138,6 +138,7 @@ One line each: date · decision · reason.
 
 | Date | Task | Files changed | Result | Next |
 | --- | --- | --- | --- | --- |
+| 2026-11-05 | Docs Fix v3: High-contrast document tables, clean folders & formatting | `DocSetup.gs`, `Documents.gs`, `embed/*` | done | Rebuild document templates in Google Sheet |
 | 2026-11-05 | Module 2 Integration: Automated proposals, quotations, emails & queue | `ConfigDocs.gs`, `DocSetup.gs`, `Documents.gs`, `Mailer.gs`, `Queue.gs`, `Hooks.gs`, `Code.gs` | done | Run "Set up documents and email" in Google Sheet |
 | 2026-11-05 | Fix 3: Mobile Package Builder popup margins, 360px layout & zero icons | `App.html`, `Styles.html`, `embed/*`, `docs/MOBILE_AUDIT.md` | done | Production verification |
 | 2026-11-04 | AdsPeek Package Builder Overhaul (Modal popup, fixed layout, working controls) | `App.html`, `Index.html`, `Styles.html`, `embed/*`, `docs/*`, `app/*`, `components/*` | done | Phase 1 page reviews or deployment QA |
