@@ -18,7 +18,7 @@
   'use strict';
 
   // Config: The deployed Google Apps Script Web App URL
-  const ADSPEEK_ESTIMATE_URL = 'https://script.google.com/macros/s/AKfycbxk8BVBXoQFdkff_JikoQgrz--CfKobeNndRG3Q5NTMf_DA5kFHnN3uxMNI_Fq0w7jeFQ/exec';
+  const ADSPEEK_ESTIMATE_URL = 'https://script.google.com/macros/s/AKfycbzVoXxpDIbzzc48JQwmPy7wPgNUddASvcKdNRp8wCsZ7ha1TPdBQvUwnHv9D87edS3cTg/exec';
 
   let overlayEl = null;
   let dialogEl = null;
@@ -39,16 +39,30 @@
     const mobile = isMobile();
 
     if (mobile) {
-      Object.assign(dialogEl.style, {
-        width: '100vw',
-        height: '100dvh',
-        minWidth: '0',
-        minHeight: '0',
-        maxWidth: '100vw',
-        maxHeight: '100dvh',
-        borderRadius: '0',
-        boxShadow: 'none'
-      });
+      const isShort = window.innerHeight < 560;
+      if (isShort) {
+        Object.assign(dialogEl.style, {
+          width: '100vw',
+          height: '100dvh',
+          minWidth: '0',
+          minHeight: '0',
+          maxWidth: 'none',
+          maxHeight: 'none',
+          borderRadius: '0',
+          boxShadow: 'none'
+        });
+      } else {
+        Object.assign(dialogEl.style, {
+          width: 'calc(100vw - 2 * var(--m-gap-x, 5vw))',
+          height: 'calc(100dvh - 2 * var(--m-gap-y, 5dvh))',
+          minWidth: '0',
+          minHeight: '0',
+          maxWidth: 'none',
+          maxHeight: 'none',
+          borderRadius: '16px',
+          boxShadow: '0 20px 60px rgba(17, 24, 39, 0.3)'
+        });
+      }
     } else {
       Object.assign(dialogEl.style, {
         width: '70vw',
@@ -131,10 +145,20 @@
     overlayEl.appendChild(dialogEl);
     document.body.appendChild(overlayEl);
 
-    // Close on backdrop click (click outside dialog)
+    // Ensure mobile gap CSS variables exist on host document
+    if (!document.getElementById('adspeek-estimate-root-vars')) {
+      const vStyle = document.createElement('style');
+      vStyle.id = 'adspeek-estimate-root-vars';
+      vStyle.textContent = ':root { --m-gap-x: 5vw; --m-gap-y: 5dvh; }';
+      document.head.appendChild(vStyle);
+    }
+
+    // Close on backdrop click (click outside dialog) — desktop only, never on mobile
     overlayEl.addEventListener('click', function (e) {
       if (e.target === overlayEl) {
-        requestModalClose();
+        if (!isMobile()) {
+          requestModalClose();
+        }
       }
     });
 

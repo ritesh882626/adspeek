@@ -297,10 +297,16 @@
     // 2. Mobile Sticky Bottom Bar Price
     const mobilePriceEl = document.getElementById('mobile-estimate-price');
     if (mobilePriceEl) {
-      mobilePriceEl.textContent = (sc === 'summary' || sc === 'details')
-        ? formatRupeeExact(res.grandTotal)
-        : formatRupee(res.expectedPrice);
+      if (sc === 'welcome' || sc === 'staff_login' || !state.selectedServiceId) {
+        mobilePriceEl.textContent = '—';
+      } else if (sc === 'summary' || sc === 'details') {
+        mobilePriceEl.textContent = formatRupeeExact(res.grandTotal);
+      } else {
+        mobilePriceEl.textContent = formatRupee(res.expectedPrice);
+      }
     }
+
+    updateBreakdownSheet();
 
     // 3. Summary Screen Totals (if visible)
     const sumSubtotal = document.getElementById('summary-subtotal');
@@ -1011,7 +1017,10 @@
         '<div class="form-grid-2">' +
           '<div class="form-group">' +
             '<label class="form-label" for="field-mobile">Mobile number <span style="color:#DC2626;">*</span></label>' +
-            '<input type="tel" id="field-mobile" class="form-input ' + (errors.mobile ? 'input-error' : '') + '" data-field="mobile" autocomplete="tel" placeholder="9876543210" maxlength="10" value="' + escapeHtml(cl.mobile) + '">' +
+            '<div class="phone-input-row">' +
+              '<span class="phone-prefix">+91</span>' +
+              '<input type="tel" id="field-mobile" class="form-input ' + (errors.mobile ? 'input-error' : '') + '" data-field="mobile" autocomplete="tel" placeholder="9876543210" maxlength="10" value="' + escapeHtml(cl.mobile) + '">' +
+            '</div>' +
             '<span class="field-error-msg" id="err-mobile" style="' + (errors.mobile ? 'display:block;' : 'display:none;') + '">' + escapeHtml(errors.mobile || '') + '</span>' +
           '</div>' +
           '<div class="form-group">' +
@@ -1143,27 +1152,52 @@
     else if (sc === 'details') rightContentHtml = renderDetails();
     else if (sc === 'confirmation') rightContentHtml = renderConfirmation();
 
-    // Mobile Top Nav Bar
+    // Screen titles and subheadings for mobile unified header
+    const SCREEN_TITLES = {
+      welcome: { title: 'Choose how to start', sub: 'Build as a client or access the staff portal' },
+      staff_login: { title: 'Staff portal', sub: 'Enter team password to access staff tools' },
+      service: { title: 'Select a service', sub: 'Choose the platform or service you want to build' },
+      catalogue: { title: 'Products and categories', sub: 'The first 20 products and 5 categories are included' },
+      pages: { title: 'Choose your pages', sub: 'Essential pages included. Add more pages.' },
+      features: { title: 'Add features', sub: 'All optional. Pick what fits your brand.' },
+      integrations: { title: 'Connect your tools', sub: 'Tool subscriptions paid directly to provider.' },
+      summary: { title: state.isStaff ? 'Review and adjust' : 'Review your package', sub: 'A final look at what you are getting and total cost.' },
+      details: { title: 'Enter your details', sub: 'We will email your itemised estimate and package breakdown.' },
+      confirmation: { title: 'Estimate sent!', sub: 'Your estimate is on its way.' }
+    };
+
+    const curInfo = SCREEN_TITLES[sc] || { title: 'AdsPeek', sub: '' };
     const currentIndex = STEP_FLOW.indexOf(sc);
-    let stepPillText = 'AdsPeek';
+    let progressHtml = '';
     if (currentIndex !== -1) {
-      stepPillText = 'Step ' + (currentIndex + 1) + ' of ' + STEP_FLOW.length;
+      const totalSteps = STEP_FLOW.length;
+      const progressPct = Math.round(((currentIndex + 1) / totalSteps) * 100);
+      progressHtml = (
+        '<div class="mobile-header-progress-row">' +
+          '<span class="mobile-progress-label">Step ' + (currentIndex + 1) + ' of ' + totalSteps + '</span>' +
+          '<div class="mobile-progress-track"><div class="mobile-progress-bar" style="width:' + progressPct + '%;"></div></div>' +
+        '</div>'
+      );
     }
 
-    const mobileTopNavHtml = (
-      '<div class="mobile-top-nav">' +
-        '<button type="button" class="mobile-back-btn" data-action="' + (sc === 'welcome' ? 'close' : 'nav-prev') + '" aria-label="' + (sc === 'welcome' ? 'Close' : 'Back') + '">' +
-          (sc === 'welcome' ? 'Close' : 'Back') +
-        '</button>' +
-        '<div class="mobile-brand-wrap">' +
-          (window.ADSPEEK_LOGO_HTML || '') +
-          '<span class="brand-text">AdsPeek</span>' +
+    const mobileHeaderHtml = (
+      '<header class="mobile-header">' +
+        '<div class="mobile-header-top">' +
+          '<div class="mobile-brand-wrap">' +
+            (window.ADSPEEK_LOGO_HTML || '') +
+            '<span class="brand-text">AdsPeek</span>' +
+          '</div>' +
+          '<button type="button" class="mobile-close-btn" data-action="close" aria-label="Close">Close</button>' +
         '</div>' +
-        '<span class="mobile-step-pill">' + stepPillText + '</span>' +
-      '</div>'
+        progressHtml +
+        '<div class="mobile-header-titles">' +
+          '<h2 class="mobile-header-title">' + curInfo.title + '</h2>' +
+          (curInfo.sub ? '<p class="mobile-header-sub">' + curInfo.sub + '</p>' : '') +
+        '</div>' +
+      '</header>'
     );
 
-    // Mobile sticky bottom bar
+    // Mobile fixed bottom bar (Grid row 3)
     let mobileBarHtml = '';
     if (sc !== 'welcome' && sc !== 'staff_login' && sc !== 'confirmation') {
       let mobileBtnLabel = 'Continue';
@@ -1171,16 +1205,38 @@
       else if (sc === 'summary') mobileBtnLabel = state.isStaff ? 'Continue' : 'Get estimate';
       else if (sc === 'details') mobileBtnLabel = state.isStaff ? 'Save quote' : 'Send estimate';
 
+      const canGoBack = sc !== 'welcome' && sc !== 'staff_login';
+      const isSummary = sc === 'summary';
+
       mobileBarHtml = (
         '<div class="mobile-bottom-bar">' +
-          '<div class="mobile-estimate-info">' +
-            '<div class="mobile-estimate-label">Your estimate</div>' +
-            '<div class="mobile-estimate-val" id="mobile-estimate-price">—</div>' +
+          '<div class="mobile-bottom-left">' +
+            (canGoBack ? '<button type="button" class="mobile-back-text-link" data-action="nav-prev">Back</button>' : '') +
+            '<div class="mobile-estimate-info">' +
+              '<span class="mobile-estimate-label">' + (isSummary ? 'Total incl. GST' : 'Your estimate') + '</span>' +
+              '<div class="mobile-estimate-row">' +
+                '<span class="mobile-estimate-val" id="mobile-estimate-price">—</span>' +
+                (isSummary ? '<button type="button" class="mobile-breakdown-btn" data-action="toggle-breakdown">View breakdown</button>' : '') +
+              '</div>' +
+            '</div>' +
           '</div>' +
-          '<button type="button" class="btn-primary" data-action="mobile-next">' + mobileBtnLabel + '</button>' +
+          '<button type="button" class="btn-primary mobile-primary-btn" data-action="mobile-next">' + mobileBtnLabel + '</button>' +
         '</div>'
       );
     }
+
+    // Inline Breakdown Sheet Overlay (for Summary on mobile)
+    const breakdownSheetHtml = (
+      '<div id="breakdown-sheet" class="mobile-breakdown-overlay" hidden>' +
+        '<div class="mobile-breakdown-card">' +
+          '<div class="mobile-breakdown-top">' +
+            '<span class="breakdown-title">Estimate breakdown</span>' +
+            '<button type="button" class="breakdown-close-btn" data-action="toggle-breakdown">Close</button>' +
+          '</div>' +
+          '<div class="breakdown-list" id="breakdown-list-content"></div>' +
+        '</div>' +
+      '</div>'
+    );
 
     // Leave Confirm Modal Overlay (covers full viewport)
     const leaveModalHtml = (
@@ -1198,13 +1254,14 @@
 
     root.innerHTML = (
       staffBannerHtml +
+      mobileHeaderHtml +
       '<div class="split-card">' +
         '<button type="button" class="modal-close-btn" data-action="close" aria-label="Close">Close</button>' +
-        mobileTopNavHtml +
         renderLeftPanel() +
         '<div class="right-panel">' + rightContentHtml + '</div>' +
       '</div>' +
       mobileBarHtml +
+      breakdownSheetHtml +
       leaveModalHtml
     );
 
@@ -1474,6 +1531,45 @@
   // Global Event Delegation (Root Container)
   // ==========================================================================
 
+  // --- Estimate Breakdown Sheet Renderer ---
+  function updateBreakdownSheet() {
+    const listEl = document.getElementById('breakdown-list-content');
+    if (!listEl) return;
+    const res = state.quoteResult || { basePrice: 0, expectedPrice: 0, grandTotal: 0, lines: [] };
+    const baseAmt = res.basePrice || 0;
+    const subtotal = res.finalPrice !== undefined && res.finalPrice !== null ? res.finalPrice : res.expectedPrice;
+    const addOns = Math.max(0, subtotal - baseAmt);
+    const gstAmt = Math.round(subtotal * 0.18);
+    const total = subtotal + gstAmt;
+
+    listEl.innerHTML = (
+      '<div class="breakdown-row"><span>Base package</span><span>' + formatRupee(baseAmt) + '</span></div>' +
+      '<div class="breakdown-row"><span>Add-ons</span><span>' + formatRupee(addOns) + '</span></div>' +
+      '<div class="breakdown-row breakdown-subtotal"><span>Subtotal (excl. GST)</span><span>' + formatRupee(subtotal) + '</span></div>' +
+      '<div class="breakdown-row"><span>GST (18%)</span><span>' + formatRupee(gstAmt) + '</span></div>' +
+      '<div class="breakdown-row breakdown-grand-total"><span>Total</span><span>' + formatRupee(total) + '</span></div>'
+    );
+  }
+
+  // --- Virtual Keyboard & Viewport Handler (Section 4) ---
+  function setupKeyboardHandling() {
+    if (window.visualViewport) {
+      const initialHeight = window.visualViewport.height;
+      window.visualViewport.addEventListener('resize', function () {
+        const isKeyboard = window.visualViewport.height < initialHeight - 120;
+        document.body.classList.toggle('keyboard-open', isKeyboard);
+      });
+    }
+
+    document.addEventListener('focusin', function (e) {
+      if (e.target.matches('input, select, textarea')) {
+        setTimeout(function () {
+          e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 120);
+      }
+    });
+  }
+
   function setupGlobalEventDelegation() {
     const root = document.getElementById('app-root') || document.body;
 
@@ -1508,6 +1604,13 @@
 
       if (action === 'close') {
         requestClose();
+      } else if (action === 'toggle-breakdown') {
+        const sheet = document.getElementById('breakdown-sheet');
+        if (sheet) {
+          const isHidden = sheet.hidden;
+          sheet.hidden = !isHidden;
+          if (!sheet.hidden) updateBreakdownSheet();
+        }
       } else if (action === 'cancel-leave') {
         const modal = document.getElementById('leave-confirm-modal');
         if (modal) modal.hidden = true;
@@ -1801,6 +1904,7 @@
   // --- Initialization ---
   function init() {
     setupGlobalEventDelegation();
+    setupKeyboardHandling();
 
     callServer('getCatalog', null)
       .then(function (cat) {

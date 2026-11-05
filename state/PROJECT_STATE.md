@@ -117,6 +117,7 @@ Phases 2–4: add rows from PLAN §9 when the previous phase gate is confirmed b
 One line each: date · decision · reason.
 
 - 2026-11-04 · Completed Package Builder overhaul: full-screen modal overlay, 3-row fixed grid layout with isolated options scrolling, single render per step with DOM in-place updates, press-and-hold numeric steppers, and website postMessage embed script · User request & FIX_AUDIT
+- 2026-11-05 · Mobile Package Builder popup with 5vw/5dvh margins, 360px layout, zero icons, fixed header/footer, scrollable options, iOS 16px font, visualViewport keyboard handling, and AdsPeek logo · Fix 3 specs
 - 2026-10-21 · Processed 15 store hero screenshots from Desktop/Screenshots Web into optimized WebP assets in public/portfolio/; integrated into PortfolioSection across 5 categories (Food, Shoes, Clothing, Jewellery, Home Decor); updated BrandLogoStrip with heavy font brand names · User request
 - 2026-10-20 · Built complete programmatic site structure (Services hub & detail pages, Migration child pages, Locations hub/country/state/city pages, Questions hub & guides, Case studies hub & detail pages, Core & legal pages) with Zod validation, schema injection, and XML sitemap generation · User specification & SEO plan architecture
 - 2026-10-20 · Comprehensive mobile responsive optimization of all homepage sections & components (320px–430px, 768px, 1280px, 1440px) with 0 horizontal overflow, 44px+ touch targets, 16px iOS zoom prevention, and fluid UI mockups · Complete mobile usability & responsiveness
@@ -137,6 +138,7 @@ One line each: date · decision · reason.
 
 | Date | Task | Files changed | Result | Next |
 | --- | --- | --- | --- | --- |
+| 2026-11-05 | Fix 3: Mobile Package Builder popup margins, 360px layout & zero icons | `App.html`, `Styles.html`, `embed/*`, `docs/MOBILE_AUDIT.md` | done | Production verification |
 | 2026-11-04 | AdsPeek Package Builder Overhaul (Modal popup, fixed layout, working controls) | `App.html`, `Index.html`, `Styles.html`, `embed/*`, `docs/*`, `app/*`, `components/*` | done | Phase 1 page reviews or deployment QA |
 | 2026-10-21 | Real Client Hero Screenshots & Heavy Brand Strip | `public/portfolio/*`, `references/portfolio/*`, `components/sections/PortfolioSection.tsx`, `components/sections/BrandLogoStrip.tsx`, `components/modals/ProjectPreviewModal.tsx`, `app/page.tsx` | done | Services hub (`/services/`) or page reviews |
 | 2026-10-20 | Full Site Structure & Business Facts Sheet | `app/*`, `content/*`, `lib/content.ts`, `components/ui/*`, `state/BUSINESS_FACTS.md` | done | Content enrichment & Ritesh facts input |
