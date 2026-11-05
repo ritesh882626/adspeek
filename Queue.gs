@@ -87,9 +87,9 @@ function processOneSubmission_(r, settings, autoSend) {
   const id = toStr_(r[S.ID]);
   const attempts = toNum_(r[S.ATTEMPTS], 0) + 1;
   const upd = {};
+  let docs = null;
   try {
     // Reuse documents from an earlier attempt if they were already created
-    let docs;
     if (toStr_(r[S.PROPOSAL_LINK]) && toStr_(r[S.QUOTATION_LINK])) {
       docs = loadExistingDocuments_(r, settings);
     } else {
@@ -115,6 +115,7 @@ function processOneSubmission_(r, settings, autoSend) {
   }
   upd[S.ATTEMPTS] = attempts;
   docSetRowValues_(CONFIG.SHEETS.SUBMISSIONS, r._row, upd);
+  if (docs && upd[S.EMAIL_STATUS] !== ST.FAILED) onDocumentsReady_(id, docs, upd[S.EMAIL_STATUS] === ST.SENT);
 }
 
 /** Rebuilds the email payload from PDFs already saved (used on retries and resends). */

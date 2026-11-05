@@ -29,6 +29,9 @@ function onOpen() {
     .addItem('Rebuild document templates (new design)', 'rebuildDocumentTemplates')
     .addItem('Resend documents for selected row', 'menuResendSelected')
     .addItem('Process pending documents now', 'menuProcessPendingNow')
+    .addSeparator()
+    .addItem('Set up tracking sheets', 'setupTrackingSheets')
+    .addItem('Run daily tracker update now', 'menuRunDailyTracker')
     .addToUi();
 }
 
