@@ -21,7 +21,10 @@ const DOCS_CONFIG = {
     SAC_CODE: 'SAC code',
     WEBSITE: 'Company website',
     THANK_YOU: 'Thank-you note',
-    SHOW_PARTNERS: 'Show partner badges'
+    SHOW_PARTNERS: 'Show partner badges',
+    SIGNATURE_NAME: 'Email signature name',
+    SIGNATURE_TITLE: 'Email signature title',
+    CONTACT_PHONE: 'Contact phone'
   },
 
   SETTING_DEFAULTS: [
@@ -39,6 +42,9 @@ const DOCS_CONFIG = {
     ['SAC code', '998314', 'Service code printed on invoices. 998314 = IT design and development services (confirm with your CA).'],
     ['Company website', 'adspeek.in', 'Printed in the document footer.'],
     ['Thank-you note', 'It has been a pleasure working with you.', 'Printed at the bottom of invoices.'],
+    ['Email signature name', 'Ritesh Kumar Singh', 'Name at the end of client emails.'],
+    ['Email signature title', 'Founder, AdsPeek', 'Line under your name in client emails.'],
+    ['Contact phone', '', 'Phone shown in the email signature, e.g. +91 98xxxxxxxx. Leave empty to use the WhatsApp number.'],
     ['Show partner badges', 'Yes', 'Yes = Meta, Google, Shopify and n8n partner badges on proposals. Only show programmes you are officially part of.']
   ],
 

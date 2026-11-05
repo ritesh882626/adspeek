@@ -21,83 +21,101 @@ function sendDocumentsEmail_(docs, settings) {
   const whatsapp = toStr_(settings[K.WHATSAPP]).replace(/\D/g, '');
   const isStaff = d.mode === 'Staff';
 
-  const subject = isStaff
-    ? 'Your AdsPeek proposal and quotation | ' + d.client.business
-    : 'Your AdsPeek estimate ' + d.submissionId + ' | ' + docFormatINR_(d.grand, 0) + ' incl. GST';
+  const sig = {
+    name: toStr_(docGetSetting_(settings, DK.SIGNATURE_NAME, 'Ritesh Kumar Singh')),
+    title: toStr_(docGetSetting_(settings, DK.SIGNATURE_TITLE, 'Founder, AdsPeek')),
+    phone: toStr_(docGetSetting_(settings, DK.CONTACT_PHONE, whatsapp ? '+' + whatsapp : '')),
+    website: d.company.website
+  };
 
+  // Plain, personal subject: no amounts or reference numbers (these raise spam scores)
+  const subject = d.serviceName + ' proposal for ' + d.client.business;
+
+  // Friendly attachment names
+  const pdfName = function (kind) { return 'AdsPeek ' + kind + ' - ' + d.fileLabel + '.pdf'; };
   const options = {
     name: senderName,
-    htmlBody: buildEmailHtml_(d, docs, whatsapp, isStaff),
-    attachments: [docs.proposal.pdfBlob, docs.quotation.pdfBlob]
+    htmlBody: buildEmailHtml_(d, sig, whatsapp, isStaff),
+    attachments: [docs.proposal.pdfBlob.copyBlob().setName(pdfName('Proposal')), docs.quotation.pdfBlob.copyBlob().setName(pdfName('Quotation'))]
   };
   if (replyTo) options.replyTo = replyTo;
   if (CONFIG.REGEX.EMAIL.test(notify) && notify.toLowerCase() !== d.client.email.toLowerCase()) options.bcc = notify;
 
-  MailApp.sendEmail(d.client.email, subject, buildEmailText_(d, isStaff), options);
+  MailApp.sendEmail(d.client.email, subject, buildEmailText_(d, sig, isStaff), options);
+}
+
+/** Opening line, shared by the text and HTML versions. */
+function emailIntro_(d, isStaff) {
+  return isStaff
+    ? 'Thank you for your time on the call. As discussed, I have attached the proposal and quotation for your ' + d.serviceName + ' project.'
+    : 'Thank you for choosing your package on our website. I have attached the proposal and quotation for your ' + d.serviceName + ' project.';
 }
 
 /** Plain-text version (shown by email apps that don't display HTML). */
-function buildEmailText_(d, isStaff) {
+function buildEmailText_(d, sig, isStaff) {
   return [
     'Hi ' + (d.client.name || 'there') + ',',
     '',
-    isStaff
-      ? 'Thank you for speaking with us. Your proposal and quotation for ' + d.serviceName + ' are attached.'
-      : 'Thank you for building your package with AdsPeek. Your proposal and quotation for ' + d.serviceName + ' are attached.',
+    emailIntro_(d, isStaff),
     '',
-    'Reference: ' + d.submissionId,
-    'Project value: ' + docFormatINR_(d.finalPrice, 2),
-    'Total incl. GST: ' + docFormatINR_(d.grand, 2),
+    'Summary',
+    'Project value: ' + docFormatINR_(d.finalPrice, 2) + ' + GST',
+    'Total: ' + docFormatINR_(d.grand, 2),
     'Valid until: ' + docFormatDateIN_(d.validUntil),
     '',
-    'Next steps:',
-    '1. Our team will review your package and call you within 24 hours.',
-    '2. Reply to this email with any changes or questions.',
-    '3. To start, pay the advance shown in the quotation.',
+    'The proposal explains the full scope, timeline and payment terms. The quotation has the item-wise price breakup.',
     '',
-    'Team AdsPeek'
+    'What happens next:',
+    '1. I will call you within 24 hours to go through it with you.',
+    '2. If you would like any changes, just reply to this email.',
+    '3. Once you are happy, we start as soon as the advance is received.',
+    '',
+    'Looking forward to working with you.',
+    '',
+    'Warm regards,',
+    sig.name,
+    sig.title,
+    [sig.phone, sig.website].filter(String).join('  |  ')
   ].join('\n');
 }
 
-/** Simple black-and-white HTML email that works in Gmail, Outlook and phones. */
-function buildEmailHtml_(d, docs, whatsapp, isStaff) {
+/**
+ * Simple, personal-looking HTML email: plain white, mostly text, no images,
+ * at most one link. Designed to read like a normal business email rather than a newsletter.
+ */
+function buildEmailHtml_(d, sig, whatsapp, isStaff) {
   const e = docEscapeHtml_;
-  const intro = isStaff
-    ? 'Thank you for speaking with us. Your proposal and quotation for <b>' + e(d.serviceName) + '</b> are attached to this email.'
-    : 'Thank you for building your package with AdsPeek. Your proposal and quotation for <b>' + e(d.serviceName) + '</b> are attached to this email.';
-
+  const p = function (html, extra) { return '<p style="margin:0 0 14px;' + (extra || '') + '">' + html + '</p>'; };
   const row = function (label, value, bold) {
-    return '<tr><td style="padding:6px 0;color:#6B7280;font-size:13px;">' + e(label) + '</td>' +
-      '<td style="padding:6px 0;text-align:right;font-size:' + (bold ? '16px;font-weight:700' : '13px') + ';color:#111827;">' + e(value) + '</td></tr>';
+    return '<tr>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #EEEEEE;color:#555555;">' + e(label) + '</td>' +
+      '<td style="padding:7px 0;border-bottom:1px solid #EEEEEE;text-align:right;color:#111111;' + (bold ? 'font-weight:bold;' : '') + '">' + e(value) + '</td>' +
+      '</tr>';
   };
-
-  const waButton = whatsapp
-    ? '<a href="https://wa.me/' + e(whatsapp) + '?text=' + encodeURIComponent('Hi AdsPeek, about my estimate ' + d.submissionId) +
-      '" style="display:inline-block;margin-top:8px;padding:12px 20px;border:1px solid #111827;border-radius:8px;color:#111827;text-decoration:none;font-size:14px;">Chat with us on WhatsApp</a>'
+  const contact = whatsapp
+    ? 'Prefer WhatsApp? <a href="https://wa.me/' + e(whatsapp) + '" style="color:#111111;">Message me here</a>.'
     : '';
 
   return '' +
-    '<div style="background:#F3F4F6;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">' +
-    '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:12px;padding:32px 28px;">' +
-    '<div style="font-size:18px;font-weight:700;letter-spacing:2px;color:#111827;">ADSPEEK</div>' +
-    '<div style="height:1px;background:#E5E7EB;margin:16px 0 24px;"></div>' +
-    '<p style="font-size:15px;color:#111827;margin:0 0 12px;">Hi ' + e(d.client.name || 'there') + ',</p>' +
-    '<p style="font-size:14px;line-height:1.6;color:#374151;margin:0 0 20px;">' + intro + '</p>' +
-    '<table role="presentation" width="100%" style="border-collapse:collapse;border-top:1px solid #E5E7EB;border-bottom:1px solid #E5E7EB;margin-bottom:20px;">' +
-    row('Reference', d.submissionId) +
-    row('Proposal', d.proposalNumber) +
-    row('Quotation', d.quotationNumber) +
-    row('Project value', docFormatINR_(d.finalPrice, 2)) +
-    row('Total incl. GST', docFormatINR_(d.grand, 2), true) +
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#222222;max-width:600px;">' +
+    p('Hi ' + e(d.client.name || 'there') + ',') +
+    p(e(emailIntro_(d, isStaff))) +
+    '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;max-width:420px;border-collapse:collapse;margin:4px 0 18px;font-size:14px;">' +
+    row('Project value', docFormatINR_(d.finalPrice, 2) + ' + GST') +
+    row('Total', docFormatINR_(d.grand, 2), true) +
     row('Valid until', docFormatDateIN_(d.validUntil)) +
     '</table>' +
-    '<p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 8px;">What happens next</p>' +
-    '<ol style="font-size:14px;line-height:1.7;color:#374151;margin:0 0 20px;padding-left:18px;">' +
-    '<li>Our team reviews your package and calls you within 24 hours.</li>' +
-    '<li>Reply to this email with any changes or questions.</li>' +
-    '<li>To start, pay the advance shown in the quotation.</li>' +
-    '</ol>' +
-    waButton +
-    '<p style="font-size:13px;color:#6B7280;margin:28px 0 0;">Team AdsPeek<br>' + e(d.company.address) + '</p>' +
-    '</div></div>';
+    p('The <b>proposal</b> explains the full scope, timeline and payment terms. The <b>quotation</b> has the item-wise price breakup.') +
+    p('<b>What happens next</b><br>' +
+      '1. I will call you within 24 hours to go through it with you.<br>' +
+      '2. If you would like any changes, just reply to this email.<br>' +
+      '3. Once you are happy, we start as soon as the advance is received.') +
+    (contact ? p(contact) : '') +
+    p('Looking forward to working with you.') +
+    '<p style="margin:22px 0 0;">Warm regards,<br>' +
+    '<b>' + e(sig.name) + '</b><br>' +
+    '<span style="color:#555555;">' + e(sig.title) + '</span><br>' +
+    '<span style="color:#555555;">' + e([sig.phone, sig.website].filter(String).join('  |  ')) + '</span></p>' +
+    '<p style="margin:18px 0 0;font-size:12px;color:#888888;">' + e(d.company.name) + ', ' + e(d.company.address) + '</p>' +
+    '</div>';
 }
