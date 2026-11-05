@@ -1199,19 +1199,37 @@
 
     // Mobile fixed bottom bar (Grid row 3)
     let mobileBarHtml = '';
-    if (sc !== 'welcome' && sc !== 'staff_login' && sc !== 'confirmation') {
+    if (sc === 'welcome') {
+      mobileBarHtml = (
+        '<div class="mobile-bottom-bar">' +
+          '<button type="button" class="btn-primary mobile-primary-btn" data-action="welcome-continue" style="width:100%;height:44px;justify-content:center;text-align:center;">Continue</button>' +
+        '</div>'
+      );
+    } else if (sc === 'staff_login') {
+      mobileBarHtml = (
+        '<div class="mobile-bottom-bar">' +
+          '<button type="button" class="mobile-back-text-link" data-action="nav-screen" data-target="welcome">Back</button>' +
+          '<button type="button" class="btn-primary mobile-primary-btn" data-action="staff-login">Log in</button>' +
+        '</div>'
+      );
+    } else if (sc === 'confirmation') {
+      mobileBarHtml = (
+        '<div class="mobile-bottom-bar">' +
+          '<button type="button" class="btn-primary mobile-primary-btn" data-action="build-another" style="width:100%;height:44px;justify-content:center;text-align:center;">Build another package</button>' +
+        '</div>'
+      );
+    } else {
       let mobileBtnLabel = 'Continue';
       if (sc === 'integrations') mobileBtnLabel = 'Review package';
       else if (sc === 'summary') mobileBtnLabel = state.isStaff ? 'Continue' : 'Get estimate';
       else if (sc === 'details') mobileBtnLabel = state.isStaff ? 'Save quote' : 'Send estimate';
 
-      const canGoBack = sc !== 'welcome' && sc !== 'staff_login';
       const isSummary = sc === 'summary';
 
       mobileBarHtml = (
         '<div class="mobile-bottom-bar">' +
           '<div class="mobile-bottom-left">' +
-            (canGoBack ? '<button type="button" class="mobile-back-text-link" data-action="nav-prev">Back</button>' : '') +
+            '<button type="button" class="mobile-back-text-link" data-action="nav-prev">Back</button>' +
             '<div class="mobile-estimate-info">' +
               '<span class="mobile-estimate-label">' + (isSummary ? 'Total incl. GST' : 'Your estimate') + '</span>' +
               '<div class="mobile-estimate-row">' +
