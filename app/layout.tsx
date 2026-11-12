@@ -1,41 +1,55 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Schibsted_Grotesk, IBM_Plex_Mono } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
-import { JsonLd } from '@/components/ui/JsonLd';
-import { getOrganizationSchema, getWebsiteSchema } from '@/lib/schema';
-import { constructMetadata } from '@/lib/seo';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
-const inter = Inter({
+const schibsted = Schibsted_Grotesk({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-sans',
 });
 
-export const metadata: Metadata = constructMetadata({
-  title: 'AdsPeek | Shopify Store Development & eCommerce Agency',
-  description:
-    'AdsPeek builds, designs, and scales high-converting Shopify and Shopify Plus storefronts for ambitious direct-to-consumer brands globally.',
-  path: '',
+const ibmMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-mono',
 });
+
+export const metadata: Metadata = {
+  title: 'AdsPeek — Shopify Development & Growth Studio, Gurugram',
+  description:
+    'Custom Shopify storefronts, migrations, and growth systems built for ambitious direct-to-consumer brands.',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const organizationSchema = getOrganizationSchema();
-  const websiteSchema = getWebsiteSchema();
-
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${schibsted.variable} ${ibmMono.variable}`}>
       <head>
-        <JsonLd data={organizationSchema} />
-        <JsonLd data={websiteSchema} />
+        {/* Google Tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-WS7KK8PM" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            `,
+          }}
+        />
       </head>
-      <body className="antialiased min-h-screen flex flex-col font-sans bg-white text-gray-900 selection:bg-[#0C5A48] selection:text-white">
+      <body className="font-sans bg-paper text-ink min-h-screen flex flex-col">
         <Script src="/embed/adspeek-estimate-modal.js" strategy="afterInteractive" />
-        {children}
+        <Header />
+        <main className="flex-1 flex flex-col">{children}</main>
+        <Footer />
       </body>
     </html>
   );

@@ -1,56 +1,72 @@
 import React from 'react';
+import Container from './Container';
 
 interface SectionProps {
-  children: React.ReactNode;
-  bg?:
-    | 'coal'
-    | 'teal-panel'
-    | 'teal-gradient'
-    | 'navy-gradient'
-    | 'navy-panel'
-    | 'light'
-    | 'cream'
-    | 'offwhite';
-  pad?: 'default' | 'large' | 'compact' | 'none';
   id?: string;
+  bg?: 'paper' | 'white' | 'forest' | 'accent' | 'ink';
+  border?: boolean;
+  padTopDesktop?: number;
+  padBottomDesktop?: number;
+  padTopMobile?: number;
+  padBottomMobile?: number;
   className?: string;
-  roundedTop?: boolean;
+  containerClassName?: string;
+  children: React.ReactNode;
 }
 
-export function Section({
-  children,
-  bg = 'light',
-  pad = 'default',
+const bgClasses: Record<string, string> = {
+  paper: 'bg-paper text-ink',
+  white: 'bg-white text-ink',
+  forest: 'bg-forest text-forest-text',
+  accent: 'bg-accent text-ink',
+  ink: 'bg-ink text-paper',
+};
+
+export const Section: React.FC<SectionProps> = ({
   id,
+  bg = 'paper',
+  border = true,
+  padTopDesktop = 96,
+  padBottomDesktop = 96,
+  padTopMobile = 64,
+  padBottomMobile = 64,
   className = '',
-  roundedTop = false,
-}: SectionProps) {
-  const bgClasses: Record<string, string> = {
-    coal: 'bg-[#02090A] text-[#EFF8F0]',
-    'teal-panel': 'bg-[#061A1C] text-[#EFF8F0]',
-    'teal-gradient': 'bg-gradient-teal text-[#EFF8F0]',
-    'navy-gradient': 'bg-gradient-navy text-[#EFF8F0]',
-    'navy-panel': 'bg-[#000A1E] text-[#EFF8F0]',
-    light: 'bg-white text-[#111827]',
-    cream: 'bg-[#FAF9F5] text-[#111827]',
-    offwhite: 'bg-[#F4F5F6] text-[#111827]',
+  containerClassName = '',
+  children,
+}) => {
+  const bgClass = bgClasses[bg] || bgClasses.paper;
+  const borderClass = border
+    ? bg === 'forest'
+      ? 'border-b border-forest-line'
+      : 'border-b border-line'
+    : '';
+
+  // Map common values to clean Tailwind classes
+  const getPadTopClass = (mobile: number, desktop: number) => {
+    if (mobile === 48 && desktop === 88) return 'pt-12 lg:pt-[88px]';
+    if (mobile === 64 && desktop === 96) return 'pt-16 lg:pt-24';
+    if (mobile === 0 && desktop === 0) return 'pt-0';
+    return `pt-[${mobile}px] lg:pt-[${desktop}px]`;
   };
 
-  const padClasses: Record<string, string> = {
-    none: 'py-0',
-    compact: 'py-8 sm:py-12 md:py-16',
-    default: 'py-12 sm:py-16 md:py-20 lg:py-28',
-    large: 'py-16 sm:py-20 md:py-28 lg:py-32',
+  const getPadBottomClass = (mobile: number, desktop: number) => {
+    if (mobile === 64 && desktop === 80) return 'pb-16 lg:pb-20';
+    if (mobile === 64 && desktop === 96) return 'pb-16 lg:pb-24';
+    if (mobile === 0 && desktop === 0) return 'pb-0';
+    return `pb-[${mobile}px] lg:pb-[${desktop}px]`;
   };
+
+  const padTopClass = getPadTopClass(padTopMobile, padTopDesktop);
+  const padBottomClass = getPadBottomClass(padBottomMobile, padBottomDesktop);
 
   return (
     <section
       id={id}
-      className={`relative w-full ${bgClasses[bg]} ${padClasses[pad]} ${
-        roundedTop ? 'rounded-t-[20px] md:rounded-t-[32px]' : ''
-      } ${className}`}
+      className={`w-full relative ${bgClass} ${borderClass} ${padTopClass} ${padBottomClass} ${className}`}
     >
-      {children}
+      <Container className={containerClassName}>{children}</Container>
     </section>
   );
-}
+};
+
+export default Section;

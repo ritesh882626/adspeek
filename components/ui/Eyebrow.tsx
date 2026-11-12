@@ -2,38 +2,24 @@ import React from 'react';
 
 interface EyebrowProps {
   children: React.ReactNode;
-  tone?: 'neon' | 'dark' | 'emerald' | 'white' | 'pill';
+  tone?: 'default' | 'onDark';
   className?: string;
 }
 
-export function Eyebrow({
+export const Eyebrow: React.FC<EyebrowProps> = ({
   children,
-  tone = 'emerald',
+  tone = 'default',
   className = '',
-}: EyebrowProps) {
-  if (tone === 'pill') {
-    return (
-      <div
-        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EBF7F2] text-[#0C5A48] text-xs font-semibold uppercase tracking-wider mb-4 border border-[#D1EFE3] ${className}`}
-      >
-        <span className="w-1.5 h-1.5 rounded-full bg-[#0C5A48]" />
-        {children}
-      </div>
-    );
-  }
-
-  const toneClasses: Record<string, string> = {
-    neon: 'text-[#36F4A4]',
-    emerald: 'text-[#0C5A48]',
-    dark: 'text-[#18181B]',
-    white: 'text-white/80',
-  };
+}) => {
+  const toneClass = tone === 'onDark' ? 'text-forest-muted' : 'text-muted';
 
   return (
-    <div
-      className={`type-eyebrow font-mono mb-3.5 tracking-wider ${toneClasses[tone]} ${className}`}
+    <p
+      className={`font-mono text-[12px] lg:text-[13px] uppercase tracking-[0.06em] mb-4 ${toneClass} ${className}`}
     >
       {children}
-    </div>
+    </p>
   );
-}
+};
+
+export default Eyebrow;

@@ -1571,20 +1571,40 @@
 
   // --- Virtual Keyboard & Viewport Handler (Section 4) ---
   function setupKeyboardHandling() {
+    function updateKeyboardState() {
+      const activeEl = document.activeElement;
+      const isInputFocused = Boolean(activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT'));
+      const bottomBar = document.querySelector('.mobile-bottom-bar');
+
+      if (!isInputFocused) {
+        document.body.classList.remove('keyboard-open');
+        if (bottomBar) bottomBar.style.display = '';
+        return;
+      }
+
+      let isKeyboard = false;
+      if (window.visualViewport) {
+        isKeyboard = window.visualViewport.height < window.innerHeight * 0.75;
+      }
+      document.body.classList.toggle('keyboard-open', isKeyboard);
+      if (bottomBar) bottomBar.style.display = isKeyboard ? 'none' : '';
+    }
+
     if (window.visualViewport) {
-      const initialHeight = window.visualViewport.height;
-      window.visualViewport.addEventListener('resize', function () {
-        const isKeyboard = window.visualViewport.height < initialHeight - 120;
-        document.body.classList.toggle('keyboard-open', isKeyboard);
-      });
+      window.visualViewport.addEventListener('resize', updateKeyboardState);
     }
 
     document.addEventListener('focusin', function (e) {
       if (e.target.matches('input, select, textarea')) {
+        updateKeyboardState();
         setTimeout(function () {
           e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }, 120);
       }
+    });
+
+    document.addEventListener('focusout', function () {
+      setTimeout(updateKeyboardState, 50);
     });
   }
 
@@ -1899,15 +1919,6 @@
       }
     });
 
-    // 7. Mobile keyboard visual viewport accommodation
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', function () {
-        const bottomBar = document.querySelector('.mobile-bottom-bar');
-        if (!bottomBar) return;
-        const isKeyboardOpen = window.visualViewport.height < window.innerHeight * 0.75;
-        bottomBar.style.display = isKeyboardOpen ? 'none' : '';
-      });
-    }
 
     // 8. Host window communication (close requested by host backdrop / Esc)
     window.addEventListener('message', function (event) {
