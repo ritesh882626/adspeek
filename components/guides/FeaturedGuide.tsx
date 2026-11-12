@@ -13,7 +13,7 @@ export function FeaturedGuide({ guide }: FeaturedGuideProps) {
     <section className="bg-paper border-b border-line">
       <Container className="py-14 sm:py-[72px] lg:py-18">
         <Link
-          href={`/questions/${guide.slug}`}
+          href={`/guides/${guide.slug}`}
           className="group block border border-line bg-white hover:border-ink transition-colors"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
@@ -39,7 +39,10 @@ export function FeaturedGuide({ guide }: FeaturedGuideProps) {
 
               <div>
                 <div className="font-mono text-xs text-muted mb-4">
-                  {guide.readMinutes} min read · {guide.date}
+                  {guide.readMinutes.includes('min read')
+                    ? guide.readMinutes
+                    : `${guide.readMinutes} min read`}{' '}
+                  · {guide.date}
                 </div>
                 <span className="text-base font-semibold text-ink underline group-hover:text-forest transition-colors">
                   Read the guide

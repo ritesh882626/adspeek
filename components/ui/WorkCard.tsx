@@ -72,3 +72,4 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 };
 
 export default WorkCard;
+

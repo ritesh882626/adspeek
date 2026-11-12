@@ -14,7 +14,7 @@ export function MarketContent({ city }: MarketContentProps) {
       <Container className="py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
           <div>
-            <Eyebrow className="mb-4">{city.marketEyebrow}</Eyebrow>
+            <Eyebrow className="mb-4">The local market</Eyebrow>
             <Heading level={2} className="m-0 whitespace-pre-line">
               {city.marketHeading}
             </Heading>
@@ -31,3 +31,5 @@ export function MarketContent({ city }: MarketContentProps) {
     </section>
   );
 }
+
+export default MarketContent;

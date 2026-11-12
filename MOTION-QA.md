@@ -31,3 +31,4 @@ Audit completed against the GSAP motion specification across Desktop (1440px), T
 5. **No JavaScript / Flash of Content:** `.js-motion` class in `<head>` ensures hero displays with 3000ms safety timeout if GSAP is blocked. All other content remains 100% visible by default in SSR HTML.
 6. **Route Isolation:** Motion hooks are scoped exclusively to homepage components (`app/page.tsx`). All other routes (`/shopify-development`, `/contact`, `/about`, `/guides`, `/shopify-development/gurugram`, `/work/*`) remain completely static.
 7. **Brand Consistency:** No arrow symbols or icons on buttons or links.
+

@@ -73,3 +73,4 @@ export function useFaqMotion<T extends HTMLElement = HTMLElement>(
     };
   });
 }
+

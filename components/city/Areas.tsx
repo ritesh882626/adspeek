@@ -12,9 +12,9 @@ export function Areas({ city }: AreasProps) {
   return (
     <section className="bg-white border-b border-line">
       <Container className="py-14 lg:py-18">
-        <Eyebrow className="mb-4">{city.areasEyebrow}</Eyebrow>
+        <Eyebrow className="mb-4">Areas served</Eyebrow>
         <Heading level={2} className="text-3xl sm:text-4xl font-extrabold tracking-[-0.025em] mb-8">
-          {city.areasHeading}
+          Serving brands across {city.name}
         </Heading>
         <div className="flex flex-wrap gap-2.5">
           {city.areas.map((area) => (
@@ -31,3 +31,4 @@ export function Areas({ city }: AreasProps) {
   );
 }
 
+export default Areas;

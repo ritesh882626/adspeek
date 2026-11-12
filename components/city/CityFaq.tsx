@@ -14,12 +14,12 @@ export function CityFaq({ city }: CityFaqProps) {
     '@type': 'FAQPage',
     mainEntity: city.faq.map((item) => ({
       '@type': 'Question',
-      name: item.question,
+      name: item.q,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: item.answer
-      }
-    }))
+        text: item.a,
+      },
+    })),
   };
 
   return (
@@ -31,19 +31,19 @@ export function CityFaq({ city }: CityFaqProps) {
       <Container className="py-14 sm:py-[72px] lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
           <div>
-            <Eyebrow className="mb-4">{city.faqEyebrow}</Eyebrow>
+            <Eyebrow className="mb-4">FAQ</Eyebrow>
             <Heading level={2} className="m-0">
-              {city.faqHeading}
+              Questions asked by {city.name} brands.
             </Heading>
           </div>
           <div className="flex flex-col border-t border-ink divide-y divide-line">
             {city.faq.map((item, idx) => (
               <div key={idx} className="py-6 first:pt-6">
                 <h3 className="text-lg sm:text-xl font-bold text-ink mb-2.5 mt-0">
-                  {item.question}
+                  {item.q}
                 </h3>
                 <p className="text-[15px] leading-relaxed text-body m-0">
-                  {item.answer}
+                  {item.a}
                 </p>
               </div>
             ))}
@@ -53,3 +53,5 @@ export function CityFaq({ city }: CityFaqProps) {
     </section>
   );
 }
+
+export default CityFaq;

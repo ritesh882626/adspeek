@@ -1,0 +1,108 @@
+---
+title: "Cut fake COD orders with WhatsApp confirmation"
+slug: "cod-confirmation-whatsapp"
+description: "How Indian D2C stores reduce COD returns (RTO) by confirming cash-on-delivery orders on WhatsApp before shipping — the flow, the message, the maths and the setup."
+category: "Automation"
+featured: false
+readMinutes: 7
+date: "2026-11-13"
+updated: "2026-11-13"
+author: "Ritesh Kumar Singh"
+authorRole: "Founder, AdsPeek"
+primaryKeyword: "cod confirmation whatsapp"
+secondaryKeywords: ["reduce rto india", "cod order verification shopify", "fake cod orders"]
+faq:
+  - q: "How much does a WhatsApp COD confirmation message cost?"
+    a: "COD confirmations are sent as utility template messages, which Meta charges per delivered message at a fraction of a rupee in India. Since 1 October 2026, utility templates are charged even inside the 24-hour customer service window. Your WhatsApp provider may add its own platform fee."
+  - q: "What should I do with orders that don't reply?"
+    a: "Send one reminder, then hold the order instead of shipping it blind. Many stores call non-responders or offer a small prepaid discount; whatever you choose, apply one clear rule."
+  - q: "Does COD confirmation reduce sales?"
+    a: "It can lose a few orders that would never have been accepted anyway. That is the point: you stop paying shipping both ways on parcels that come back."
+---
+
+**Short answer:** before you ship a cash-on-delivery order, send the customer a WhatsApp message with the order details and two buttons — **Confirm** and **Cancel**. Ship only confirmed orders, chase the silent ones once, and cancel the rest. It's the simplest automation a COD-heavy Indian store can add, and usually the fastest to pay for itself.
+
+## Why COD returns hurt so much
+
+COD still drives a huge share of Indian e-commerce, especially for first orders and outside the metros. The problem is what comes back.
+
+When a COD parcel is refused or can't be delivered, it goes **Return to Origin (RTO)**. You pay forward shipping, you pay return shipping, and your stock sits in transit for a week or two. You earn nothing.
+
+How big is the gap? On ClickPost's FY2026 D2C network, **37.51% of COD orders ended as RTO, against 5.28% of prepaid orders**. Meesho's FY25 prospectus reported a different measure — orders undelivered — at **22.3% for COD and 2.7% for prepaid**. Different datasets, same message: COD orders fail many times more often than prepaid ones.
+
+## Where confirmation helps (and where it doesn't)
+
+COD orders fail for several reasons:
+- **Fake or prank orders**, wrong numbers, duplicate orders.
+- **Impulse orders** the buyer regrets before the parcel arrives.
+- **Wrong or incomplete addresses.**
+- **Buyer not available** or not carrying cash.
+- **Product mismatch** — it isn't what they expected.
+
+A confirmation message catches the first three well and helps with the fourth (you can share the expected delivery date). It won't fix product mismatch — better photos, size guides and honest descriptions do.
+
+## The flow
+
+1. **Order placed (COD).** Your store tags the order *Awaiting confirmation*.
+2. **Within a few minutes:** a WhatsApp utility message goes out with the order summary and two quick-reply buttons.
+3. **Customer taps Confirm:** the tag changes to *Confirmed*; the order is released to your shipping app.
+4. **Customer taps Cancel:** the order is cancelled automatically and stock goes back.
+5. **No reply after a few hours:** one reminder.
+6. **Still no reply by your cut-off (for example, the next morning):** hold the order — call the customer, or cancel. Pick one rule and apply it every time.
+7. **Optional:** in the confirmation message, offer a small discount to pay online instead. Every COD order that converts to prepaid is one less RTO risk.
+
+## The message
+
+Keep it short, clear and recognisably from your brand. Meta classifies order confirmations as **utility** messages — keep them transactional. Adding a sales pitch can get a template re-classified as marketing (more expensive) or rejected.
+
+> Hi {{name}}, thanks for your order with **{{brand}}**!
+> Order {{order_no}}: {{items}} — ₹{{amount}} (Cash on Delivery)
+> Delivering to: {{short_address}}
+>
+> Please confirm so we can ship it today.
+> **[ Confirm order ]   [ Cancel ]**
+
+If you offer a prepaid incentive, put it in a **separate, clearly optional** line and check the template is approved as utility.
+
+## What it costs
+
+Meta charges per delivered **template message**, by category and country. Utility messages to Indian numbers cost a fraction of a rupee each, and **since 1 October 2026 utility templates are charged even inside the 24-hour customer service window** (they had been free there from July 2025). Your WhatsApp provider will add its own platform fee, and GST applies.
+
+Do the maths for your store:
+
+> **Monthly saving** ≈ COD orders × (RTO rate before − RTO rate after) × cost of one RTO
+> **Monthly cost** ≈ COD orders × messages per order × price per message + provider fee
+
+With one or two messages per order, the cost is tiny compared with even a few avoided round trips. Measure your RTO rate for a month before and after — that's your proof.
+
+Also remember: **Shopify doesn't charge its third-party transaction fee on COD orders**, so every COD order you keep (and deliver) is cheap to process. The goal isn't to kill COD — it's to stop shipping orders that were never going to be accepted.
+
+## How to set it up on Shopify
+
+You need three things:
+1. **WhatsApp Business Platform access** through an official provider (a Business Solution Provider). The plain WhatsApp Business app isn't built for automated confirmations at scale.
+2. **An approved utility template** with Confirm / Cancel buttons.
+3. **An automation** that sends the template on new COD orders and updates the order (tag, hold, cancel) based on the reply — either a Shopify app built for COD confirmation or a custom flow.
+
+Then connect the result to shipping: only *Confirmed* orders should reach your courier panel.
+
+## Mistakes to avoid
+
+- **Shipping before confirmation "to save time."** The whole point is that unconfirmed orders wait.
+- **Sending promotions in the confirmation template.** Keep utility messages utility.
+- **No rule for silent customers.** Decide hold-or-cancel and stick to it.
+- **Not measuring.** Track RTO rate on COD orders weekly.
+
+## Where this fits
+
+COD confirmation is one of the automations in our Growth System, alongside [abandoned-cart recovery](/guides/abandoned-cart-recovery-whatsapp-vs-email) and order updates. You can add it in the **Automations** step of our [package builder](/shopify-development#build).
+
+---
+
+### Sources
+- ClickPost — [Ecommerce RTO statistics India 2026](https://www.clickpost.ai/blog/ecommerce-rto-statistics-india) (COD 37.51% vs prepaid 5.28% on ClickPost's FY2026 D2C network; Meesho FY25 22.3% vs 2.7% undelivered)
+- Meta for Developers — [Pricing on the WhatsApp Business Platform](https://developers.facebook.com/docs/whatsapp/pricing)
+- Twilio — [Changes to WhatsApp's pricing, October 2026](https://support.twilio.com/hc/en-us/articles/53100462475931-Notice-Changes-to-WhatsApp-s-Pricing-October-2026) (utility templates in the service window charged from 1 October 2026)
+- Razorpay — [Shopify payment gateway cost in India](https://razorpay.com/blog/razorpay-shopify-payment-gateway-pricing-explained/) (manual payment methods such as COD exempt from Shopify's third-party fee)
+
+*Checked in November 2026. WhatsApp pricing changes quarterly; check Meta's rate card before budgeting.*

@@ -74,22 +74,22 @@ export const Footer: React.FC<FooterProps> = () => {
               Delhi
             </Link>
             <Link
+              href="/shopify-development/noida"
+              className="text-[15px] text-footer-text hover:text-white py-2 sm:py-0 min-h-[44px] sm:min-h-0 flex items-center transition-colors"
+            >
+              Noida
+            </Link>
+            <Link
               href="/shopify-development/mumbai"
               className="text-[15px] text-footer-text hover:text-white py-2 sm:py-0 min-h-[44px] sm:min-h-0 flex items-center transition-colors"
             >
               Mumbai
             </Link>
             <Link
-              href="/shopify-development/dubai"
+              href="/shopify-development/bangalore"
               className="text-[15px] text-footer-text hover:text-white py-2 sm:py-0 min-h-[44px] sm:min-h-0 flex items-center transition-colors"
             >
-              Dubai
-            </Link>
-            <Link
-              href="/shopify-development/london"
-              className="text-[15px] text-footer-text hover:text-white py-2 sm:py-0 min-h-[44px] sm:min-h-0 flex items-center transition-colors"
-            >
-              London
+              Bengaluru
             </Link>
           </nav>
 

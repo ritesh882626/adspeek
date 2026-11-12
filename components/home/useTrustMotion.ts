@@ -51,3 +51,4 @@ export function useTrustMotion<T extends HTMLElement = HTMLElement>(
     };
   });
 }
+

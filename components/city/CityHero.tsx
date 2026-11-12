@@ -15,7 +15,7 @@ export function CityHero({ city }: CityHeroProps) {
     ...(city.office ? [{ label: 'Office', value: city.office }] : []),
     { label: 'Meetings', value: city.meetings },
     { label: 'Stores built', value: city.storesBuilt },
-    { label: 'Quote', value: city.quoteTime }
+    { label: 'Quote', value: city.quote },
   ];
 
   return (
@@ -25,7 +25,7 @@ export function CityHero({ city }: CityHeroProps) {
           items={[
             { label: 'Home', href: '/' },
             { label: 'Shopify Development', href: '/shopify-development' },
-            { label: city.name }
+            { label: city.name },
           ]}
           className="mb-10 text-muted"
         />
@@ -33,8 +33,8 @@ export function CityHero({ city }: CityHeroProps) {
         <div className="flex flex-wrap gap-14 items-end">
           <div className="flex-[999_1_560px] min-w-0">
             <h1 className="text-[44px] sm:text-[56px] lg:text-[72px] font-extrabold leading-[0.98] tracking-[-0.035em] text-ink m-0">
-              Shopify development<br />
-              company in <Highlight>{city.h1Highlight}</Highlight>
+              {city.h1Lead}{' '}
+              <Highlight>{city.h1Highlight}</Highlight>
             </h1>
             <p className="text-lg sm:text-xl leading-relaxed text-body max-w-[620px] mt-7 mb-0">
               {city.heroText}
@@ -44,7 +44,7 @@ export function CityHero({ city }: CityHeroProps) {
                 Build your package
               </Button>
               <Button href="/contact" variant="outline">
-                Visit our office
+                {city.office ? 'Visit our office' : 'Book a strategy call'}
               </Button>
             </div>
           </div>
@@ -60,3 +60,5 @@ export function CityHero({ city }: CityHeroProps) {
     </section>
   );
 }
+
+export default CityHero;

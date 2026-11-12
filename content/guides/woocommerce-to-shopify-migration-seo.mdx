@@ -1,0 +1,121 @@
+---
+title: "Move from WooCommerce to Shopify without losing SEO"
+slug: "woocommerce-to-shopify-migration-seo"
+description: "A step-by-step WooCommerce to Shopify migration plan that protects your Google rankings: URL mapping, 301 redirects, data migration, launch-day checks and what to monitor after."
+category: "Migration"
+featured: false
+readMinutes: 9
+date: "2026-11-13"
+updated: "2026-11-13"
+author: "Ritesh Kumar Singh"
+authorRole: "Founder, AdsPeek"
+primaryKeyword: "woocommerce to shopify migration"
+secondaryKeywords: ["migrate woocommerce to shopify without losing seo", "woocommerce shopify redirects", "shopify migration india"]
+faq:
+  - q: "Will I lose Google rankings when I move to Shopify?"
+    a: "Not if every old URL is 301-redirected to its new equivalent and your page titles, descriptions and content come across. Expect some movement for a few weeks while Google re-crawls; a properly mapped migration usually settles back."
+  - q: "Do my URLs change?"
+    a: "Yes. Shopify uses fixed patterns — /products/ for products and /collections/ for categories — so WooCommerce URLs like /product/… and /product-category/… must each be redirected."
+  - q: "Can I move my order history and customers?"
+    a: "Yes, with a migration app such as Shopify's Store Migration app or Matrixify. Customers can't bring their old passwords; they'll set a new one through an account invite."
+  - q: "How long does a migration take?"
+    a: "It depends on catalogue size, custom data and design work. The data move itself is quick; the planning, redirects, design and testing take most of the time."
+---
+
+**Short answer:** export everything, map every old URL to its new Shopify URL, move the data with a migration app, rebuild the design, set up **301 redirects for every changed URL**, test, then switch the domain and watch Google Search Console closely for a month. The redirect map is what protects your rankings — don't skip it.
+
+## Why URLs are the risky part
+
+WooCommerce and Shopify structure URLs differently, and Shopify's patterns can't be changed:
+
+| Page | WooCommerce (default) | Shopify |
+|---|---|---|
+| Product | `/product/blue-kurta/` | `/products/blue-kurta` |
+| Category | `/product-category/kurtas/` | `/collections/kurtas` |
+| Page | `/about-us/` | `/pages/about-us` |
+| Blog post | `/my-post/` (varies) | `/blogs/news/my-post` |
+
+Every URL that Google has indexed, and every link other sites point to, needs a **301 redirect** to its new home. Without them, those pages return 404 and their rankings and link value disappear.
+
+## Step 1: Audit before you touch anything
+
+- **Crawl the current site** (Screaming Frog or a similar crawler) and export every URL with its title, meta description and H1.
+- **Export from Google Search Console** your top pages by clicks, and pages with backlinks.
+- **List every plugin** and what it does — each needs a Shopify equivalent (built-in feature, app, or custom code).
+- **Note custom data** — product attributes, size charts, custom fields. On Shopify these usually become **metafields**.
+- **Back up** the WooCommerce site and database.
+
+## Step 2: Build the redirect map
+
+A spreadsheet with two columns: **old URL → new URL**. Start with patterns, then fix exceptions:
+
+- `/product/{slug}/` → `/products/{slug}`
+- `/product-category/{slug}/` → `/collections/{slug}`
+- Pages → `/pages/{slug}`
+- Posts → `/blogs/{blog}/{slug}`
+
+Then check by hand: your top 50 pages by traffic, anything with backlinks, and URLs whose slugs will change. Never redirect everything to the homepage — Google treats that like a broken page.
+
+## Step 3: Move the data
+
+Options:
+- **Shopify's Store Migration app** — connects to WooCommerce and moves products; good for simpler stores.
+- **Matrixify** — handles large catalogues, variants, custom fields to metafields, customers and order history, and can import redirects in bulk.
+- **Paid migration services** (such as LitExtension or Cart2Cart) — hands-off moves for standard data.
+
+Things to check after import: variants and options, images and alt text, prices and compare-at prices, inventory, SEO titles and descriptions, product reviews (export and import through your reviews app), customer accounts (customers will set new passwords via an account invite).
+
+## Step 4: Rebuild the store, keep the SEO content
+
+Design is the fun part, but protect what ranks:
+- Keep **product and collection descriptions** — don't shorten text on pages that bring traffic.
+- Carry over **page titles and meta descriptions**.
+- Keep **image alt text**.
+- Make sure **structured data** (product, price, availability, reviews) is output by the new theme.
+- Recreate important **content pages** and blog posts at their new URLs.
+
+## Step 5: Import redirects and test
+
+- Import the redirect CSV into Shopify (**URL Redirects** in the admin, or via Matrixify for large files).
+- Test a sample of old URLs — at least your top 50 — and confirm each returns a **301** to the right page, not a chain of redirects.
+- Place real test orders, including COD and each payment method.
+- Check tracking (Meta Pixel, Conversions API, GA4) before switching the domain.
+
+## Step 6: Launch day
+
+- **Point the domain** to Shopify and set it as primary.
+- **Submit the new sitemap** in Google Search Console (`yourdomain.com/sitemap.xml`).
+- **Use URL inspection** on key pages to request indexing.
+- Keep the old WooCommerce site **offline but backed up** — don't leave a second copy live.
+
+## Step 7: Monitor for 4–8 weeks
+
+- **Search Console → Pages:** watch for spikes in "Not found (404)" and fix them with extra redirects.
+- **Performance:** compare clicks and impressions for your top pages week by week.
+- **Crawl the old URL list again** after launch to confirm every redirect still works.
+
+Some ranking movement in the first weeks is normal while Google re-crawls. Steady declines on specific pages usually point to a missing redirect or lost content on that page.
+
+## Common mistakes
+
+- Redirecting everything to the homepage.
+- Forgetting category, page and blog URLs (only redirecting products).
+- Dropping product descriptions or page titles in the new design.
+- Launching without testing redirects.
+- Leaving the old site live on a subdomain, creating duplicate content.
+
+## Should you migrate at all?
+
+If WooCommerce is working and you have reliable technical help, you may not need to. Read [Shopify vs WooCommerce for Indian D2C brands](/guides/shopify-vs-woocommerce-india) first. If maintenance, speed or sale-day stability are costing you, migration is usually worth it.
+
+We handle WooCommerce to Shopify migrations including the redirect map and post-launch monitoring — choose **Move to Shopify** in the [package builder](/shopify-development#build).
+
+---
+
+### Sources
+- Shopify Help Center — URL redirects (Online Store → Navigation/Content → URL redirects)
+- Shopify Community — [Migrating from WooCommerce to Shopify](https://community.shopify.com/t/migrating-from-woocommerce-to-shopify-looking-for-advice/653418) (301 redirects, Search Console checks)
+- eSEOspace — [How to migrate from WooCommerce to Shopify](https://eseospace.com/blog/migrate-woocommerce-to-shopify/) (Shopify's fixed URL structure; bulk redirects)
+- Fudge — [Migrate from WooCommerce to Shopify](https://www.fudge.ai/guides/migrate-from-woocommerce-to-shopify/) (migration apps; testing redirects; monitoring 404s)
+
+*Checked in November 2026.*

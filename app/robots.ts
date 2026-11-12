@@ -1,19 +1,13 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from '@/lib/seo';
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://adspeek.in';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/_next/'],
-      },
-      {
-        userAgent: ['GPTBot', 'ChatGPT-User', 'Google-Extended', 'PerplexityBot', 'ClaudeBot'],
-        allow: '/',
-      },
-    ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    rules: {
+      userAgent: '*',
+      allow: '/',
+    },
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

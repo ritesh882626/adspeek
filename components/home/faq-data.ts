@@ -1,6 +1,10 @@
 export interface FaqItem {
   question: string;
   answer: string;
+  link?: {
+    text: string;
+    href: string;
+  };
 }
 
 export const HOME_FAQS: FaqItem[] = [
@@ -8,6 +12,10 @@ export const HOME_FAQS: FaqItem[] = [
     question: 'How much does a Shopify store cost?',
     answer:
       'Builds start from [PRICE]. The final quote depends on pages, custom features and integrations — fixed before we start.',
+    link: {
+      text: 'See the full breakdown in our guide to Shopify costs in India.',
+      href: '/guides/shopify-store-cost-india',
+    },
   },
   {
     question: 'How long does it take?',

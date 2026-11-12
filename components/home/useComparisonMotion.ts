@@ -126,3 +126,4 @@ export function useComparisonMotion<T extends HTMLElement = HTMLElement>(
     }
   });
 }
+

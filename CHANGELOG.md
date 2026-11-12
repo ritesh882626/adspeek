@@ -45,3 +45,4 @@
 - 2026-11-13: Task M13 — FAQ: highlighter sweep + answer unmask (`components/home/Faq.tsx`, `components/home/useFaqMotion.ts`)
 - 2026-11-13: Task M14 — Final CTA: letters drop and bounce; repel cursor; tap to jump (`components/sections/CtaBand.tsx`, `components/sections/useCtaMotion.ts`, `app/page.tsx`)
 - 2026-11-13: Task M15 — Motion QA (`MOTION-QA.md`, `CHANGELOG.md`)
+- 2026-11-13: Tasks C0–C5 — Content Build: MDX pipeline, 7 guide articles, 5 city pages, real case studies work portfolio, sitemap & robots, internal linking, and Content QA report (`content/guides/*.mdx`, `data/cities.ts`, `data/work.ts`, `lib/guides.ts`, `data/guides.ts`, `components/guides/*`, `components/city/*`, `components/shopify/Overview.tsx`, `components/home/Faq.tsx`, `components/home/faq-data.ts`, `components/home/SelectedWork.tsx`, `app/sitemap.ts`, `app/robots.ts`, `CONTENT-QA.md`, `CHANGELOG.md`)

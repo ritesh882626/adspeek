@@ -34,7 +34,7 @@ export const SelectedWork: React.FC = () => {
             </h2>
           </div>
           <Link
-            href="#work-all"
+            href="/work"
             className="hidden sm:inline-flex items-center text-[16px] font-semibold text-ink underline hover:text-forest transition-colors min-h-[44px]"
           >
             See all work
@@ -63,7 +63,7 @@ export const SelectedWork: React.FC = () => {
         {/* Mobile "See all work" button/link underneath */}
         <div className="sm:hidden mt-8 text-center">
           <Link
-            href="#work-all"
+            href="/work"
             className="inline-flex items-center justify-center text-[16px] font-semibold text-ink underline min-h-[44px]"
           >
             See all work

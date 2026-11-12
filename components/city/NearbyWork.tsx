@@ -13,9 +13,9 @@ export function NearbyWork({ city }: NearbyWorkProps) {
   return (
     <section className="bg-paper border-b border-line">
       <Container className="py-14 sm:py-[72px] lg:py-24">
-        <Eyebrow className="mb-4">{city.workEyebrow}</Eyebrow>
+        <Eyebrow className="mb-4">Selected work</Eyebrow>
         <Heading level={2} className="mb-12">
-          {city.workHeading}
+          Stores built near {city.name}.
         </Heading>
 
         {/* Desktop & Tablet Grid (640px and up) */}
@@ -33,7 +33,7 @@ export function NearbyWork({ city }: NearbyWorkProps) {
                   <span>{item.location}</span>
                 </div>
                 <h3 className="text-xl sm:text-[22px] font-bold text-ink m-0">
-                  {item.name}
+                  {item.category} brand
                 </h3>
               </div>
             </div>
@@ -43,19 +43,22 @@ export function NearbyWork({ city }: NearbyWorkProps) {
         {/* Mobile Horizontal Swipe Row (below 640px) */}
         <div className="sm:hidden -mx-5 px-5 flex overflow-x-auto snap-x snap-mandatory gap-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {city.work.map((item, idx) => (
-            <div key={idx} className="flex-none w-[82vw] snap-start border border-line bg-white">
+            <div
+              key={idx}
+              className="flex-none w-[82vw] snap-start border border-line bg-white"
+            >
               <Placeholder
                 ratio="16/10"
                 label="[Store screenshot]"
                 className="w-full"
               />
-              <div className="p-5">
+              <div className="p-6">
                 <div className="flex justify-between font-mono text-xs uppercase tracking-[0.04em] text-muted mb-2">
                   <span>{item.category}</span>
                   <span>{item.location}</span>
                 </div>
-                <h3 className="text-lg font-bold text-ink m-0">
-                  {item.name}
+                <h3 className="text-xl font-bold text-ink m-0">
+                  {item.category} brand
                 </h3>
               </div>
             </div>
@@ -65,3 +68,5 @@ export function NearbyWork({ city }: NearbyWorkProps) {
     </section>
   );
 }
+
+export default NearbyWork;

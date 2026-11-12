@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Section from '../ui/Section';
 import Breadcrumb from '../ui/Breadcrumb';
 import Highlight from '../ui/Highlight';
@@ -34,6 +35,14 @@ export const Overview: React.FC = () => {
           <p className="text-[17px] sm:text-[18px] lg:text-[20px] leading-[1.5] text-body max-w-[600px] mt-8 mb-0">
             We don&apos;t sell fixed packages. You pick exactly what your store needs — catalogue size, pages, integrations and automations — and we quote for that, nothing more.
           </p>
+          <div className="mt-4">
+            <Link
+              href="/guides/shopify-store-cost-india"
+              className="text-[15px] font-medium text-ink underline hover:text-forest transition-colors"
+            >
+              How much does Shopify cost in India? Read the guide
+            </Link>
+          </div>
         </div>
 
         {/* Right column: 2x2 facts box */}

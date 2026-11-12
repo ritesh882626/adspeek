@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
+import Link from 'next/link';
 import Section from '../ui/Section';
 import Eyebrow from '../ui/Eyebrow';
 import { HOME_FAQS } from './faq-data';
@@ -18,7 +19,7 @@ export const Faq: React.FC = () => {
       name: faq.question,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: faq.answer,
+        text: faq.link ? `${faq.answer} ${faq.link.text}` : faq.answer,
       },
     })),
   };
@@ -77,6 +78,17 @@ export const Faq: React.FC = () => {
                   className="m-0 text-[15px] leading-[1.55] text-body"
                 >
                   {faq.answer}
+                  {faq.link && (
+                    <>
+                      {' '}
+                      <Link
+                        href={faq.link.href}
+                        className="underline text-ink hover:text-forest transition-colors font-medium"
+                      >
+                        {faq.link.text}
+                      </Link>
+                    </>
+                  )}
                 </dd>
               </div>
             ))}
