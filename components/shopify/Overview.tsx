@@ -24,7 +24,7 @@ export const Overview: React.FC = () => {
       <div className="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-12 lg:gap-14">
         {/* Left column */}
         <div className="w-full lg:w-[60%] flex flex-col justify-end">
-          <h1 className="text-[44px] sm:text-[56px] lg:text-[72px] leading-[0.98] tracking-[-0.035em] font-extrabold text-ink m-0">
+          <h1 className="text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.02] sm:leading-[0.98] tracking-[-0.035em] font-extrabold text-ink m-0">
             Shopify stores,
             <span className="hidden sm:inline">
               <br />
@@ -84,3 +84,4 @@ export const Overview: React.FC = () => {
 };
 
 export default Overview;
+

@@ -28,7 +28,7 @@ export function CityFaq({ city }: CityFaqProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Container className="py-16 lg:py-24">
+      <Container className="py-14 sm:py-[72px] lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
           <div>
             <Eyebrow className="mb-4">{city.faqEyebrow}</Eyebrow>

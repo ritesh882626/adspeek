@@ -94,3 +94,4 @@ Scope: Home (`/`), Shopify Service (`/shopify-development`), Contact (`/contact`
 | Footer | Privacy / Terms | `/privacy-policy` / `/terms` | Yes | Legal compliance pages |
 
 Audit Result: PASSED. All routes compile and generate static HTML without errors.
+

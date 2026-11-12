@@ -171,3 +171,4 @@ export const AUTOMATIONS: FeatureOption[] = [
     desc: 'Sent to you every Monday',
   },
 ];
+

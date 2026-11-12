@@ -32,3 +32,4 @@ export const StepPlatform: React.FC<StepPlatformProps> = ({ selected, onSelect }
 };
 
 export default StepPlatform;
+

@@ -30,3 +30,4 @@ export function Areas({ city }: AreasProps) {
     </section>
   );
 }
+

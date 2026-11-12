@@ -10,8 +10,10 @@ export const Office: React.FC = () => {
       border={true}
       padTopDesktop={96}
       padBottomDesktop={96}
-      padTopMobile={64}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={56}
+      padBottomMobile={56}
     >
       <div className="flex flex-col lg:flex-row gap-12 lg:gap-14 items-stretch w-full">
         {/* Left Column (about 35%) */}
@@ -67,3 +69,4 @@ export const Office: React.FC = () => {
 };
 
 export default Office;
+

@@ -31,3 +31,4 @@ export const TEAM_MEMBERS: TeamMember[] = [
     photoLabel: '[Photo]',
   },
 ];
+

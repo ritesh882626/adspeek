@@ -29,3 +29,4 @@ export const HOME_FAQS: FaqItem[] = [
       'Yes — products, customers and order history move across, with redirects so you keep your search rankings.',
   },
 ];
+

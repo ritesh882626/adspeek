@@ -21,7 +21,7 @@ export const AboutHero: React.FC = () => {
     >
       <Breadcrumb items={breadcrumbs} className="mb-10" />
 
-      <h1 className="text-[44px] sm:text-[56px] lg:text-[72px] leading-[0.98] tracking-[-0.035em] font-extrabold text-ink m-0">
+      <h1 className="text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.02] sm:leading-[0.98] tracking-[-0.035em] font-extrabold text-ink m-0">
         We stay
         <span className="hidden sm:inline">
           <br />
@@ -37,3 +37,4 @@ export const AboutHero: React.FC = () => {
 };
 
 export default AboutHero;
+

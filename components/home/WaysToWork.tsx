@@ -43,8 +43,10 @@ export const WaysToWork: React.FC = () => {
       border={true}
       padTopDesktop={96}
       padBottomDesktop={96}
-      padTopMobile={64}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={56}
+      padBottomMobile={56}
     >
       <Eyebrow>06 — Ways to work with us</Eyebrow>
       <h2 className="text-[32px] sm:text-[40px] lg:text-[48px] font-extrabold leading-[1.04] tracking-[-0.03em] text-ink m-0 mb-12">
@@ -129,3 +131,4 @@ export const WaysToWork: React.FC = () => {
 };
 
 export default WaysToWork;
+

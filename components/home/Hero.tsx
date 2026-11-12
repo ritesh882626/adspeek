@@ -36,8 +36,10 @@ export const Hero: React.FC = () => {
       border={true}
       padTopDesktop={88}
       padBottomDesktop={80}
-      padTopMobile={48}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={40}
+      padBottomMobile={56}
     >
       <div className="flex flex-col lg:flex-row items-stretch lg:items-end gap-12 lg:gap-14">
         {/* Left Column */}
@@ -46,7 +48,7 @@ export const Hero: React.FC = () => {
             Shopify development &amp; growth · Gurugram → worldwide
           </Eyebrow>
 
-          <h1 className="text-[44px] sm:text-[56px] lg:text-[76px] leading-[0.98] tracking-[-0.035em] font-extrabold text-ink m-0">
+          <h1 className="text-[42px] sm:text-[56px] lg:text-[76px] leading-[1.02] sm:leading-[0.98] tracking-[-0.035em] font-extrabold text-ink m-0">
             We build your store.
             <span className="hidden sm:inline">
               <br />
@@ -87,3 +89,4 @@ export const Hero: React.FC = () => {
 };
 
 export default Hero;
+

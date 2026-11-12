@@ -49,3 +49,4 @@ export const MobileSummaryBar: React.FC<MobileSummaryBarProps> = ({ itemCount })
 };
 
 export default MobileSummaryBar;
+

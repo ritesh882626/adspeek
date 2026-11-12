@@ -43,3 +43,4 @@ export const Logo: React.FC<LogoProps> = ({ tone = 'default', className = '' }) 
 };
 
 export default Logo;
+

@@ -80,3 +80,4 @@ export const StepContact: React.FC<StepContactProps> = ({ contact, onChange }) =
 };
 
 export default StepContact;
+

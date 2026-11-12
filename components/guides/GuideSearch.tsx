@@ -28,7 +28,7 @@ export function GuideSearch() {
     <form
       role="search"
       onSubmit={handleSubmit}
-      className="flex w-full max-w-[420px] items-stretch"
+      className="flex w-full max-w-full lg:max-w-[420px] items-stretch"
     >
       <label htmlFor="guide-search-input" className="sr-only">
         Search guides
@@ -50,3 +50,4 @@ export function GuideSearch() {
     </form>
   );
 }
+

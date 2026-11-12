@@ -39,3 +39,4 @@ export const StepAutomations: React.FC<StepAutomationsProps> = ({
 };
 
 export default StepAutomations;
+

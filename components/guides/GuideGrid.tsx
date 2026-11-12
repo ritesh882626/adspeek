@@ -37,7 +37,7 @@ export function GuideGrid({
 
   return (
     <section className="bg-white border-b border-line">
-      <Container className="py-16 lg:py-24">
+      <Container className="py-14 sm:py-[72px] lg:py-24">
         <Eyebrow className="mb-4">Latest guides</Eyebrow>
         <Heading level={2} className="mb-12">
           {searchQuery ? `Search results for "${searchQuery}"` : 'All publications.'}
@@ -78,3 +78,4 @@ export function GuideGrid({
     </section>
   );
 }
+

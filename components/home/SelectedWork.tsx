@@ -13,8 +13,10 @@ export const SelectedWork: React.FC = () => {
       border={true}
       padTopDesktop={96}
       padBottomDesktop={96}
-      padTopMobile={64}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={56}
+      padBottomMobile={56}
     >
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
@@ -100,3 +102,4 @@ export const SelectedWork: React.FC = () => {
 };
 
 export default SelectedWork;
+

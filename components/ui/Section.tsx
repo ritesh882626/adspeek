@@ -7,6 +7,8 @@ interface SectionProps {
   border?: boolean;
   padTopDesktop?: number;
   padBottomDesktop?: number;
+  padTopTablet?: number;
+  padBottomTablet?: number;
   padTopMobile?: number;
   padBottomMobile?: number;
   className?: string;
@@ -28,8 +30,10 @@ export const Section: React.FC<SectionProps> = ({
   border = true,
   padTopDesktop = 96,
   padBottomDesktop = 96,
-  padTopMobile = 64,
-  padBottomMobile = 64,
+  padTopTablet = 72,
+  padBottomTablet = 72,
+  padTopMobile = 56,
+  padBottomMobile = 56,
   className = '',
   containerClassName = '',
   children,
@@ -41,28 +45,36 @@ export const Section: React.FC<SectionProps> = ({
       : 'border-b border-line'
     : '';
 
-  // Map common values to clean Tailwind classes
-  const getPadTopClass = (mobile: number, desktop: number) => {
-    if (mobile === 48 && desktop === 88) return 'pt-12 lg:pt-[88px]';
-    if (mobile === 64 && desktop === 96) return 'pt-16 lg:pt-24';
-    if (mobile === 0 && desktop === 0) return 'pt-0';
-    return `pt-[${mobile}px] lg:pt-[${desktop}px]`;
+  const getPadClasses = (mTop: number, mBottom: number, tTop: number, tBottom: number, dTop: number, dBottom: number) => {
+    // Specific well-known presets
+    if (mTop === 40 && mBottom === 56 && dTop === 88 && dBottom === 80) {
+      return 'pt-10 pb-14 sm:pt-[72px] sm:pb-[72px] lg:pt-[88px] lg:pb-20';
+    }
+    if (mTop === 56 && mBottom === 56 && tTop === 72 && tBottom === 72 && dTop === 96 && dBottom === 96) {
+      return 'py-14 sm:py-[72px] lg:py-24';
+    }
+    if (mTop === 56 && mBottom === 56 && dTop === 72 && dBottom === 72) {
+      return 'py-14 lg:py-[72px]';
+    }
+    if (mTop === 64 && mBottom === 64 && dTop === 96 && dBottom === 96) {
+      return 'py-14 sm:py-[72px] lg:py-24';
+    }
+    return `pt-[${mTop}px] pb-[${mBottom}px] sm:pt-[${tTop}px] sm:pb-[${tBottom}px] lg:pt-[${dTop}px] lg:pb-[${dBottom}px]`;
   };
 
-  const getPadBottomClass = (mobile: number, desktop: number) => {
-    if (mobile === 64 && desktop === 80) return 'pb-16 lg:pb-20';
-    if (mobile === 64 && desktop === 96) return 'pb-16 lg:pb-24';
-    if (mobile === 0 && desktop === 0) return 'pb-0';
-    return `pb-[${mobile}px] lg:pb-[${desktop}px]`;
-  };
-
-  const padTopClass = getPadTopClass(padTopMobile, padTopDesktop);
-  const padBottomClass = getPadBottomClass(padBottomMobile, padBottomDesktop);
+  const padClasses = getPadClasses(
+    padTopMobile,
+    padBottomMobile,
+    padTopTablet,
+    padBottomTablet,
+    padTopDesktop,
+    padBottomDesktop
+  );
 
   return (
     <section
       id={id}
-      className={`w-full relative ${bgClass} ${borderClass} ${padTopClass} ${padBottomClass} ${className}`}
+      className={`relative w-full ${bgClass} ${borderClass} ${padClasses} ${className}`}
     >
       <Container className={containerClassName}>{children}</Container>
     </section>

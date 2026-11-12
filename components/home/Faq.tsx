@@ -24,8 +24,10 @@ export const Faq: React.FC = () => {
       border={true}
       padTopDesktop={96}
       padBottomDesktop={96}
-      padTopMobile={64}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={56}
+      padBottomMobile={56}
     >
       <script
         type="application/ld+json"
@@ -66,3 +68,4 @@ export const Faq: React.FC = () => {
 };
 
 export default Faq;
+

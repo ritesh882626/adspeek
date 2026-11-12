@@ -60,3 +60,4 @@ export const StepCatalogue: React.FC<StepCatalogueProps> = ({
 };
 
 export default StepCatalogue;
+

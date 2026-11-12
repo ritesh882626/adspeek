@@ -30,8 +30,10 @@ export const CtaBand: React.FC<CtaBandProps> = ({
       border={false}
       padTopDesktop={96}
       padBottomDesktop={96}
-      padTopMobile={64}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={56}
+      padBottomMobile={56}
       className={className}
     >
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 lg:gap-10">
@@ -56,3 +58,4 @@ export const CtaBand: React.FC<CtaBandProps> = ({
 };
 
 export default CtaBand;
+

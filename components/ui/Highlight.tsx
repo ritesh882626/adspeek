@@ -16,3 +16,4 @@ export const Highlight: React.FC<HighlightProps> = ({ children, className = '' }
 };
 
 export default Highlight;
+

@@ -25,3 +25,4 @@ export const StepHeader: React.FC<StepHeaderProps> = ({ num, title, hint }) => {
 };
 
 export default StepHeader;
+

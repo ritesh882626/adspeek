@@ -39,3 +39,4 @@ export const StepIntegrations: React.FC<StepIntegrationsProps> = ({
 };
 
 export default StepIntegrations;
+

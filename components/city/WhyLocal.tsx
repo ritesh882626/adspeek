@@ -11,15 +11,22 @@ interface WhyLocalProps {
 export function WhyLocal({ city }: WhyLocalProps) {
   return (
     <section className="bg-white border-b border-line">
-      <Container className="py-16 lg:py-24">
+      <Container className="py-14 sm:py-[72px] lg:py-24">
         <Eyebrow className="mb-4">Why a {city.name} team</Eyebrow>
         <Heading level={2} className="mb-14">
           What you get by working local.
         </Heading>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border border-ink divide-y lg:divide-y-0 lg:divide-x divide-ink">
-          {city.whyLocal.map((item) => (
-            <div key={item.number} className="p-8 flex flex-col justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-ink">
+          {city.whyLocal.map((item, idx) => (
+            <div
+              key={item.number}
+              className={`p-6 sm:p-8 flex flex-col justify-between border-line ${
+                idx % 2 !== 0 ? 'sm:border-l' : ''
+              } ${idx >= 2 ? 'sm:border-t lg:border-t-0' : ''} ${
+                idx > 0 ? 'border-t sm:border-t-0' : ''
+              } ${idx < 3 ? 'lg:border-r' : ''}`}
+            >
               <div>
                 <span className="font-mono text-sm font-medium text-muted block mb-4">
                   {item.number}

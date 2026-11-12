@@ -53,8 +53,10 @@ export const GrowthSystem: React.FC = () => {
       border={false}
       padTopDesktop={96}
       padBottomDesktop={96}
-      padTopMobile={64}
-      padBottomMobile={64}
+      padTopTablet={72}
+      padBottomTablet={72}
+      padTopMobile={56}
+      padBottomMobile={56}
     >
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
@@ -141,3 +143,4 @@ export const GrowthSystem: React.FC = () => {
 };
 
 export default GrowthSystem;
+

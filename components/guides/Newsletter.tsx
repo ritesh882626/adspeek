@@ -38,7 +38,7 @@ export function Newsletter() {
 
   return (
     <section className="bg-paper border-b border-line">
-      <Container className="py-16 lg:py-24">
+      <Container className="py-14 sm:py-[72px] lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7">
             <Eyebrow className="mb-4">Newsletter</Eyebrow>
@@ -85,3 +85,4 @@ export function Newsletter() {
     </section>
   );
 }
+

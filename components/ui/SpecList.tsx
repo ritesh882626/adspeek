@@ -48,3 +48,4 @@ export const SpecList: React.FC<SpecListProps> = ({
 };
 
 export default SpecList;
+
