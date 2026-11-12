@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Schibsted_Grotesk, IBM_Plex_Mono } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
+import './motion.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -33,6 +34,25 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${schibsted.variable} ${ibmMono.variable}`}>
       <head>
+        {/* Hero no-flash script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.documentElement.classList.add('js-motion');
+                    setTimeout(function() {
+                      if (!document.documentElement.hasAttribute('data-hero-ready')) {
+                        document.documentElement.classList.remove('js-motion');
+                      }
+                    }, 3000);
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         {/* Google Tag (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-WS7KK8PM" />
         <script

@@ -10,6 +10,7 @@ import WaysToWork from '@/components/home/WaysToWork';
 import Faq from '@/components/home/Faq';
 import CtaBand from '@/components/sections/CtaBand';
 import OrganizationSchema from '@/components/seo/OrganizationSchema';
+import ViewfinderCursor from '@/components/motion/ViewfinderCursor';
 
 export const metadata: Metadata = {
   title: 'AdsPeek — Shopify Development & Growth Studio, Gurugram',
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <ViewfinderCursor />
       <OrganizationSchema />
       <Hero />
       <TrustStrip />
@@ -35,6 +37,7 @@ export default function HomePage() {
       <Faq />
       <CtaBand
         id="book"
+        playful={true}
         heading={
           <>
             Tell us about your brand.

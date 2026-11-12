@@ -1,9 +1,15 @@
-import React from 'react';
+'use client';
+
+import React, { useRef } from 'react';
 import Link from 'next/link';
 import Section from '../ui/Section';
 import Eyebrow from '../ui/Eyebrow';
+import { useServicesMotion } from './useServicesMotion';
 
 export const ServicesList: React.FC = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useServicesMotion(sectionRef);
+
   const services = [
     {
       code: 'S1',
@@ -40,65 +46,76 @@ export const ServicesList: React.FC = () => {
   ];
 
   return (
-    <Section
-      id="services"
-      bg="white"
-      border={true}
-      padTopDesktop={96}
-      padBottomDesktop={96}
-      padTopTablet={72}
-      padBottomTablet={72}
-      padTopMobile={56}
-      padBottomMobile={56}
-    >
-      <Eyebrow>02 — Services</Eyebrow>
-      <h2 className="text-[32px] sm:text-[40px] lg:text-[48px] font-extrabold leading-[1.04] tracking-[-0.03em] text-ink m-0 mb-12">
-        Four things we do.
-        <span className="hidden sm:inline">
-          <br />
-        </span>{' '}
-        All of them connect.
-      </h2>
+    <div ref={sectionRef}>
+      <Section
+        id="services"
+        bg="white"
+        border={true}
+        padTopDesktop={96}
+        padBottomDesktop={96}
+        padTopTablet={72}
+        padBottomTablet={72}
+        padTopMobile={56}
+        padBottomMobile={56}
+      >
+        <Eyebrow decode>02 — Services</Eyebrow>
+        <h2 className="text-[32px] sm:text-[40px] lg:text-[48px] font-extrabold leading-[1.04] tracking-[-0.03em] text-ink m-0 mb-12">
+          Four things we do.
+          <span className="hidden sm:inline">
+            <br />
+          </span>{' '}
+          All of them connect.
+        </h2>
 
-      <div className="border-t-2 border-ink">
-        {services.map((service, index) => (
-          <Link
-            key={index}
-            href={service.href}
-            className="group block border-b border-line py-6 sm:py-8 transition-colors text-ink"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr] gap-4 sm:gap-6 items-baseline">
-              {/* Col 1: Code + Title */}
-              <div className="flex items-baseline gap-4 sm:gap-5">
-                <span className="font-mono text-[13px] sm:text-[14px] text-muted shrink-0">
-                  {service.code}
-                </span>
-                <span className="text-[24px] sm:text-[28px] lg:text-[30px] font-bold tracking-[-0.02em] text-ink group-hover:text-forest transition-colors">
-                  {service.name}
-                </span>
-              </div>
+        <div className="border-t-2 border-ink">
+          {services.map((service, index) => (
+            <Link
+              key={index}
+              href={service.href}
+              data-motion="svc-row"
+              className="group block border-b border-line py-6 sm:py-8 transition-colors text-ink relative overflow-hidden"
+            >
+              <span data-motion="svc-fill" className="svc-fill" />
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr] gap-4 sm:gap-6 items-baseline relative z-10"
+              >
+                {/* Col 1: Code + Title */}
+                <div className="flex items-baseline gap-4 sm:gap-5">
+                  <span
+                    data-motion="svc-code"
+                    className="font-mono text-[13px] sm:text-[14px] text-muted shrink-0"
+                  >
+                    {service.code}
+                  </span>
+                  <span
+                    data-motion="svc-name"
+                    className="text-[24px] sm:text-[28px] lg:text-[30px] font-bold tracking-[-0.02em] text-ink group-hover:text-forest transition-colors inline-block"
+                  >
+                    {service.name}
+                  </span>
+                </div>
 
-              {/* Col 2: Description */}
-              <p className="m-0 text-[15px] sm:text-[16px] leading-[1.55] text-body">
-                {service.description}
-              </p>
-
-              {/* Col 3: For audience */}
-              <div className="md:col-start-2 lg:col-start-3">
-                <span className="font-mono text-[12px] uppercase tracking-[0.04em] text-muted block mb-1">
-                  For
-                </span>
-                <p className="m-0 text-[14px] sm:text-[15px] leading-[1.55] text-muted">
-                  {service.forAudience}
+                {/* Col 2: Description */}
+                <p className="m-0 text-[15px] sm:text-[16px] leading-[1.55] text-body">
+                  {service.description}
                 </p>
+
+                {/* Col 3: For audience */}
+                <div className="md:col-start-2 lg:col-start-3">
+                  <span className="font-mono text-[12px] uppercase tracking-[0.04em] text-muted block mb-1">
+                    For
+                  </span>
+                  <p className="m-0 text-[14px] sm:text-[15px] leading-[1.55] text-muted">
+                    {service.forAudience}
+                  </p>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </Section>
+            </Link>
+          ))}
+        </div>
+      </Section>
+    </div>
   );
 };
 
 export default ServicesList;
-

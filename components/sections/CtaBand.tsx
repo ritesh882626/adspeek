@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useRef } from 'react';
 import Section from '../ui/Section';
 import Button from '../ui/Button';
+import { useCtaMotion } from './useCtaMotion';
 
 interface CtaBandProps {
   id?: string;
@@ -14,6 +17,7 @@ interface CtaBandProps {
     href: string;
   };
   className?: string;
+  playful?: boolean;
 }
 
 export const CtaBand: React.FC<CtaBandProps> = ({
@@ -22,40 +26,53 @@ export const CtaBand: React.FC<CtaBandProps> = ({
   primary = { label: 'Book a free strategy call', href: '/contact' },
   secondary = { label: 'WhatsApp us', href: '#whatsapp' },
   className = '',
+  playful = false,
 }) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useCtaMotion(sectionRef, playful);
+
   return (
-    <Section
-      id={id}
-      bg="accent"
-      border={false}
-      padTopDesktop={96}
-      padBottomDesktop={96}
-      padTopTablet={72}
-      padBottomTablet={72}
-      padTopMobile={56}
-      padBottomMobile={56}
-      className={className}
-    >
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 lg:gap-10">
-        <h2 className="text-[36px] sm:text-[48px] lg:text-[64px] font-extrabold leading-[1] tracking-[-0.035em] text-ink m-0 max-w-full lg:max-w-[62%]">
-          {heading}
-        </h2>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
-          {primary && (
-            <Button href={primary.href} variant="dark">
-              {primary.label}
-            </Button>
-          )}
-          {secondary && (
-            <Button href={secondary.href} variant="outline-thick">
-              {secondary.label}
-            </Button>
-          )}
+    <div ref={sectionRef}>
+      <Section
+        id={id}
+        bg="accent"
+        border={false}
+        padTopDesktop={96}
+        padBottomDesktop={96}
+        padTopTablet={72}
+        padBottomTablet={72}
+        padTopMobile={56}
+        padBottomMobile={56}
+        className={className}
+      >
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 lg:gap-10">
+          <h2
+            data-motion="cta-heading"
+            aria-label="Tell us about your brand. We'll map the system."
+            className="text-[36px] sm:text-[48px] lg:text-[64px] font-extrabold leading-[1] tracking-[-0.035em] text-ink m-0 max-w-full lg:max-w-[62%]"
+          >
+            {heading}
+          </h2>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
+            {primary && (
+              <div data-motion="cta-btn">
+                <Button href={primary.href} variant="dark">
+                  {primary.label}
+                </Button>
+              </div>
+            )}
+            {secondary && (
+              <div data-motion="cta-btn">
+                <Button href={secondary.href} variant="outline-thick">
+                  {secondary.label}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </Section>
+      </Section>
+    </div>
   );
 };
 
 export default CtaBand;
-

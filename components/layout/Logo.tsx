@@ -20,6 +20,7 @@ export const Logo: React.FC<LogoProps> = ({ tone = 'default', className = '' }) 
     >
       {/* Viewfinder mark */}
       <div
+        data-motion="logo-square"
         className={`relative w-[22px] h-[22px] ${markBg} flex items-center justify-center shrink-0 p-[2px]`}
         aria-hidden="true"
       >

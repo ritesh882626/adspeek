@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import Container from '../ui/Container';
 import Logo from './Logo';
 import MobileMenu from './MobileMenu';
+import { useHeaderMotion } from './useHeaderMotion';
 
 interface HeaderProps {
   onOpenConsultation?: () => void;
@@ -12,6 +13,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  useHeaderMotion(headerRef, mobileMenuOpen);
 
   const navLinks = [
     { label: 'Services', href: '/shopify-development' },
@@ -22,7 +25,7 @@ export const Header: React.FC<HeaderProps> = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-paper border-b border-line">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full bg-paper border-b border-line">
       <Container className="flex items-center justify-between h-[64px] lg:h-[80px]">
         {/* Left: Brand Logo */}
         <div className="flex items-center">

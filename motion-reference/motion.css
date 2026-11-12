@@ -1,0 +1,31 @@
+.js-motion #top .wrap{opacity:0}
+.ch{display:inline-block}
+.w{display:inline-block;white-space:nowrap}
+#vf{position:fixed;left:0;top:0;pointer-events:none;z-index:9999;mix-blend-mode:difference}
+#vf i{position:absolute;width:9px;height:9px;border:0 solid #fff}
+#vf i:nth-child(1){left:0;top:0;border-left-width:2px;border-top-width:2px}
+#vf i:nth-child(2){right:0;top:0;border-right-width:2px;border-top-width:2px}
+#vf i:nth-child(3){left:0;bottom:0;border-left-width:2px;border-bottom-width:2px}
+#vf i:nth-child(4){right:0;bottom:0;border-right-width:2px;border-bottom-width:2px}
+.flap{display:inline-block}
+.tx{position:relative}
+.strike{position:absolute;left:-2px;right:-2px;top:52%;height:2px;background:#111410;transform:scaleX(0);transform-origin:0 50%;pointer-events:none}
+.svc-fill{position:absolute;inset:0;background:#C8F03C;z-index:0;pointer-events:none}
+.loop-svg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
+.loop-base{fill:none;stroke:#3C6A5A;stroke-width:2;stroke-dasharray:3 7}
+.loop-prog{fill:none;stroke:#C8F03C;stroke-width:2}
+.loop-dot{fill:#C8F03C}
+.loop-halo{fill:#C8F03C;opacity:.35}
+.sys-chip{background:#0F3D2E;padding:4px 8px;margin:-4px -8px;display:inline-block;position:relative}
+.tick{display:inline-block;color:#C8F03C;margin-right:8px;transform:scale(0);opacity:0}
+.vf-wrap{position:relative}
+.vf-wrap>div{overflow:hidden}
+.vf-c{position:absolute;width:18px;height:18px;border:0 solid #111410;pointer-events:none;z-index:2}
+.vf-tl{left:10px;top:10px;border-left-width:2px;border-top-width:2px}
+.vf-tr{right:10px;top:10px;border-right-width:2px;border-top-width:2px}
+.vf-bl{left:10px;bottom:10px;border-left-width:2px;border-bottom-width:2px}
+.vf-br{right:10px;bottom:10px;border-right-width:2px;border-bottom-width:2px}
+.pbar{position:absolute;left:0;right:0;top:-2px;height:3px;background:#C8F03C;transform:scaleX(0);transform-origin:0 50%}
+.proc-ol>li .pbar{right:20px}
+@media (max-width:639px){.proc-ol>li .pbar{right:0}}
+@media (prefers-reduced-motion: reduce){.js-motion #top .wrap{opacity:1}}
