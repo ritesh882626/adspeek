@@ -2,14 +2,27 @@ import React from 'react';
 import Link from 'next/link';
 import Section from '../ui/Section';
 import Eyebrow from '../ui/Eyebrow';
-import Placeholder from '../ui/Placeholder';
-import { WORK_PROJECTS } from '@/data/work';
+import WorkWindow from '../work/WorkWindow';
+import { PROJECTS, GROUP_LABELS, Project } from '@/data/portfolio';
 
-export const RelatedWork: React.FC = () => {
+interface RelatedWorkProps {
+  heading?: string;
+  eyebrow?: string;
+  limit?: number;
+}
+
+export const RelatedWork: React.FC<RelatedWorkProps> = ({
+  heading = "Shopify stores we've built.",
+  eyebrow = "Related work",
+  limit = 6,
+}) => {
+  const displayProjects: Project[] = PROJECTS.slice(0, limit);
+  const durations = [14, 16, 18, 15, 17, 19];
+
   return (
     <Section
       id="work"
-      bg="white"
+      bg="paper"
       border={true}
       padTopDesktop={96}
       padBottomDesktop={96}
@@ -21,13 +34,13 @@ export const RelatedWork: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
         <div>
-          <Eyebrow>Related work</Eyebrow>
+          <Eyebrow>{eyebrow}</Eyebrow>
           <h2 className="text-[32px] sm:text-[40px] lg:text-[48px] font-extrabold leading-[1.04] tracking-[-0.03em] text-ink m-0">
-            Shopify stores we&apos;ve built.
+            {heading}
           </h2>
         </div>
         <Link
-          href="#work-all"
+          href="/work"
           className="hidden sm:inline-flex items-center text-[16px] font-semibold text-ink underline hover:text-forest transition-colors min-h-[44px]"
         >
           See all work
@@ -36,69 +49,109 @@ export const RelatedWork: React.FC = () => {
 
       {/* Desktop & Tablet Grid (640px and up) */}
       <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-        {WORK_PROJECTS.map((project) => (
-          <Link
-            key={project.id}
-            href={project.href}
-            className="group flex flex-col gap-3.5 text-ink no-underline"
-          >
-            <Placeholder
-              ratio="4/3"
-              label={project.imageLabel}
-              className="w-full"
-            />
-            <div className="flex justify-between items-center font-mono text-[12px] uppercase tracking-[0.04em] text-muted">
-              <span>{project.category}</span>
-              <span>{project.platform}</span>
+        {displayProjects.map((project, index) => {
+          const duration = durations[index % durations.length];
+          return (
+            <div
+              key={project.id}
+              className="flex flex-col justify-between text-ink"
+            >
+              <div>
+                <WorkWindow
+                  project={project}
+                  view="desktop"
+                  duration={duration}
+                  className="w-full mb-4"
+                />
+                <div className="flex justify-between items-center font-mono text-[12px] uppercase tracking-[0.04em] text-muted mb-2">
+                  <span>{GROUP_LABELS[project.group]}</span>
+                  <span>{project.platform}</span>
+                </div>
+                <h3 className="m-0 text-[20px] font-bold tracking-[-0.01em] text-ink mb-1.5">
+                  {project.name}
+                </h3>
+                <p className="m-0 text-[14px] leading-[1.5] text-body mb-3">
+                  {project.description}
+                </p>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] font-semibold text-ink underline hover:text-forest transition-colors min-h-[44px] inline-flex items-center"
+                >
+                  Visit {project.name}
+                </a>
+                <Link
+                  href="/work"
+                  className="text-[13px] font-mono text-muted hover:text-forest transition-colors"
+                >
+                  View in work
+                </Link>
+              </div>
             </div>
-            <p className="m-0 text-[20px] font-bold tracking-[-0.01em] text-ink group-hover:text-forest transition-colors">
-              {project.name}
-            </p>
-            {project.packageSummary && (
-              <p className="m-0 text-[14px] leading-[1.5] text-body">
-                <strong>Package:</strong> {project.packageSummary}
-              </p>
-            )}
-          </Link>
-        ))}
+          );
+        })}
       </div>
 
       {/* Mobile Horizontal Swipe Row (below 640px) */}
       <div className="sm:hidden -mx-5 px-5 flex overflow-x-auto snap-x snap-mandatory gap-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {WORK_PROJECTS.map((project) => (
-          <Link
-            key={project.id}
-            href={project.href}
-            className="flex-none w-[82vw] snap-start flex flex-col gap-3.5 text-ink no-underline"
-          >
-            <Placeholder
-              ratio="4/3"
-              label={project.imageLabel}
-              className="w-full"
-            />
-            <div className="flex justify-between items-center font-mono text-[12px] uppercase tracking-[0.04em] text-muted">
-              <span>{project.category}</span>
-              <span>{project.platform}</span>
+        {displayProjects.map((project, index) => {
+          const duration = durations[index % durations.length];
+          return (
+            <div
+              key={project.id}
+              className="flex-none w-[82vw] snap-start flex flex-col justify-between text-ink"
+            >
+              <div>
+                <WorkWindow
+                  project={project}
+                  view="desktop"
+                  duration={duration}
+                  className="w-full mb-4"
+                />
+                <div className="flex justify-between items-center font-mono text-[12px] uppercase tracking-[0.04em] text-muted mb-2">
+                  <span>{GROUP_LABELS[project.group]}</span>
+                  <span>{project.platform}</span>
+                </div>
+                <h3 className="m-0 text-[19px] font-bold tracking-[-0.01em] text-ink mb-1.5">
+                  {project.name}
+                </h3>
+                <p className="m-0 text-[13px] leading-[1.5] text-body mb-3">
+                  {project.description}
+                </p>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] font-semibold text-ink underline min-h-[44px] inline-flex items-center"
+                >
+                  Visit {project.name}
+                </a>
+                <Link
+                  href="/work"
+                  className="text-[13px] font-mono text-muted"
+                >
+                  View in work
+                </Link>
+              </div>
             </div>
-            <p className="m-0 text-[18px] font-bold tracking-[-0.01em] text-ink">
-              {project.name}
-            </p>
-            {project.packageSummary && (
-              <p className="m-0 text-[13px] leading-[1.5] text-body">
-                <strong>Package:</strong> {project.packageSummary}
-              </p>
-            )}
-          </Link>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Mobile "See all work" button/link underneath */}
-      <div className="sm:hidden mt-8 text-center">
+      {/* Bottom "View all client projects" CTA */}
+      <div className="mt-12 text-center">
         <Link
-          href="#work-all"
-          className="inline-flex items-center justify-center text-[16px] font-semibold text-ink underline min-h-[44px]"
+          href="/work"
+          className="inline-flex items-center justify-center px-7 py-3.5 bg-ink text-white font-semibold text-[15px] hover:bg-forest transition-colors min-h-[44px]"
         >
-          See all work
+          View all {PROJECTS.length} client projects
         </Link>
       </div>
     </Section>
@@ -106,4 +159,3 @@ export const RelatedWork: React.FC = () => {
 };
 
 export default RelatedWork;
-

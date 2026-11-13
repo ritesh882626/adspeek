@@ -12,6 +12,7 @@ import { AnswerBlock } from '@/components/ui/AnswerBlock';
 import { FaqBlock } from '@/components/ui/FaqBlock';
 import { CtaBand } from '@/components/ui/CtaBand';
 import { JsonLd } from '@/components/ui/JsonLd';
+import RelatedWork from '@/components/shopify/RelatedWork';
 
 export const dynamicParams = false;
 
@@ -132,6 +133,13 @@ export default async function MigrationChildPage({
           </div>
         </Container>
       </section>
+
+      {/* Real Work Showcase */}
+      <RelatedWork
+        heading="Stores we've built &amp; scaled on Shopify."
+        eyebrow="Proven migration &amp; store results"
+        limit={3}
+      />
 
       {/* FAQs */}
       <Container>

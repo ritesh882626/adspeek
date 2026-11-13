@@ -12,6 +12,7 @@ import { AnswerBlock } from '@/components/ui/AnswerBlock';
 import { FaqBlock } from '@/components/ui/FaqBlock';
 import { CtaBand } from '@/components/ui/CtaBand';
 import { JsonLd } from '@/components/ui/JsonLd';
+import RelatedWork from '@/components/shopify/RelatedWork';
 
 export const dynamicParams = false;
 
@@ -172,6 +173,13 @@ export default async function ServiceDetailPage({
           </div>
         </Container>
       </section>
+
+      {/* Real Work Showcase */}
+      <RelatedWork
+        heading="Live Shopify stores we've engineered."
+        eyebrow="Proven client results"
+        limit={3}
+      />
 
       {/* Service FAQs */}
       <Container>

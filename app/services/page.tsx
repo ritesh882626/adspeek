@@ -7,6 +7,7 @@ import { buildMetadata } from '@/lib/seo';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { CtaBand } from '@/components/ui/CtaBand';
+import RelatedWork from '@/components/shopify/RelatedWork';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Shopify Development & eCommerce Services | AdsPeek',
@@ -97,6 +98,13 @@ export default function ServicesHubPage() {
           </div>
         </Container>
       </section>
+
+      {/* Real Client Work Showcase */}
+      <RelatedWork
+        heading="Shopify stores we've engineered."
+        eyebrow="Our work in production"
+        limit={6}
+      />
 
       {/* Migration Feature Strip */}
       <section className="py-12 bg-white border-y border-gray-200/70">
