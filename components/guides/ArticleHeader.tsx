@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Container from '../ui/Container';
 
 interface ArticleHeaderProps {
@@ -10,6 +11,7 @@ interface ArticleHeaderProps {
   authorRole: string;
   updated: string;
   readMinutes: number | string;
+  cover?: string;
 }
 
 function formatDate(iso: string) {
@@ -31,6 +33,7 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
   authorRole,
   updated,
   readMinutes,
+  cover,
 }) => {
   return (
     <header className="bg-paper border-b border-line pt-10 pb-12 sm:pt-14 sm:pb-16 w-full">
@@ -81,9 +84,24 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({
           <span>·</span>
           <span>{readMinutes} min read</span>
         </div>
+
+        {/* Featured Cover Banner */}
+        {cover && (
+          <div className="mt-8 sm:mt-10 relative w-full aspect-[16/9] sm:aspect-[21/9] max-h-[500px] overflow-hidden border border-line bg-[#EAE8E1]">
+            <Image
+              src={cover}
+              alt={title}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 1200px"
+              className="object-cover"
+            />
+          </div>
+        )}
       </Container>
     </header>
   );
 };
 
 export default ArticleHeader;
+

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Placeholder } from '../ui/Placeholder';
 import { Guide } from '@/data/guides';
 
@@ -14,11 +15,23 @@ export function GuideCard({ guide }: GuideCardProps) {
       className="group flex flex-col justify-between border-b border-line pb-8 hover:opacity-95 transition-opacity"
     >
       <div>
-        <Placeholder
-          ratio="16/10"
-          label="[Cover image]"
-          className="w-full mb-5 aspect-[16/9] sm:aspect-[16/10]"
-        />
+        <div className="relative w-full mb-5 aspect-[16/10] overflow-hidden bg-[#EAE8E1] border border-line">
+          {guide.cover ? (
+            <Image
+              src={guide.cover}
+              alt={guide.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            />
+          ) : (
+            <Placeholder
+              ratio="16/10"
+              label="[Cover image]"
+              className="w-full h-full"
+            />
+          )}
+        </div>
         <div className="flex justify-between items-center font-mono text-xs text-muted mb-2.5 uppercase tracking-[0.04em]">
           <span className="font-semibold text-ink">{guide.category}</span>
           <span>

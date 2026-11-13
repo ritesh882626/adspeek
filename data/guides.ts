@@ -42,5 +42,5 @@ export const GUIDES: Guide[] = getAllGuides().map((g) => ({
   readMinutes: `${g.readMinutes} min read`,
   date: formatDate(g.date),
   featured: g.featured,
-  cover: g.cover,
+  cover: g.cover || `/images/guides/${g.slug}.jpg`,
 }));

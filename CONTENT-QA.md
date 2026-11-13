@@ -141,3 +141,4 @@ Each page category outputs appropriate Schema.org structured data:
 
 - **Market Commentary Comparison:** Scanned all paragraphs in `marketText` across Gurugram, Delhi, Noida, Mumbai, and Bengaluru.
 - **Result:** **0 duplicate paragraphs**. 100% unique city-specific context and local data (citing Inc42, Colliers, Delhi NCR hubs, Bhiwandi warehousing, Bengaluru D2C funding).
+

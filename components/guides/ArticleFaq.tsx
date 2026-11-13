@@ -58,3 +58,4 @@ export const ArticleFaq: React.FC<ArticleFaqProps> = ({ faq }) => {
 };
 
 export default ArticleFaq;
+

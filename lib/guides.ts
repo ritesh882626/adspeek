@@ -58,7 +58,7 @@ export function getAllGuides(): GuideFrontmatter[] {
       primaryKeyword: data.primaryKeyword,
       secondaryKeywords: data.secondaryKeywords,
       faq: data.faq || [],
-      cover: data.cover,
+      cover: data.cover || `/images/guides/${slug}.jpg`,
     });
   }
 
@@ -93,7 +93,7 @@ export function getGuide(slug: string): GuideArticle | null {
       primaryKeyword: data.primaryKeyword,
       secondaryKeywords: data.secondaryKeywords,
       faq: data.faq || [],
-      cover: data.cover,
+      cover: data.cover || `/images/guides/${slug}.jpg`,
     },
     content,
   };
@@ -110,3 +110,4 @@ export function getRelatedGuides(slug: string, n = 3): GuideFrontmatter[] {
   const combined = [...sameCategory, ...otherCategory];
   return combined.slice(0, n);
 }
+

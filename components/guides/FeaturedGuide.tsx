@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Container } from '../ui/Container';
 import { Placeholder } from '../ui/Placeholder';
 import { Guide } from '@/data/guides';
@@ -17,12 +18,23 @@ export function FeaturedGuide({ guide }: FeaturedGuideProps) {
           className="group block border border-line bg-white hover:border-ink transition-colors"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-            <div className="lg:col-span-7 border-b lg:border-b-0 lg:border-r border-line">
-              <Placeholder
-                ratio="16/9"
-                label="[Featured guide cover]"
-                className="w-full h-full min-h-[260px] sm:min-h-[340px]"
-              />
+            <div className="lg:col-span-7 border-b lg:border-b-0 lg:border-r border-line relative overflow-hidden bg-[#EAE8E1] min-h-[260px] sm:min-h-[340px]">
+              {guide.cover ? (
+                <Image
+                  src={guide.cover}
+                  alt={guide.title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                />
+              ) : (
+                <Placeholder
+                  ratio="16/9"
+                  label="[Featured guide cover]"
+                  className="w-full h-full min-h-[260px] sm:min-h-[340px]"
+                />
+              )}
             </div>
             <div className="lg:col-span-5 p-6 sm:p-8 lg:p-12 flex flex-col justify-between">
               <div>

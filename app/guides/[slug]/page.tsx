@@ -26,7 +26,11 @@ export async function generateMetadata({
   if (!guide) return {};
 
   const { frontmatter } = guide;
+  const coverUrl = frontmatter.cover || `/images/guides/${slug}.jpg`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://adspeek.in';
+
   return {
+    metadataBase: new URL(siteUrl),
     title: `${frontmatter.title} | AdsPeek`,
     description: frontmatter.description,
     alternates: {
@@ -39,6 +43,20 @@ export async function generateMetadata({
       publishedTime: frontmatter.date,
       modifiedTime: frontmatter.updated || frontmatter.date,
       authors: [frontmatter.author],
+      images: [
+        {
+          url: coverUrl,
+          width: 1200,
+          height: 675,
+          alt: frontmatter.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: frontmatter.title,
+      description: frontmatter.description,
+      images: [coverUrl],
     },
   };
 }
@@ -76,11 +94,14 @@ export default async function GuideArticlePage({
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://adspeek.com';
 
+  const coverUrl = frontmatter.cover || `/images/guides/${slug}.jpg`;
+
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: frontmatter.title,
     description: frontmatter.description,
+    image: `${siteUrl}${coverUrl}`,
     datePublished: frontmatter.date,
     dateModified: frontmatter.updated || frontmatter.date,
     author: {
@@ -147,6 +168,7 @@ export default async function GuideArticlePage({
         authorRole={frontmatter.authorRole}
         updated={frontmatter.updated}
         readMinutes={frontmatter.readMinutes}
+        cover={coverUrl}
       />
 
       <ArticleBody content={content} tocItems={tocItems} />
@@ -176,3 +198,4 @@ export default async function GuideArticlePage({
     </>
   );
 }
+
