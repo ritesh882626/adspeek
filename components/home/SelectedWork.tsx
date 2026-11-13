@@ -8,7 +8,7 @@ import WorkWindow from '../work/WorkWindow';
 import { PROJECTS, GROUP_LABELS, Project } from '@/data/portfolio';
 import { useWorkMotion } from './useWorkMotion';
 
-const FEATURED_IDS = ['hihomes', 'reliquary', 'pawnourish'];
+const FEATURED_IDS = ['arhan-rugs', 'miamour', 'stance'];
 
 export const SelectedWork: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);

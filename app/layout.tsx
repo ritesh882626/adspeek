@@ -24,6 +24,13 @@ export const metadata: Metadata = {
   title: 'AdsPeek — Shopify Development & Growth Studio, Gurugram',
   description:
     'Custom Shopify storefronts, migrations, and growth systems built for ambitious direct-to-consumer brands.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+  },
 };
 
 export default function RootLayout({

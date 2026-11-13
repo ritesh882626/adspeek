@@ -24,7 +24,7 @@ export const TrustStrip: React.FC = () => {
               data-motion="numbers"
               className="text-[30px] sm:text-[40px] font-extrabold tracking-[-0.03em] text-ink m-0 leading-none"
             >
-              [XX]
+              50+
             </p>
             <p className="mt-1.5 mb-0 text-muted text-[15px]">
               Stores launched
@@ -37,7 +37,7 @@ export const TrustStrip: React.FC = () => {
               data-motion="numbers"
               className="text-[30px] sm:text-[40px] font-extrabold tracking-[-0.03em] text-ink m-0 leading-none"
             >
-              [X]+ yrs
+              2+ yrs
             </p>
             <p className="mt-1.5 mb-0 text-muted text-[15px]">
               Building and running D2C brands
@@ -50,7 +50,7 @@ export const TrustStrip: React.FC = () => {
               data-motion="numbers"
               className="text-[30px] sm:text-[40px] font-extrabold tracking-[-0.03em] text-ink m-0 leading-none"
             >
-              [X] countries
+              4+ countries
             </p>
             <p className="mt-1.5 mb-0 text-muted text-[15px]">
               Clients across India, UAE, UK, US

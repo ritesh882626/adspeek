@@ -11,25 +11,25 @@ export const ProcessTimeline: React.FC = () => {
 
   const steps = [
     {
-      timing: 'Week [1]',
+      timing: 'Week 1',
       isChip: false,
       title: 'Strategy call',
       desc: 'Goals, products, budget and a fixed quote.',
     },
     {
-      timing: 'Week [1–2]',
+      timing: 'Week 1–2',
       isChip: false,
       title: 'Design',
       desc: 'Homepage and key pages for your approval.',
     },
     {
-      timing: 'Week [3–5]',
+      timing: 'Week 2–3',
       isChip: false,
       title: 'Build & QA',
       desc: 'Store built, tested on every device.',
     },
     {
-      timing: 'Week [6]',
+      timing: 'Week 3–4',
       isChip: false,
       title: 'Launch',
       desc: 'Tracking live, first campaigns switched on.',

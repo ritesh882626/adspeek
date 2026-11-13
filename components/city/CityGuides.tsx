@@ -33,6 +33,7 @@ export function CityGuides({ cityName, citySlug }: CityGuidesProps) {
       readMinutes: `${g.frontmatter.readMinutes}`,
       date: g.frontmatter.date,
       featured: g.frontmatter.featured,
+      cover: g.frontmatter.cover,
     }));
 
   return (

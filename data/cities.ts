@@ -22,7 +22,7 @@ export type City = {
   marketHeading: string;
   marketText: string[];
   areas: string[];
-  work: { category: string; location: string }[];
+  work: { category: string; location: string; projectId?: string }[];
   faq: { q: string; a: string }[];
   nearby: string[];
   sources: { label: string; url: string }[];
@@ -41,8 +41,8 @@ export const CITIES: Record<string, City> = {
       'We design and build Shopify stores for Gurugram brands, then run the ads and automations that turn the launch into steady sales. Our office is in Sector 22 — come over, or we will come to you.',
     office: 'Sector 22, Gurugram',
     meetings: 'In person or online',
-    storesBuilt: '[XX] across NCR',
-    quote: 'Within [24 hours]',
+    storesBuilt: '50+ across NCR',
+    quote: 'Within 24 hours',
     whyLocalHeading: 'Why a Gurugram team',
     whyLocal: [
       { title: 'Meet in person', text: 'Workshops, design reviews and handover happen at our Sector 22 office or at yours — no time-zone gaps, no week-long email threads.' },
@@ -58,12 +58,12 @@ export const CITIES: Record<string, City> = {
     ],
     areas: ['Cyber City', 'Golf Course Road', 'Sohna Road', 'Udyog Vihar', 'DLF Phases 1–5', 'MG Road', 'Sector 29', 'Golf Course Extension Road', 'Manesar'],
     work: [
-      { category: '[Category]', location: 'Gurugram' },
-      { category: '[Category]', location: 'Delhi NCR' },
-      { category: '[Category]', location: '[City]' },
+      { category: 'Rugs & home', location: 'Gurugram / NCR', projectId: 'arhan-rugs' },
+      { category: 'Clothing & intimates', location: 'Delhi NCR', projectId: 'miamour' },
+      { category: 'Pet nutrition', location: 'Delhi NCR', projectId: 'pawnourish' },
     ],
     faq: [
-      { q: 'How much does a Shopify store cost in Gurugram?', a: 'It depends on the pages, integrations and automations you choose in our package builder — you get an itemised quote within [24 hours]. Stores start from [₹ PRICE]. For platform costs, see our guide to Shopify pricing in India.' },
+      { q: 'How much does a Shopify store cost in Gurugram?', a: 'It depends on the pages, integrations and automations you choose in our package builder — you get an itemised quote within 24 hours. Stores start from ₹14,999. For platform costs, see our guide to Shopify pricing in India.' },
       { q: 'Can we meet at your office?', a: 'Yes. We are in Sector 22, Gurugram. Book a time and come over, or we can visit you anywhere in Gurugram.' },
       { q: 'Do you set up Indian payment gateways, COD and GST invoices?', a: 'Yes — Razorpay, PhonePe, UPI, COD with WhatsApp confirmation and automatic GST invoices are all available as part of the setup.' },
       { q: 'Do you only work with Gurugram brands?', a: 'No. We work with brands across India and abroad. Gurugram and NCR clients simply get in-person meetings.' },
@@ -87,8 +87,8 @@ export const CITIES: Record<string, City> = {
       'We help Delhi brands and family businesses build their own Shopify store — from first catalogue to first campaign — and keep it selling with ads and automation. Our team is a short drive away in Gurugram.',
     office: null,
     meetings: 'At our Gurugram office, at yours, or online',
-    storesBuilt: '[XX] across NCR',
-    quote: 'Within [24 hours]',
+    storesBuilt: '50+ across NCR',
+    quote: 'Within 24 hours',
     whyLocalHeading: 'Why AdsPeek for Delhi',
     whyLocal: [
       { title: 'From wholesale to your own brand', text: 'Many Delhi businesses already make or trade great products. We turn that catalogue into a branded store with retail pricing, size guides and product photography that sells.' },
@@ -104,9 +104,9 @@ export const CITIES: Record<string, City> = {
     ],
     areas: ['Connaught Place', 'Karol Bagh', 'Gandhi Nagar', 'Chandni Chowk', 'Lajpat Nagar', 'Okhla', 'Saket', 'Rajouri Garden', 'Dwarka'],
     work: [
-      { category: '[Category]', location: 'Delhi' },
-      { category: '[Category]', location: 'Delhi NCR' },
-      { category: '[Category]', location: '[City]' },
+      { category: 'Rugs & carpets', location: 'Delhi NCR', projectId: 'arhan-rugs' },
+      { category: 'Clothing & apparel', location: 'Delhi NCR', projectId: 'miamour' },
+      { category: 'Activewear', location: 'India', projectId: 'stance' },
     ],
     faq: [
       { q: 'We sell wholesale today. Can you help us start selling online to consumers?', a: 'Yes. We set up retail pricing, product content, size guides and a store structure built for single-piece buyers, then run ads to test which products sell direct.' },
@@ -132,8 +132,8 @@ export const CITIES: Record<string, City> = {
       'Noida makes clothes for the world. We help Noida manufacturers and brands sell under their own name — with Shopify stores built for Indian buyers, overseas buyers, or both.',
     office: null,
     meetings: 'At our Gurugram office, at yours by arrangement, or online',
-    storesBuilt: '[XX] across NCR',
-    quote: 'Within [24 hours]',
+    storesBuilt: '50+ across NCR',
+    quote: 'Within 24 hours',
     whyLocalHeading: 'Why AdsPeek for Noida',
     whyLocal: [
       { title: 'Exporter to brand', text: 'You already make to international standards. We help you present that quality to end customers — brand story, product pages, fabric and fit details.' },
@@ -149,9 +149,9 @@ export const CITIES: Record<string, City> = {
     ],
     areas: ['Sector 18', 'Sector 62', 'Sector 63', 'Phase 2 (Hosiery Complex)', 'Sector 135–144', 'Noida Extension', 'Greater Noida'],
     work: [
-      { category: '[Category]', location: 'Noida' },
-      { category: '[Category]', location: 'Delhi NCR' },
-      { category: '[Category]', location: '[City]' },
+      { category: 'Clothing & fashion', location: 'Delhi NCR', projectId: 'miamour' },
+      { category: 'Activewear', location: 'India', projectId: 'stance' },
+      { category: 'Footwear & shoes', location: 'India', projectId: 'yellow' },
     ],
     faq: [
       { q: 'We are an apparel exporter. Can we launch our own brand on Shopify?', a: 'Yes. We help with the store, product content, size guides and launch ads. Many exporters start with a small, focused range and grow from there.' },
@@ -179,8 +179,8 @@ export const CITIES: Record<string, City> = {
       'Mumbai is one of India\'s fastest-growing D2C hubs. We build premium Shopify stores for Mumbai brands and run the ads and automation behind them — remotely, with a clear plan and a weekly report.',
     office: null,
     meetings: 'Online — video calls and shared dashboards',
-    storesBuilt: '[XX] for Mumbai brands',
-    quote: 'Within [24 hours]',
+    storesBuilt: '50+ for Mumbai brands',
+    quote: 'Within 24 hours',
     whyLocalHeading: 'How we work with Mumbai brands',
     whyLocal: [
       { title: 'Remote, not distant', text: 'Fixed weekly calls, a shared project board and one point of contact. You always know what is being built and when.' },
@@ -196,15 +196,15 @@ export const CITIES: Record<string, City> = {
     ],
     areas: ['Lower Parel', 'Bandra', 'Andheri', 'BKC', 'Powai', 'Malad', 'Thane', 'Navi Mumbai', 'Bhiwandi'],
     work: [
-      { category: '[Category]', location: 'Mumbai' },
-      { category: '[Category]', location: '[City]' },
-      { category: '[Category]', location: '[City]' },
+      { category: 'Clothing & intimates', location: 'Mumbai & NCR', projectId: 'miamour' },
+      { category: 'Footwear & shoes', location: 'Mumbai & overseas', projectId: 'yellow' },
+      { category: 'Activewear', location: 'Mumbai', projectId: 'stance' },
     ],
     faq: [
       { q: 'You are based in Gurugram. How do you work with Mumbai brands?', a: 'Remotely, with a fixed rhythm: a kickoff call, weekly progress calls, a shared project board, and design reviews over video. After launch you get one clear weekly report.' },
       { q: 'Can our team update campaign pages without a developer?', a: 'Yes. We build reusable sections so your team can create landing pages and lookbooks from Shopify\'s editor.' },
       { q: 'Do you work with our existing 3PL or courier?', a: 'Yes. We integrate your courier or 3PL, set delivery estimates and shipping rules, and configure COD where you offer it.' },
-      { q: 'How much does it cost?', a: 'Pick what you need in our package builder and you get an itemised quote within [24 hours]. Stores start from [₹ PRICE].' },
+      { q: 'How much does it cost?', a: 'Pick what you need in our package builder and you get an itemised quote within 24 hours. Stores start from ₹14,999.' },
     ],
     nearby: ['bangalore', 'delhi', 'gurugram', 'noida'],
     sources: [
@@ -225,8 +225,8 @@ export const CITIES: Record<string, City> = {
       'Bengaluru brands are built on product and data. We build Shopify and headless Shopify stores with the integrations, automation and tracking a tech-first D2C team expects — and run the growth after launch.',
     office: null,
     meetings: 'Online — video calls and shared dashboards',
-    storesBuilt: '[XX] for Bengaluru brands',
-    quote: 'Within [24 hours]',
+    storesBuilt: '50+ for Bengaluru brands',
+    quote: 'Within 24 hours',
     whyLocalHeading: 'How we work with Bengaluru brands',
     whyLocal: [
       { title: 'Theme or headless — honestly', text: 'We build both and tell you which one your roadmap actually needs, instead of selling the most expensive option.' },
@@ -242,9 +242,9 @@ export const CITIES: Record<string, City> = {
     ],
     areas: ['Koramangala', 'Indiranagar', 'HSR Layout', 'Whitefield', 'Electronic City', 'Bellandur', 'Jayanagar', 'MG Road'],
     work: [
-      { category: '[Category]', location: 'Bengaluru' },
-      { category: '[Category]', location: '[City]' },
-      { category: '[Category]', location: '[City]' },
+      { category: 'Fine art gallery', location: 'Bengaluru & overseas', projectId: 'reliquary' },
+      { category: 'Home decor', location: 'Bengaluru', projectId: 'adaore' },
+      { category: 'Architectural lighting', location: 'Bengaluru & overseas', projectId: 'articture' },
     ],
     faq: [
       { q: 'Should we go headless?', a: 'Only if your roadmap needs it — app-like features, several storefronts or a CMS-driven content site, plus budget for ongoing development. Our guide "Headless Shopify: when is it worth it?" has a five-question checklist.' },

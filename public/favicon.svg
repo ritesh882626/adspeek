@@ -1,4 +1,6 @@
-<svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="500" height="500" fill="#F5F5F5"/>
-<path d="M490 250C490 382.548 382.548 490 250 490C117.452 490 10 382.548 10 250C10 117.452 117.452 10 250 10C382.548 10 490 117.452 490 250Z" fill="#0D00FF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="#C8F03C"/>
+  <path d="M4 11V4H11" stroke="#111410" stroke-width="3" stroke-linecap="square" fill="none"/>
+  <path d="M28 21V28H21" stroke="#111410" stroke-width="3" stroke-linecap="square" fill="none"/>
+  <text x="16" y="23" font-family="'Schibsted Grotesk', system-ui, -apple-system, sans-serif" font-size="20" font-weight="900" fill="#111410" text-anchor="middle">a</text>
 </svg>

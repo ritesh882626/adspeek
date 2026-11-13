@@ -24,7 +24,7 @@ export const Hero: React.FC = () => {
       label: 'Build time',
       value: (
         <span data-motion="spec-value" className="font-medium">
-          [X–Y] weeks
+          3–4 weeks
         </span>
       ),
     },
@@ -48,7 +48,7 @@ export const Hero: React.FC = () => {
       label: 'Starts from',
       value: (
         <span data-motion="spec-value" className="font-bold">
-          [YOUR PRICE]
+          ₹14,999
         </span>
       ),
     },

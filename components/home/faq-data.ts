@@ -11,7 +11,7 @@ export const HOME_FAQS: FaqItem[] = [
   {
     question: 'How much does a Shopify store cost?',
     answer:
-      'Builds start from [PRICE]. The final quote depends on pages, custom features and integrations — fixed before we start.',
+      'Builds start from ₹14,999. The final quote depends on pages, custom features and integrations — fixed before we start.',
     link: {
       text: 'See the full breakdown in our guide to Shopify costs in India.',
       href: '/guides/shopify-store-cost-india',
@@ -19,12 +19,12 @@ export const HOME_FAQS: FaqItem[] = [
   },
   {
     question: 'How long does it take?',
-    answer: 'Most stores go live in [X–Y] weeks from the first call.',
+    answer: 'Most stores go live in 3–4 weeks from the first call.',
   },
   {
     question: 'Do you work with brands outside India?',
     answer:
-      "Yes. We're based in Gurugram and work remotely with brands in [COUNTRIES].",
+      "Yes. We're based in Gurugram and work remotely with brands across 4+ countries including India, UAE, USA and the UK.",
   },
   {
     question: 'What happens after launch?',

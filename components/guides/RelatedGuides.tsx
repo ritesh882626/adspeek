@@ -34,6 +34,7 @@ export const RelatedGuides: React.FC<RelatedGuidesProps> = ({ guides }) => {
                 readMinutes: `${guide.readMinutes}`,
                 date: guide.date,
                 featured: guide.featured,
+                cover: guide.cover,
               }}
             />
           ))}

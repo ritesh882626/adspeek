@@ -73,7 +73,7 @@ export const Overview: React.FC = () => {
               Quote in
             </p>
             <p className="m-0 text-[16px] font-semibold text-ink leading-[1.4]">
-              [24 hours]
+              24 hours
             </p>
           </div>
 
