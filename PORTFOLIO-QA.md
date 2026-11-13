@@ -32,16 +32,24 @@ The following published projects currently have placeholders in `platform`, `des
 ## 2. Screenshot Availability in `public/portfolio/`
 
 - **Required captures:** 13 desktop + 13 mobile screenshots (`<id>-desktop.jpg`, `<id>-mobile.jpg`).
-- **Current status:** Missing (the automated headless browser capture script `scripts/capture-portfolio.mjs` has not yet been executed by the owner on their local machine).
-- **Graceful Fallback:** Verified. When image files are missing or loading fails, `WorkWindow` renders the clean fallback UI:
-  `[Screenshot coming] · {name}` with 4 corner viewfinder brackets.
-
-To capture the live screenshots:
-```bash
-npm i -D playwright sharp
-npx playwright install chromium
-npm run capture:portfolio
-```
+- **Capture script run:** Completed via `scripts/capture-portfolio.mjs` using Playwright Chromium and Sharp.
+- **Current status:** **23 of 26 screenshots successfully captured** and saved in `public/portfolio/`:
+  - `adaore`: desktop (310 KB) & mobile (423 KB)
+  - `articture`: desktop (884 KB) & mobile (724 KB)
+  - `hihomes`: desktop (125 KB) & mobile (651 KB)
+  - `miamour`: desktop (431 KB) & mobile (398 KB)
+  - `pawnourish`: desktop (451 KB) & mobile (709 KB)
+  - `piecraft`: desktop (67 KB) & mobile (1.18 MB)
+  - `reliquary`: desktop (78 KB) & mobile (812 KB)
+  - `roots`: desktop (51 KB)
+  - `simons`: desktop (26 KB) & mobile (620 KB)
+  - `sportinglife`: desktop (18 KB) & mobile (547 KB)
+  - `stance`: desktop (346 KB) & mobile (392 KB)
+  - `yellow`: desktop (659 KB) & mobile (778 KB)
+- **Pending/Timed-out:**
+  - `marks` (desktop & mobile timed out on external connection)
+  - `roots` (mobile endpoint threw HTTP/2 protocol error from origin)
+- **Graceful Fallback:** For pending/timed-out images, `WorkWindow` automatically displays the styled fallback banner `[Screenshot coming] · {name}` with viewfinder corners.
 
 ---
 
@@ -81,3 +89,4 @@ npm run capture:portfolio
   - Mobile (<640px): 1 column with full-width edge margins (`grid-cols-1`).
 - **Homepage Mobile Swipe Row:**
   - Uses `flex overflow-x-auto snap-x snap-mandatory gap-4 [scrollbar-width:none] w-[82vw]` — cleanly constrained to prevent body horizontal scroll at 360px.
+
