@@ -156,15 +156,15 @@
     "mobile": "/portfolio/articture-mobile.jpg"
   },
   {
-    "id": "current-rug-store",
-    "name": "[Name at launch]",
+    "id": "arhan-rugs",
+    "name": "Arhan Rugs",
     "url": "https://ydffdz-ej.myshopify.com/",
     "group": "rugs",
     "platform": "Shopify",
-    "description": "[One line]",
-    "role": "[Your role]",
-    "published": false,
-    "desktop": "/portfolio/current-rug-store-desktop.jpg",
-    "mobile": "/portfolio/current-rug-store-mobile.jpg"
+    "description": "Luxury handcrafted rugs and bespoke artisanal carpets.",
+    "role": "Website design & Shopify build",
+    "published": true,
+    "desktop": "/portfolio/arhan-rugs-desktop.jpg",
+    "mobile": "/portfolio/arhan-rugs-mobile.jpg"
   }
 ]
