@@ -73,3 +73,4 @@ export const WorkHero: React.FC<WorkHeroProps> = ({ projectCount }) => {
 };
 
 export default WorkHero;
+

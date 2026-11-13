@@ -25,3 +25,4 @@ export const GROUP_LABELS: Record<ProjectGroup, string> = {
 export const PROJECTS: Project[] = (portfolioData as Project[]).filter(
   (p) => p.published
 );
+

@@ -77,7 +77,10 @@ export const WorkWindow: React.FC<WorkWindowProps> = ({
       </div>
 
       {/* Viewport */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#E7E9E1] w-full">
+      <div
+        data-motion="frame"
+        className="relative aspect-[16/10] overflow-hidden bg-[#E7E9E1] w-full"
+      >
         {imgError ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-[#E7E9E1] text-muted font-mono text-[12px]">
             <span className="text-ink font-semibold mb-1">[{project.name}]</span>
@@ -98,7 +101,7 @@ export const WorkWindow: React.FC<WorkWindowProps> = ({
             </div>
           </div>
         ) : (
-          <div className="relative w-full h-full">
+          <div data-motion="work-image" className="relative w-full h-full">
             <Image
               src={imgSrc}
               alt={`${project.name} website, desktop`}
@@ -113,18 +116,26 @@ export const WorkWindow: React.FC<WorkWindowProps> = ({
 
         {/* Viewfinder corner brackets */}
         <span
+          data-motion="corner"
+          data-corner="tl"
           className="pointer-events-none absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-ink transition-opacity duration-200 opacity-100 sm:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
           aria-hidden="true"
         />
         <span
+          data-motion="corner"
+          data-corner="tr"
           className="pointer-events-none absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-ink transition-opacity duration-200 opacity-100 sm:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
           aria-hidden="true"
         />
         <span
+          data-motion="corner"
+          data-corner="bl"
           className="pointer-events-none absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-ink transition-opacity duration-200 opacity-100 sm:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
           aria-hidden="true"
         />
         <span
+          data-motion="corner"
+          data-corner="br"
           className="pointer-events-none absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-ink transition-opacity duration-200 opacity-100 sm:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
           aria-hidden="true"
         />
@@ -134,3 +145,4 @@ export const WorkWindow: React.FC<WorkWindowProps> = ({
 };
 
 export default WorkWindow;
+
