@@ -99,6 +99,12 @@ export const Footer: React.FC<FooterProps> = () => {
               Company
             </span>
             <Link
+              href="/work"
+              className="text-[15px] text-footer-text hover:text-white py-2 sm:py-0 min-h-[44px] sm:min-h-0 flex items-center transition-colors"
+            >
+              Work
+            </Link>
+            <Link
               href="/about"
               className="text-[15px] text-footer-text hover:text-white py-2 sm:py-0 min-h-[44px] sm:min-h-0 flex items-center transition-colors"
             >

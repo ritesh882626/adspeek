@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const navLinks = [
     { label: 'Services', href: '/shopify-development' },
     { label: 'Growth System', href: '/#system' },
-    { label: 'Work', href: '/#work' },
+    { label: 'Work', href: '/work' },
     { label: 'Guides', href: '/guides' },
     { label: 'About', href: '/about' },
   ];

@@ -45,3 +45,29 @@ img {
     scrollbar-width: none;
   }
 }
+
+/* Auto-scrolling portfolio windows */
+@keyframes peekScroll {
+  0%, 8% {
+    object-position: 50% 0%;
+  }
+  92%, 100% {
+    object-position: 50% 100%;
+  }
+}
+
+.peek-scroll {
+  animation: peekScroll var(--peek-duration, 14s) ease-in-out infinite alternate;
+}
+
+.peek-window:hover .peek-scroll,
+.peek-window:focus-within .peek-scroll,
+.peek-window.paused .peek-scroll {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peek-scroll {
+    animation: none;
+  }
+}
