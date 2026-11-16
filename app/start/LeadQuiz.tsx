@@ -254,8 +254,11 @@ export function LeadQuiz() {
   };
 
   // Send to Google Sheet
+  const DEFAULT_SHEET_URL =
+    'https://script.google.com/macros/s/AKfycbwMBdTUmtOQyC25na2yawmB97vF7RPfHnsiStVAeJru-iEJtyq8xXCKIwL7KYL0mkBCYw/exec';
+
   const sendToSheet = (payload: Record<string, unknown>) => {
-    const sheetUrl = process.env.NEXT_PUBLIC_LEAD_SHEET_URL || '';
+    const sheetUrl = process.env.NEXT_PUBLIC_LEAD_SHEET_URL || DEFAULT_SHEET_URL;
     if (!/^https:\/\/script\.google\.com\//.test(sheetUrl)) {
       console.warn('[LeadQuiz] NEXT_PUBLIC_LEAD_SHEET_URL is not set — lead not saved.');
       return Promise.resolve();
