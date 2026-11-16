@@ -1,1050 +1,822 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import {
-  CATEGORY_OPTIONS,
-  CHANNEL_OPTIONS,
-  ORDERS_OPTIONS,
-  BUDGET_OPTIONS,
-  STEP3_MICROCOPY,
-  STEP4_MICROCOPY,
-  STORE_FEATURES_INCLUDED,
-  calculateLeadQuality,
-  buildWhatsAppMessage,
-  buildWhatsAppUrl,
-  DEFAULT_WHATSAPP_NUMBER,
-} from './quiz-config';
-import { getVariant } from './variants';
-import { trackLead, trackQuizCustom } from './MetaPixel';
+import './quiz.css';
+
+interface BusinessOption {
+  label: string;
+  short: string;
+  msg: string;
+  note: string;
+}
+
+const BUSINESS: Record<string, BusinessOption> = {
+  website: {
+    label: 'Own website / Shopify',
+    short: 'Own website',
+    msg: 'I sell through my own website',
+    note: "We'll rebuild it to convert better — not just look better.",
+  },
+  marketplace: {
+    label: 'Amazon / Flipkart',
+    short: 'Amazon / Flipkart',
+    msg: 'I sell on Amazon/Flipkart',
+    note: 'Marketplace sellers keep the full margin on orders from their own store — no commission cut.',
+  },
+  social: {
+    label: 'Instagram / WhatsApp',
+    short: 'Instagram / WhatsApp',
+    msg: 'I sell on Instagram/WhatsApp',
+    note: 'Turn DMs into a checkout that takes orders while you sleep.',
+  },
+  offline: {
+    label: 'Offline shop',
+    short: 'Offline shop',
+    msg: 'I run an offline shop',
+    note: 'Take your shop online and sell beyond your area.',
+  },
+  buyer: {
+    label: 'Looking to buy a product',
+    short: 'Buyer',
+    msg: "I'm looking to buy a product",
+    note: 'Got it — share a few details and we will guide you.',
+  },
+};
+
+const SALES: Record<string, string> = {
+  under1: 'Under ₹1L',
+  '1-5': '₹1–5L',
+  '5-20': '₹5–20L',
+  '20plus': '₹20L+',
+};
+
+interface VariantData {
+  eyebrow: string;
+  headline: string;
+  cta: string;
+}
+
+const VARIANTS: Record<string, VariantData> = {
+  default: {
+    eyebrow: 'For brands and sellers only',
+    headline: 'Get a store that <strong>sells for you.</strong>',
+    cta: 'Get started',
+  },
+};
+
+const REDIRECT_SECONDS = 5;
 
 export function LeadQuiz() {
   const searchParams = useSearchParams();
-  const variantKey = searchParams.get('v') || 'default';
-  const variant = getVariant(variantKey);
+  const [current, setCurrent] = useState<number>(0);
+  const [answers, setAnswers] = useState<{ business: string; sales: string }>({
+    business: '',
+    sales: '',
+  });
 
-  // Steps: 1 (Hook), 2 (Category), 3 (Channel), 4 (Orders), 5 (Budget), 6 (Contact), 7 (WhatsApp Redirect)
-  const [step, setStep] = useState<number>(1);
-
-  // Form selections
-  const [category, setCategory] = useState<string>('skincare');
-  const [channel, setChannel] = useState<string>('marketplace');
-  const [orders, setOrders] = useState<string>('100-500');
-  const [budget, setBudget] = useState<string>('25-50');
-
-  // Contact inputs
   const [name, setName] = useState<string>('');
-  const [phoneDigits, setPhoneDigits] = useState<string>('');
-  const [storeLink, setStoreLink] = useState<string>('');
-  const [honeypotCompany, setHoneypotCompany] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [link, setLink] = useState<string>('');
+  const [hp, setHp] = useState<string>('');
 
-  // Validation & Submission
-  const [phoneTouched, setPhoneTouched] = useState<boolean>(false);
-  const [nameTouched, setNameTouched] = useState<boolean>(false);
+  const [nameInvalid, setNameInvalid] = useState<boolean>(false);
+  const [phoneInvalid, setPhoneInvalid] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Step 7 Redirect
-  const [countdown, setCountdown] = useState<number>(5);
-  const [redirectBlocked, setRedirectBlocked] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number>(REDIRECT_SECONDS);
+  const [countText, setCountText] = useState<string>(`Opening WhatsApp in ${REDIRECT_SECONDS} seconds…`);
+  const [isFallback, setIsFallback] = useState<boolean>(false);
+  const [waUrl, setWaUrl] = useState<string>('#');
+  const [bubbleMsg, setBubbleMsg] = useState<string>('');
 
-  // Headings focus ref for a11y
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const timersRef = useRef<NodeJS.Timeout[]>([]);
+  const leadSentRef = useRef<boolean>(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const headingRefs = useRef<(HTMLHeadingElement | null)[]>([]);
 
-  // Unique IDs for form
-  const nameId = useId();
-  const phoneId = useId();
-  const linkId = useId();
+  // Variant config
+  const variantKey = VARIANTS[searchParams.get('v') || ''] ? (searchParams.get('v') as string) : 'default';
+  const V = VARIANTS[variantKey] || VARIANTS.default;
 
-  // Save UTMs to sessionStorage on initial load
+  // Stored UTM parameters
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
-    utmKeys.forEach((key) => {
-      const val = searchParams.get(key);
-      if (val) {
-        sessionStorage.setItem(`lq_${key}`, val);
-      }
+    const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+    let utm: Record<string, string> = {};
+    try {
+      utm = JSON.parse(sessionStorage.getItem('lq_utm') || '{}');
+    } catch {}
+    UTM_KEYS.forEach((k) => {
+      const val = searchParams.get(k);
+      if (val) utm[k] = val;
     });
+    try {
+      sessionStorage.setItem('lq_utm', JSON.stringify(utm));
+    } catch {}
 
-    // Initialize history state if not already set
-    if (!window.history.state || typeof window.history.state.step !== 'number') {
-      window.history.replaceState({ step: 1 }, '');
-    }
+    // Initialize history
+    window.history.replaceState({ s: 0 }, '', window.location.href);
 
     const handlePopState = (e: PopStateEvent) => {
-      if (e.state && typeof e.state.step === 'number') {
-        setStep(e.state.step);
-      } else {
-        setStep(1);
-      }
+      let s = e.state && typeof e.state.s === 'number' ? e.state.s : 0;
+      if (s === 4 && !leadSentRef.current) s = 3;
+      showStep(s, false);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [searchParams]);
 
-  // Focus heading on step change for screen readers
-  useEffect(() => {
-    if (headingRef.current) {
-      headingRef.current.focus();
+  // Clear timers helper
+  const clearAllTimers = () => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+  };
+
+  // Step transition
+  const showStep = (i: number, pushHistory: boolean = true) => {
+    if (i < 0 || i > 4) return;
+    if (current === 4 && i !== 4) clearAllTimers();
+
+    setCurrent(i);
+
+    if (pushHistory) {
+      window.history.pushState({ s: i }, '', window.location.href);
     }
-    // Auto-focus name input on step 6 to trigger mobile autofill
-    if (step === 6 && nameInputRef.current) {
-      nameInputRef.current.focus();
-    }
-  }, [step]);
+    window.scrollTo(0, 0);
 
-  // Handle countdown & redirect on Step 7
-  const waMessage = buildWhatsAppMessage({
-    name: name || 'there',
-    category,
-    channel,
-    orders,
-    budget,
-    storeLink,
-  });
-  const waUrl = buildWhatsAppUrl(waMessage);
-
-  useEffect(() => {
-    if (step !== 7) return;
-
-    setCountdown(5);
-    setRedirectBlocked(false);
-
-    countdownIntervalRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-          window.location.href = waUrl;
-          return 0;
+    setTimeout(() => {
+      if (i === 3 && nameInputRef.current) {
+        try {
+          nameInputRef.current.focus({ preventScroll: true });
+        } catch {
+          nameInputRef.current.focus();
         }
-        return prev - 1;
-      });
-    }, 1000);
-
-    // Fallback if browser blocks automatic redirect
-    const blockTimer = setTimeout(() => {
-      if (document.visibilityState === 'visible') {
-        setRedirectBlocked(true);
+      } else if (headingRefs.current[i]) {
+        try {
+          headingRefs.current[i]?.focus({ preventScroll: true });
+        } catch {
+          headingRefs.current[i]?.focus();
+        }
       }
-    }, 7000);
-
-    const handleVisibility = () => {
-      if (document.hidden && countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-      clearTimeout(blockTimer);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [step, waUrl]);
-
-  // Navigation helpers
-  const goToStep = (nextStep: number) => {
-    window.history.pushState({ step: nextStep }, '');
-    setStep(nextStep);
-    trackQuizCustom('QuizStep', { step: nextStep });
+    }, 50);
   };
 
   const handleBack = () => {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      setStep((prev) => Math.max(1, prev - 1));
+      showStep(Math.max(0, current - 1), true);
     }
   };
 
-  // Option selection with 180ms auto-advance
-  const handleSelectOption = (
-    setter: (val: string) => void,
-    val: string,
-    nextStep: number
-  ) => {
-    setter(val);
+  // Option selection with 180ms delay
+  const handleSelectOption = (key: 'business' | 'sales', val: string, nextStep: number) => {
+    setAnswers((prev) => ({ ...prev, [key]: val }));
+    const from = current;
     setTimeout(() => {
-      goToStep(nextStep);
+      if (current === from) {
+        showStep(nextStep, true);
+      }
     }, 180);
   };
 
-  // Phone sanitization: strip non-digits, drop 91 if 12 digits, drop 0 if 11 digits
+  // Phone sanitization & formatting
+  const digits10 = (v: string) => {
+    const d = String(v || '').replace(/\D/g, '');
+    return d.length > 10 ? d.slice(-10) : d;
+  };
+
+  const pretty = (d: string) => {
+    return d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d;
+  };
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    let digits = raw.replace(/\D/g, '');
-    if (digits.length === 12 && digits.startsWith('91')) {
-      digits = digits.slice(2);
-    } else if (digits.length === 11 && digits.startsWith('0')) {
-      digits = digits.slice(1);
+    const d = raw.replace(/\D/g, '');
+    if (/[+]/.test(raw) || d.length > 10) {
+      setPhone(pretty(digits10(raw)));
+    } else {
+      setPhone(raw);
     }
-    digits = digits.slice(0, 10);
-    setPhoneDigits(digits);
+    if (phoneInvalid && /^[6-9]\d{9}$/.test(digits10(raw))) {
+      setPhoneInvalid(false);
+    }
   };
 
-  const formatPhoneDisplay = (digits: string) => {
-    if (digits.length <= 5) return digits;
-    return `${digits.slice(0, 5)} ${digits.slice(5)}`;
+  const handlePhoneBlur = () => {
+    const d = digits10(phone);
+    setPhone(pretty(d));
+    if (d && !/^[6-9]\d{9}$/.test(d)) {
+      setPhoneInvalid(true);
+    }
   };
 
-  const isPhoneValid = /^[6-9]\d{9}$/.test(phoneDigits);
-  const isNameValid = name.trim().length >= 2;
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    if (e.target.value.trim().length >= 2) {
+      setNameInvalid(false);
+    }
+  };
 
-  // Form submission handler
-  const handleSubmitContact = async (e: React.FormEvent) => {
+  const handleNameBlur = () => {
+    const v = name.trim();
+    if (v && v.length < 2) {
+      setNameInvalid(true);
+    }
+  };
+
+  // Quality calculation
+  const getQuality = () => {
+    if (answers.business === 'buyer') return 'Not a fit (buyer)';
+    if (answers.sales === '5-20' || answers.sales === '20plus') return 'Hot';
+    if (answers.sales === '1-5') return 'Warm';
+    return 'Cold';
+  };
+
+  // WhatsApp builder
+  const buildWhatsApp = (leadName: string, dPhone: string, storeUrl: string) => {
+    const b = BUSINESS[answers.business];
+    let msg = `Hi AdsPeek, I'm ${leadName}. `;
+    if (b && answers.business !== 'buyer') {
+      msg += `${b.msg}, monthly sales ${SALES[answers.sales] || 'not sure'}. I'd like a free consultation for a store that sells.`;
+    } else {
+      msg += "I'm looking to buy a product.";
+    }
+    if (storeUrl) msg += ` Store: ${storeUrl}`;
+
+    const waNum = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918796279223').replace(/\D/g, '');
+    const url = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+    setWaUrl(url);
+    setBubbleMsg(msg);
+    return url;
+  };
+
+  // Send to Google Sheet
+  const sendToSheet = (payload: Record<string, unknown>) => {
+    const sheetUrl = process.env.NEXT_PUBLIC_LEAD_SHEET_URL || '';
+    if (!/^https:\/\/script\.google\.com\//.test(sheetUrl)) {
+      console.warn('[LeadQuiz] NEXT_PUBLIC_LEAD_SHEET_URL is not set — lead not saved.');
+      return Promise.resolve();
+    }
+    const body = JSON.stringify(payload);
+    return fetch(sheetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body,
+      keepalive: true,
+    }).catch(() => {
+      try {
+        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+          navigator.sendBeacon(sheetUrl, new Blob([body], { type: 'text/plain;charset=utf-8' }));
+        }
+      } catch {}
+    });
+  };
+
+  const waitMs = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Form submit
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setNameTouched(true);
-    setPhoneTouched(true);
+    const trimmedName = name.trim().replace(/\s+/g, ' ');
+    const d = digits10(phone);
+    const trimmedLink = link.trim().slice(0, 200);
 
-    if (!isNameValid || !isPhoneValid || isSubmitting) {
+    const okName = trimmedName.length >= 2;
+    const okPhone = /^[6-9]\d{9}$/.test(d);
+
+    setNameInvalid(!okName);
+    setPhoneInvalid(!okPhone);
+
+    if (!okName) {
+      nameInputRef.current?.focus();
+      return;
+    }
+    if (!okPhone) {
       return;
     }
 
+    setPhone(pretty(d));
     setIsSubmitting(true);
-    const leadId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `lq_${Date.now()}`;
-    const quality = calculateLeadQuality(channel, orders, budget);
 
-    // 1. Fire Meta Pixel Lead event
-    trackLead(leadId, {
-      category,
-      channel,
-      orders,
-      budget,
-      quality,
-    });
+    const leadId =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `lq-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-    // 2. Gather UTMs & Device info
-    const getStored = (k: string) => (typeof window !== 'undefined' ? sessionStorage.getItem(`lq_${k}`) || '' : '');
-    const utm_source = getStored('utm_source');
-    const utm_medium = getStored('utm_medium');
-    const utm_campaign = getStored('utm_campaign');
-    const utm_content = getStored('utm_content');
-    const utm_term = getStored('utm_term');
-    const fbclid = getStored('fbclid');
-    const device = typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 200) : '';
-    const pageUrl = typeof window !== 'undefined' ? window.location.href.slice(0, 500) : '';
+    let utm: Record<string, string> = {};
+    try {
+      utm = JSON.parse(sessionStorage.getItem('lq_utm') || '{}');
+    } catch {}
 
     const payload = {
       leadId,
-      name: name.trim(),
-      phone: `+91${phoneDigits}`,
-      storeLink: storeLink.trim(),
-      category,
-      channel,
-      orders,
-      budget,
-      quality,
-      utm_source,
-      utm_medium,
-      utm_campaign,
-      utm_content,
-      utm_term,
-      fbclid,
+      name: trimmedName,
+      phone: `+91${d}`,
+      storeLink: trimmedLink,
+      business: BUSINESS[answers.business] ? BUSINESS[answers.business].label : '',
+      sales: SALES[answers.sales] || '',
+      quality: getQuality(),
       variant: variantKey,
-      pageUrl,
-      device,
-      company: honeypotCompany,
+      utm_source: utm.utm_source || '',
+      utm_medium: utm.utm_medium || '',
+      utm_campaign: utm.utm_campaign || '',
+      utm_content: utm.utm_content || '',
+      utm_term: utm.utm_term || '',
+      fbclid: utm.fbclid || '',
+      pageUrl: typeof window !== 'undefined' ? window.location.href.slice(0, 300) : '',
+      device: typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 200) : '',
+      hp,
     };
 
-    // 3. Post to /api/lead with max 2.5s race timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const targetWaUrl = buildWhatsApp(trimmedName, d, trimmedLink);
 
-    try {
-      await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        keepalive: true,
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-    } catch {
-      // If fetch timed out or failed, fallback to sendBeacon
-      try {
-        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-          const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-          navigator.sendBeacon('/api/lead', blob);
-        }
-      } catch {
-        // Continue regardless
-      }
-    }
-
-    // Always proceed to Step 7
-    setIsSubmitting(false);
-    goToStep(7);
+    const sendPromise = hp ? Promise.resolve() : sendToSheet(payload);
+    Promise.race([sendPromise, waitMs(2500)]).then(() => {
+      leadSentRef.current = true;
+      setIsSubmitting(false);
+      showStep(4, true);
+      startRedirect(targetWaUrl);
+    });
   };
 
+  // 5-second countdown & redirect
+  const triggerFallback = () => {
+    setIsFallback(true);
+    setCountText('Tap the button to open WhatsApp');
+  };
+
+  const startRedirect = (targetUrl: string) => {
+    clearAllTimers();
+    let n = REDIRECT_SECONDS;
+    setCountdown(n);
+    setCountText(`Opening WhatsApp in ${n} seconds…`);
+    setIsFallback(false);
+
+    for (let k = 1; k <= n; k++) {
+      const t = setTimeout(() => {
+        if (k < n) {
+          setCountdown(n - k);
+          setCountText(`Opening WhatsApp in ${n - k} ${n - k === 1 ? 'second…' : 'seconds…'}`);
+        } else {
+          setCountdown(0);
+          setCountText('Opening WhatsApp…');
+          window.location.href = targetUrl;
+          const fallbackTimer = setTimeout(() => {
+            if (document.visibilityState === 'visible') {
+              triggerFallback();
+            }
+          }, 2000);
+          timersRef.current.push(fallbackTimer);
+        }
+      }, k * 1000);
+      timersRef.current.push(t);
+    }
+  };
+
+  // Handle pageshow (back from WhatsApp)
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted && current === 4) {
+        clearAllTimers();
+        triggerFallback();
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, [current]);
+
+  // Summary rendering
+  const summaryParts: string[] = [];
+  if (BUSINESS[answers.business]) summaryParts.push(BUSINESS[answers.business].short);
+  if (SALES[answers.sales]) summaryParts.push(`${SALES[answers.sales]} / month`);
+
   return (
-    <div className="w-full min-h-[100dvh] bg-[#F6F6F7] flex justify-center text-[#202223] font-sans antialiased selection:bg-[#E3F1EC] selection:text-[#004C3F]">
-      <div className="w-full max-w-[440px] min-h-[100dvh] bg-white flex flex-col shadow-sm sm:my-auto sm:min-h-[844px] sm:max-h-[920px] sm:rounded-[24px] sm:overflow-hidden sm:border sm:border-[#E1E3E5]">
+    <div className="quiz-root">
+      <main className="wrap">
+        <div className="card" id="card">
+          {/* Header */}
+          <div className="top">
+            <button
+              className="back"
+              id="back"
+              type="button"
+              aria-label="Back"
+              hidden={current === 0}
+              onClick={handleBack}
+            >
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 6l-6 6 6 6" />
+              </svg>
+            </button>
 
-        {/* ================= STEP 1: HOOK ================= */}
-        {step === 1 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#EDEEEF]">
-              <div className="text-[20px] font-extrabold tracking-[-0.02em] text-[#004C3F]">
-                AdsPeek
-              </div>
-              <div className="text-[12px] font-semibold text-[#004C3F] bg-[#E3F1EC] px-2.5 py-1 rounded-full">
-                Shopify store experts
-              </div>
-            </div>
+            <span className="logo" id="logo">
+              <img src="/logo-black.svg" alt="AdsPeek" height={28} />
+            </span>
 
-            {/* Main Hook Body */}
-            <div className="flex-1 bg-[#F1F8F5] px-5 py-8 flex flex-col justify-center gap-4">
-              <div className="self-start text-[12px] font-semibold text-[#004C3F] bg-white border border-[#C9E3D8] px-2.5 py-1 rounded-full">
-                {variant.eyebrow}
-              </div>
+            <span
+              className="steplabel"
+              id="steplabel"
+              style={{ color: current === 3 ? '#008060' : undefined }}
+            >
+              {current >= 1 && current <= 2
+                ? `Step ${current} of 2`
+                : current === 3
+                ? 'Last step'
+                : ''}
+            </span>
+          </div>
 
+          {/* Progress bar */}
+          <div
+            className="progress"
+            id="progress"
+            role="progressbar"
+            aria-label="Quiz progress"
+            aria-valuemin={0}
+            aria-valuemax={2}
+            aria-valuenow={Math.min(current, 2)}
+            hidden={current === 0 || current === 4}
+          >
+            <span
+              id="bar"
+              style={{ width: `${current === 3 ? 100 : current * 50}%` }}
+            />
+          </div>
+
+          {/* 0 · HOOK */}
+          <section className={`step ${current === 0 ? 'on' : ''}`} data-step="0" aria-labelledby="h-hook">
+            <div className="hero">
+              <span className="pill" id="v-eyebrow">
+                {V.eyebrow}
+              </span>
               <h1
-                ref={headingRef}
+                id="h-hook"
                 tabIndex={-1}
-                className="m-0 text-[32px] sm:text-[34px] leading-[1.12] font-extrabold tracking-[-0.025em] text-[#202223] outline-none"
-              >
-                {variant.headline}
-              </h1>
-
-              <p className="m-0 text-[16px] sm:text-[17px] leading-[1.5] text-[#4A4F55]">
-                {variant.sub}
-              </p>
-
+                ref={(el) => { headingRefs.current[0] = el; }}
+                dangerouslySetInnerHTML={{ __html: V.headline }}
+              />
+              <ul className="perks" id="v-perks">
+                <li>
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  Takes 5 seconds
+                </li>
+                <li>
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  Free consultation
+                </li>
+                <li>
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  Reply on WhatsApp
+                </li>
+              </ul>
               <button
+                className="cta"
+                id="start"
                 type="button"
-                onClick={() => {
-                  trackQuizCustom('QuizStart');
-                  goToStep(2);
-                }}
-                className="mt-2 flex items-center justify-center gap-2.5 min-h-[58px] rounded-[14px] bg-[#008060] text-white text-[17px] font-bold shadow-[0_2px_0_#004C3F] hover:bg-[#007054] active:scale-[0.98] transition-all cursor-pointer"
+                onClick={() => showStep(1, true)}
               >
-                <span>{variant.cta}</span>
+                <span id="v-cta">{V.cta}</span>
                 <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </button>
-
-              <div className="flex justify-center gap-3.5 text-[13px] text-[#4A4F55]">
-                <span>No payment needed</span>
-                <span aria-hidden="true">·</span>
-                <span>No spam calls</span>
-              </div>
             </div>
-
-            {/* Footer */}
-            <div className="px-5 py-4 sm:pb-6 flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <p className="private">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#008060" />
                 <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#008060" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="12" cy="15.5" r="1.4" fill="#FFFFFF" />
+                <circle cx="12" cy="15.5" r="1.4" fill="#fff" />
               </svg>
-              <span>Your details stay private. We never share them.</span>
-            </div>
-          </div>
-        )}
+              Your details stay private. We never share them.
+            </p>
+          </section>
 
-        {/* ================= STEP 2: WHAT DO YOU SELL? ================= */}
-        {step === 2 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header & Progress */}
-            <div className="px-5 pt-3.5 flex flex-col gap-3.5">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  aria-label="Back"
-                  className="w-11 h-11 -ml-2.5 flex items-center justify-center rounded-xl text-[#202223] hover:bg-black/5 cursor-pointer"
-                >
-                  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                <div className="text-[13px] font-semibold text-[#5C6166]">Step 1 of 4</div>
-                <div className="text-[17px] font-extrabold text-[#004C3F]">AdsPeek</div>
-              </div>
-              <div role="progressbar" aria-valuenow={25} aria-valuemin={0} aria-valuemax={100} className="h-1.5 rounded-full bg-[#E3F1EC] overflow-hidden">
-                <div className="w-[25%] h-full bg-[#008060] rounded-full transition-all duration-300" />
-              </div>
-            </div>
-
-            {/* Question Heading */}
-            <div className="px-5 pt-7 flex flex-col gap-2">
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="m-0 text-[26px] leading-[1.2] font-extrabold tracking-[-0.02em] text-[#202223] outline-none"
+          {/* 1 · BUSINESS */}
+          <section className={`step ${current === 1 ? 'on' : ''}`} data-step="1" aria-labelledby="h-q1">
+            <h2 id="h-q1" tabIndex={-1} ref={(el) => { headingRefs.current[1] = el; }}>
+              How do you <strong>sell now?</strong>
+            </h2>
+            <div className="opts" data-q="business">
+              <button
+                className="opt"
+                type="button"
+                data-v="website"
+                aria-pressed={answers.business === 'website'}
+                onClick={() => handleSelectOption('business', 'website', 2)}
               >
-                What do you sell?
-              </h2>
-              <p className="m-0 text-[15px] text-[#4A4F55]">
-                Pick one — we&apos;ll show stores built for your category.
-              </p>
-            </div>
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                  <path d="M3 9h18" />
+                  <circle cx="6.5" cy="6.5" r=".6" fill="#008060" />
+                </svg>
+                <span>Own website / Shopify</span>
+                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </button>
 
-            {/* Category 2-Column Grid */}
-            <div className="px-5 pt-5 grid grid-cols-2 gap-3">
-              {CATEGORY_OPTIONS.map((item) => {
-                const isSelected = category === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={isSelected}
-                    onClick={() => handleSelectOption(setCategory, item.id, 3)}
-                    className={`flex flex-col gap-2.5 p-4 min-h-[108px] text-left rounded-[16px] transition-all cursor-pointer active:scale-[0.98] ${
-                      isSelected
-                        ? 'border-2 border-[#008060] bg-[#F1F8F5]'
-                        : 'border-[1.5px] border-[#E1E3E5] bg-white hover:border-[#C9CCCF]'
-                    }`}
-                  >
-                    {/* Category SVG Icons */}
-                    {item.id === 'skincare' && (
-                      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M9 3h6v4H9z" />
-                        <path d="M8 7h8l1 4v9a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-9z" />
-                      </svg>
-                    )}
-                    {item.id === 'fashion' && (
-                      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M8 3 3 6l2 5 2-1v11h10V10l2 1 2-5-5-3a4 4 0 0 1-8 0z" />
-                      </svg>
-                    )}
-                    {item.id === 'wellness' && (
-                      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 4C10 4 4 10 4 20c10 0 16-6 16-16z" />
-                        <path d="M4 20 14 10" />
-                      </svg>
-                    )}
-                    {item.id === 'home' && (
-                      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 11 12 4l9 7" />
-                        <path d="M5 10v10h14V10" />
-                        <path d="M10 20v-6h4v6" />
-                      </svg>
-                    )}
-                    {item.id === 'pets' && (
-                      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="7" cy="8" r="2" />
-                        <circle cx="17" cy="8" r="2" />
-                        <circle cx="4" cy="14" r="2" />
-                        <circle cx="20" cy="14" r="2" />
-                        <path d="M12 13c-3 0-5 3-5 5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2c0-2-2-5-5-5z" />
-                      </svg>
-                    )}
-                    {item.id === 'other' && (
-                      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="5" cy="12" r="1.5" />
-                        <circle cx="12" cy="12" r="1.5" />
-                        <circle cx="19" cy="12" r="1.5" />
-                      </svg>
-                    )}
-                    <span className="text-[16px] font-bold text-[#202223] leading-tight">
-                      {item.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Footer hint */}
-            <div className="mt-auto px-5 py-4 pb-6 flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              <span>Takes about 30 seconds · Tap to continue</span>
-            </div>
-          </div>
-        )}
-
-        {/* ================= STEP 3: WHERE DO YOU SELL TODAY? ================= */}
-        {step === 3 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header & Progress */}
-            <div className="px-5 pt-3.5 flex flex-col gap-3.5">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  aria-label="Back"
-                  className="w-11 h-11 -ml-2.5 flex items-center justify-center rounded-xl text-[#202223] hover:bg-black/5 cursor-pointer"
-                >
-                  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                <div className="text-[13px] font-semibold text-[#5C6166]">Step 2 of 4</div>
-                <div className="text-[17px] font-extrabold text-[#004C3F]">AdsPeek</div>
-              </div>
-              <div role="progressbar" aria-valuenow={50} aria-valuemin={0} aria-valuemax={100} className="h-1.5 rounded-full bg-[#E3F1EC] overflow-hidden">
-                <div className="w-[50%] h-full bg-[#008060] rounded-full transition-all duration-300" />
-              </div>
-            </div>
-
-            {/* Microcopy box based on category */}
-            <div className="mx-5 mt-5 p-3 rounded-[12px] bg-[#F1F8F5] flex items-start gap-2.5">
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-              <span className="text-[14px] leading-[1.45] text-[#004C3F]">
-                {STEP3_MICROCOPY[category] || STEP3_MICROCOPY.other}
-              </span>
-            </div>
-
-            {/* Question Heading */}
-            <div className="px-5 pt-5 flex flex-col gap-2">
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="m-0 text-[26px] leading-[1.2] font-extrabold tracking-[-0.02em] text-[#202223] outline-none"
+              <button
+                className="opt"
+                type="button"
+                data-v="marketplace"
+                aria-pressed={answers.business === 'marketplace'}
+                onClick={() => handleSelectOption('business', 'marketplace', 2)}
               >
-                Where do you sell today?
-              </h2>
-              <p className="m-0 text-[15px] text-[#4A4F55]">
-                Your main channel right now.
-              </p>
-            </div>
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                  <path d="M3 6h18" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                <span>Amazon / Flipkart</span>
+                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </button>
 
-            {/* Channel Options */}
-            <div className="px-5 pt-5 flex flex-col gap-3">
-              {CHANNEL_OPTIONS.map((item) => {
-                const isSelected = channel === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={isSelected}
-                    onClick={() => handleSelectOption(setChannel, item.id, 4)}
-                    className={`flex items-center gap-3.5 min-h-[64px] px-4.5 rounded-[16px] text-left transition-all cursor-pointer active:scale-[0.98] ${
-                      isSelected
-                        ? 'border-2 border-[#008060] bg-[#F1F8F5]'
-                        : 'border-[1.5px] border-[#E1E3E5] bg-white hover:border-[#C9CCCF]'
-                    }`}
-                  >
-                    <span
-                      className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        isSelected ? 'border-[#008060] bg-[#008060]' : 'border-[#8C9196]'
-                      }`}
-                    >
-                      {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
-                    </span>
-                    <span className="flex flex-col gap-0.5">
-                      <span className="text-[16px] font-bold text-[#202223]">{item.label}</span>
-                      <span className="text-[13px] text-[#5C6166]">{item.sub}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Footer hint */}
-            <div className="mt-auto px-5 py-4 pb-6 flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              <span>2 more taps</span>
-            </div>
-          </div>
-        )}
-
-        {/* ================= STEP 4: MONTHLY ORDERS ================= */}
-        {step === 4 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header & Progress */}
-            <div className="px-5 pt-3.5 flex flex-col gap-3.5">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  aria-label="Back"
-                  className="w-11 h-11 -ml-2.5 flex items-center justify-center rounded-xl text-[#202223] hover:bg-black/5 cursor-pointer"
-                >
-                  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                <div className="text-[13px] font-semibold text-[#5C6166]">Step 3 of 4</div>
-                <div className="text-[17px] font-extrabold text-[#004C3F]">AdsPeek</div>
-              </div>
-              <div role="progressbar" aria-valuenow={75} aria-valuemin={0} aria-valuemax={100} className="h-1.5 rounded-full bg-[#E3F1EC] overflow-hidden">
-                <div className="w-[75%] h-full bg-[#008060] rounded-full transition-all duration-300" />
-              </div>
-            </div>
-
-            {/* Microcopy box based on channel */}
-            <div className="mx-5 mt-5 p-3 rounded-[12px] bg-[#F1F8F5] flex items-start gap-2.5">
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-              <span className="text-[14px] leading-[1.45] text-[#004C3F]">
-                {STEP4_MICROCOPY[channel] || STEP4_MICROCOPY.marketplace}
-              </span>
-            </div>
-
-            {/* Question Heading */}
-            <div className="px-5 pt-5 flex flex-col gap-2">
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="m-0 text-[26px] leading-[1.2] font-extrabold tracking-[-0.02em] text-[#202223] outline-none"
+              <button
+                className="opt"
+                type="button"
+                data-v="social"
+                aria-pressed={answers.business === 'social'}
+                onClick={() => handleSelectOption('business', 'social', 2)}
               >
-                How many orders a month?
-              </h2>
-              <p className="m-0 text-[15px] text-[#4A4F55]">
-                A rough number is fine — across all channels.
-              </p>
-            </div>
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r=".8" fill="#008060" />
+                </svg>
+                <span>Instagram / WhatsApp</span>
+                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </button>
 
-            {/* Orders 2-Column Grid */}
-            <div className="px-5 pt-5 grid grid-cols-2 gap-3">
-              {ORDERS_OPTIONS.map((item) => {
-                const isSelected = orders === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={isSelected}
-                    onClick={() => handleSelectOption(setOrders, item.id, 5)}
-                    className={`flex flex-col justify-center gap-1 p-4 min-h-[96px] text-left rounded-[16px] transition-all cursor-pointer active:scale-[0.98] ${
-                      isSelected
-                        ? 'border-2 border-[#008060] bg-[#F1F8F5]'
-                        : 'border-[1.5px] border-[#E1E3E5] bg-white hover:border-[#C9CCCF]'
-                    }`}
-                  >
-                    <span className="text-[24px] font-extrabold tracking-[-0.02em] text-[#202223]">
-                      {item.label}
-                    </span>
-                    <span className={`text-[13px] ${isSelected ? 'text-[#004C3F] font-semibold' : 'text-[#5C6166]'}`}>
-                      {item.sub}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Footer hint */}
-            <div className="mt-auto px-5 py-4 pb-6 flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              <span>Almost done — 1 more tap</span>
-            </div>
-          </div>
-        )}
-
-        {/* ================= STEP 5: BUDGET ================= */}
-        {step === 5 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header & Progress */}
-            <div className="px-5 pt-3.5 flex flex-col gap-3.5">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  aria-label="Back"
-                  className="w-11 h-11 -ml-2.5 flex items-center justify-center rounded-xl text-[#202223] hover:bg-black/5 cursor-pointer"
-                >
-                  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                <div className="text-[13px] font-semibold text-[#5C6166]">Step 4 of 4</div>
-                <div className="text-[17px] font-extrabold text-[#004C3F]">AdsPeek</div>
-              </div>
-              <div role="progressbar" aria-valuenow={100} aria-valuemin={0} aria-valuemax={100} className="h-1.5 rounded-full bg-[#E3F1EC] overflow-hidden">
-                <div className="w-[100%] h-full bg-[#008060] rounded-full transition-all duration-300" />
-              </div>
-            </div>
-
-            {/* Question Heading */}
-            <div className="px-5 pt-7 flex flex-col gap-2">
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="m-0 text-[26px] leading-[1.2] font-extrabold tracking-[-0.02em] text-[#202223] outline-none"
+              <button
+                className="opt"
+                type="button"
+                data-v="offline"
+                aria-pressed={answers.business === 'offline'}
+                onClick={() => handleSelectOption('business', 'offline', 2)}
               >
-                What budget feels right for your store?
-              </h2>
-              <p className="m-0 text-[15px] text-[#4A4F55]">
-                So we suggest the right plan — no hidden costs later.
-              </p>
-            </div>
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l1.5-5h15L21 9" />
+                  <path d="M4 9v11h16V9" />
+                  <path d="M3 9h18" />
+                  <path d="M10 20v-6h4v6" />
+                </svg>
+                <span>Offline shop</span>
+                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </button>
 
-            {/* Budget Options */}
-            <div className="px-5 pt-5 flex flex-col gap-3">
-              {BUDGET_OPTIONS.map((item) => {
-                const isSelected = budget === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={isSelected}
-                    onClick={() => handleSelectOption(setBudget, item.id, 6)}
-                    className={`flex items-center justify-between gap-3 min-h-[64px] px-4.5 rounded-[16px] text-left transition-all cursor-pointer active:scale-[0.98] ${
-                      isSelected
-                        ? 'border-2 border-[#008060] bg-[#F1F8F5]'
-                        : 'border-[1.5px] border-[#E1E3E5] bg-white hover:border-[#C9CCCF]'
-                    }`}
-                  >
-                    <span className="flex flex-col gap-0.5">
-                      <span className="text-[17px] font-bold text-[#202223]">{item.label}</span>
-                      <span className={`text-[13px] ${isSelected ? 'text-[#004C3F] font-semibold' : 'text-[#5C6166]'}`}>
-                        {item.sub}
-                      </span>
-                    </span>
-                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={isSelected ? '#008060' : '#8C9196'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 6 6 6-6 6" />
-                    </svg>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Every store includes chips */}
-            <div className="mx-5 mt-5 flex flex-col gap-2.5">
-              <div className="text-[12px] font-bold tracking-[0.08em] uppercase text-[#5C6166]">
-                Every store includes
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {STORE_FEATURES_INCLUDED.map((feat) => (
-                  <span
-                    key={feat}
-                    className="text-[13px] font-semibold px-3 py-2 rounded-full bg-[#F6F6F7] text-[#303438]"
-                  >
-                    {feat}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Footer hint */}
-            <div className="mt-auto px-5 py-4 pb-6 flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              <span>Last question</span>
-            </div>
-          </div>
-        )}
-
-        {/* ================= STEP 6: CONTACT ================= */}
-        {step === 6 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header & Progress */}
-            <div className="px-5 pt-3.5 flex flex-col gap-3.5">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  aria-label="Back"
-                  className="w-11 h-11 -ml-2.5 flex items-center justify-center rounded-xl text-[#202223] hover:bg-black/5 cursor-pointer"
-                >
-                  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                <div className="text-[13px] font-bold text-[#008060]">You qualify</div>
-                <div className="text-[17px] font-extrabold text-[#004C3F]">AdsPeek</div>
-              </div>
-              <div role="progressbar" aria-valuenow={100} aria-valuemin={0} aria-valuemax={100} className="h-1.5 rounded-full bg-[#008060]" />
-            </div>
-
-            {/* Selected Answers Summary Chips */}
-            <div className="mx-5 mt-5 p-3.5 rounded-[14px] bg-[#F1F8F5] flex flex-col gap-2.5">
-              <div className="text-[13px] font-bold text-[#004C3F]">
-                Your store plan is ready for
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                <span className="text-[12px] font-semibold px-2.5 py-1.5 rounded-full bg-white border border-[#C9E3D8] text-[#004C3F]">
-                  {CATEGORY_OPTIONS.find((c) => c.id === category)?.shortLabel || category}
-                </span>
-                <span className="text-[12px] font-semibold px-2.5 py-1.5 rounded-full bg-white border border-[#C9E3D8] text-[#004C3F]">
-                  {CHANNEL_OPTIONS.find((c) => c.id === channel)?.shortLabel || channel}
-                </span>
-                <span className="text-[12px] font-semibold px-2.5 py-1.5 rounded-full bg-white border border-[#C9E3D8] text-[#004C3F]">
-                  {ORDERS_OPTIONS.find((o) => o.id === orders)?.shortLabel || orders}
-                </span>
-                <span className="text-[12px] font-semibold px-2.5 py-1.5 rounded-full bg-white border border-[#C9E3D8] text-[#004C3F]">
-                  {BUDGET_OPTIONS.find((b) => b.id === budget)?.shortLabel || budget}
-                </span>
-              </div>
-            </div>
-
-            {/* Question Heading */}
-            <div className="px-5 pt-5 flex flex-col gap-1.5">
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="m-0 text-[26px] leading-[1.2] font-extrabold tracking-[-0.02em] text-[#202223] outline-none"
+              <button
+                className="opt"
+                type="button"
+                data-v="buyer"
+                aria-pressed={answers.business === 'buyer'}
+                onClick={() => handleSelectOption('business', 'buyer', 2)}
               >
-                Where should we send it?
-              </h2>
-              <p className="m-0 text-[15px] text-[#4A4F55]">
-                We&apos;ll WhatsApp your plan — no calls unless you ask.
-              </p>
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="20" r="1.5" />
+                  <circle cx="18" cy="20" r="1.5" />
+                  <path d="M2 3h3l2.5 12h11.5l2-8H6.5" />
+                </svg>
+                <span>Looking to buy a product</span>
+                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </button>
             </div>
+            <p className="hint">Tap one to continue</p>
+          </section>
 
-            {/* Semantic Form */}
-            <form
-              onSubmit={handleSubmitContact}
-              noValidate
-              autoComplete="on"
-              method="post"
-              action="/api/lead"
-              className="px-5 pt-5 flex flex-col gap-3.5"
-            >
-              {/* Honeypot field for bot spam prevention */}
-              <input
-                type="text"
-                name="company"
-                value={honeypotCompany}
-                onChange={(e) => setHoneypotCompany(e.target.value)}
-                style={{ display: 'none' }}
-                tabIndex={-1}
-                autoComplete="off"
-              />
+          {/* 2 · MONTHLY SALES */}
+          <section className={`step ${current === 2 ? 'on' : ''}`} data-step="2" aria-labelledby="h-q2">
+            {BUSINESS[answers.business] && (
+              <div className="note" id="note2">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span>{BUSINESS[answers.business].note}</span>
+              </div>
+            )}
+            <h2 id="h-q2" tabIndex={-1} ref={(el) => { headingRefs.current[2] = el; }}>
+              Monthly <strong>sales?</strong>
+            </h2>
+            <p className="lead">A rough number is fine — across all channels.</p>
+            <div className="opts grid2" data-q="sales">
+              <button
+                className="opt tile"
+                type="button"
+                data-v="under1"
+                aria-pressed={answers.sales === 'under1'}
+                onClick={() => handleSelectOption('sales', 'under1', 3)}
+              >
+                <span className="num">Under ₹1L</span>
+                <span className="sub">per month</span>
+              </button>
 
-              {/* Name Field */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor={nameId} className="text-[14px] font-semibold text-[#202223]">
-                  Your name
-                </label>
+              <button
+                className="opt tile"
+                type="button"
+                data-v="1-5"
+                aria-pressed={answers.sales === '1-5'}
+                onClick={() => handleSelectOption('sales', '1-5', 3)}
+              >
+                <span className="num">₹1–5L</span>
+                <span className="sub">per month</span>
+              </button>
+
+              <button
+                className="opt tile"
+                type="button"
+                data-v="5-20"
+                aria-pressed={answers.sales === '5-20'}
+                onClick={() => handleSelectOption('sales', '5-20', 3)}
+              >
+                <span className="num">₹5–20L</span>
+                <span className="sub">per month</span>
+              </button>
+
+              <button
+                className="opt tile"
+                type="button"
+                data-v="20plus"
+                aria-pressed={answers.sales === '20plus'}
+                onClick={() => handleSelectOption('sales', '20plus', 3)}
+              >
+                <span className="num">₹20L+</span>
+                <span className="sub">per month</span>
+              </button>
+            </div>
+            <p className="hint">Last question</p>
+          </section>
+
+          {/* 3 · CONTACT */}
+          <section className={`step ${current === 3 ? 'on' : ''}`} data-step="3" aria-labelledby="h-contact">
+            <div className="summary" id="summary">
+              <b>Your business:</b> {summaryParts.join(' · ')}
+            </div>
+            <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[3] = el; }}>
+              Where should we <strong>connect you?</strong>
+            </h2>
+            <form id="form" method="post" action="#" autoComplete="on" noValidate onSubmit={handleSubmit}>
+              <div className={`field ${nameInvalid ? 'invalid' : ''}`} id="f-name">
+                <label htmlFor="lq-name">Your name</label>
                 <input
                   ref={nameInputRef}
-                  id={nameId}
+                  className="input"
+                  id="lq-name"
                   name="name"
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={() => setNameTouched(true)}
                   autoComplete="name"
                   autoCapitalize="words"
                   autoCorrect="off"
                   spellCheck={false}
                   enterKeyHint="next"
-                  placeholder="e.g. Priya"
+                  placeholder="e.g. Priya Sharma"
+                  value={name}
+                  onChange={handleNameChange}
+                  onBlur={handleNameBlur}
                   required
-                  className={`h-[52px] px-3.5 rounded-[12px] border text-[16px] text-[#202223] placeholder:text-[#8C9196] outline-none transition-all ${
-                    nameTouched && !isNameValid
-                      ? 'border-[#D72C0D] focus:ring-2 focus:ring-[#D72C0D]/20'
-                      : 'border-[#C9CCCF] focus:border-[#008060] focus:ring-2 focus:ring-[#008060]/20'
-                  }`}
                 />
-                {nameTouched && !isNameValid && (
-                  <span className="text-[12px] text-[#D72C0D]">Please enter your name (at least 2 letters)</span>
-                )}
+                <div className="err" id="e-name">
+                  Please enter your name
+                </div>
               </div>
 
-              {/* WhatsApp Phone Field */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor={phoneId} className="text-[14px] font-semibold text-[#202223]">
-                  WhatsApp number
-                </label>
-                <div
-                  className={`flex h-[52px] rounded-[12px] overflow-hidden border transition-all ${
-                    phoneTouched && !isPhoneValid
-                      ? 'border-[#D72C0D] focus-within:ring-2 focus-within:ring-[#D72C0D]/20'
-                      : 'border-[#C9CCCF] focus-within:border-[#008060] focus-within:ring-2 focus-within:ring-[#008060]/20'
-                  }`}
-                >
-                  <span className="flex items-center px-3 bg-[#F6F6F7] text-[16px] font-semibold text-[#303438] border-r border-[#E1E3E5] select-none">
+              <div className={`field ${phoneInvalid ? 'invalid' : ''}`} id="f-phone">
+                <label htmlFor="lq-phone">WhatsApp number</label>
+                <div className="phone">
+                  <span className="cc" aria-hidden="true">
                     +91
                   </span>
                   <input
-                    id={phoneId}
+                    id="lq-phone"
                     name="tel"
                     type="tel"
                     inputMode="tel"
-                    value={formatPhoneDisplay(phoneDigits)}
-                    onChange={handlePhoneChange}
-                    onBlur={() => setPhoneTouched(true)}
                     autoComplete="tel"
                     enterKeyHint="next"
                     placeholder="98765 43210"
+                    aria-describedby="e-phone"
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    onBlur={handlePhoneBlur}
                     required
-                    className="flex-1 min-w-0 px-3 text-[16px] text-[#202223] placeholder:text-[#8C9196] outline-none bg-white"
                   />
                 </div>
-                {phoneTouched && !isPhoneValid && (
-                  <span className="text-[12px] text-[#D72C0D]">Enter a 10-digit WhatsApp number</span>
-                )}
+                <div className="err" id="e-phone">
+                  Enter a 10-digit WhatsApp number
+                </div>
               </div>
 
-              {/* Store or Instagram Link (Optional) */}
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor={linkId} className="text-[14px] font-semibold text-[#202223]">
-                  Store or Instagram link <span className="font-normal text-[#5C6166]">(optional)</span>
+              <div className="field">
+                <label htmlFor="lq-link">
+                  Store or Instagram link <span className="opt-l">(optional)</span>
                 </label>
                 <input
-                  id={linkId}
+                  className="input"
+                  id="lq-link"
                   name="url"
                   type="text"
                   inputMode="url"
-                  value={storeLink}
-                  onChange={(e) => setStoreLink(e.target.value)}
                   autoComplete="url"
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
                   enterKeyHint="done"
                   placeholder="amazon.in/… or @yourbrand"
-                  maxLength={200}
-                  className="h-[52px] px-3.5 rounded-[12px] border border-[#C9CCCF] text-[16px] text-[#202223] placeholder:text-[#8C9196] outline-none focus:border-[#008060] focus:ring-2 focus:ring-[#008060]/20"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
                 />
               </div>
 
-              {/* Submit CTA & Privacy */}
-              <div className="mt-4 flex flex-col gap-3 pb-6">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex items-center justify-center gap-2.5 min-h-[56px] rounded-[14px] bg-[#008060] text-white text-[17px] font-bold shadow-[0_2px_0_#004C3F] hover:bg-[#007054] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
-                >
-                  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z" />
-                  </svg>
-                  <span>{isSubmitting ? 'Saving…' : 'Get my store plan on WhatsApp'}</span>
-                </button>
-
-                <div className="flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="4" y="11" width="16" height="10" rx="2" />
-                    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                  </svg>
-                  <span>100% private · Never shared or sold</span>
-                </div>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* ================= STEP 7: WHATSAPP REDIRECT ================= */}
-        {step === 7 && (
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Header */}
-            <div className="flex items-center justify-center px-5 py-4 border-b border-[#EDEEEF]">
-              <div className="text-[20px] font-extrabold tracking-[-0.02em] text-[#004C3F]">
-                AdsPeek
-              </div>
-            </div>
-
-            {/* Success Hero */}
-            <div className="px-5 pt-8 flex flex-col items-center gap-3.5 text-center">
-              <div className="w-[72px] h-[72px] rounded-full bg-[#E3F1EC] flex items-center justify-center">
-                <svg aria-hidden="true" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
+              <div className="hp" aria-hidden="true">
+                <label htmlFor="lq-hp">Leave empty</label>
+                <input
+                  id="lq-hp"
+                  name="lq_hp_x"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={hp}
+                  onChange={(e) => setHp(e.target.value)}
+                />
               </div>
 
-              <h2
-                ref={headingRef}
-                tabIndex={-1}
-                className="m-0 text-[26px] leading-[1.2] font-extrabold tracking-[-0.02em] text-[#202223] outline-none"
-              >
-                You&apos;re a great fit for a Shopify store
-              </h2>
-
-              <p className="m-0 text-[15px] leading-[1.5] text-[#4A4F55]">
-                Just tap <b>Send</b> in WhatsApp and our team replies with your plan.
-              </p>
-
-              {/* Status Pill with Countdown */}
-              <div
-                role="status"
-                aria-live="polite"
-                className={`flex items-center gap-2.5 p-2 pr-3.5 rounded-full bg-[#F1F8F5] border border-[#C9E3D8] transition-all ${
-                  redirectBlocked ? 'animate-pulse' : ''
-                }`}
-              >
-                <span className="w-[34px] h-[34px] rounded-full border-[3px] border-[#008060] flex items-center justify-center text-[15px] font-extrabold text-[#004C3F]">
-                  {countdown}
-                </span>
-                <span className="text-[14px] font-semibold text-[#004C3F]">
-                  {redirectBlocked ? 'Tap the button to open WhatsApp' : `Opening WhatsApp in ${countdown} seconds…`}
-                </span>
-              </div>
-            </div>
-
-            {/* WhatsApp Message Preview Bubble */}
-            <div className="mx-5 mt-6 p-4 rounded-[16px] bg-[#EFEAE2] flex flex-col gap-2">
-              <div className="text-[12px] font-semibold text-[#5C6166]">
-                Your message (pre-filled)
-              </div>
-              <div className="self-end max-w-[88%] p-3.5 rounded-[14px_14px_4px_14px] bg-[#D9FDD3] text-[14px] leading-[1.5] text-[#202223] shadow-xs">
-                {waMessage}
-              </div>
-            </div>
-
-            {/* Immediate Action Buttons */}
-            <div className="px-5 pt-5 flex flex-col gap-3">
-              <a
-                href={waUrl}
-                className="flex items-center justify-center gap-2.5 min-h-[56px] rounded-[14px] bg-[#008060] text-white text-[17px] font-bold no-underline shadow-[0_2px_0_#004C3F] hover:bg-[#007054] active:scale-[0.98] transition-all"
-              >
-                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <button className="cta" id="submit" type="submit" disabled={isSubmitting}>
+                <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z" />
                 </svg>
-                <span>Open WhatsApp now</span>
-              </a>
-              <div className="text-center text-[13px] text-[#5C6166]">
-                Didn&apos;t open?{' '}
-                <a href={waUrl} className="font-semibold text-[#008060] underline">
-                  Tap here
-                </a>
-              </div>
-            </div>
+                <span id="submit-text">
+                  {isSubmitting ? 'Saving…' : 'Connect me on WhatsApp'}
+                </span>
+              </button>
+            </form>
 
-            {/* What happens next section */}
-            <div className="mx-5 mt-6 flex flex-col gap-3">
-              <div className="text-[12px] font-bold tracking-[0.08em] uppercase text-[#5C6166]">
-                What happens next
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-[#E3F1EC] text-[#004C3F] text-[13px] font-extrabold flex items-center justify-center shrink-0">
-                  1
-                </span>
-                <span className="text-[14px] text-[#303438]">
-                  We reply with stores built for your category
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-[#E3F1EC] text-[#004C3F] text-[13px] font-extrabold flex items-center justify-center shrink-0">
-                  2
-                </span>
-                <span className="text-[14px] text-[#303438]">
-                  A 10-min call to plan your store — only if you want
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-[#E3F1EC] text-[#004C3F] text-[13px] font-extrabold flex items-center justify-center shrink-0">
-                  3
-                </span>
-                <span className="text-[14px] text-[#303438]">
-                  Fixed quote. No surprises.
-                </span>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="mt-auto px-5 py-4 pb-6 flex items-center justify-center gap-2 text-[12px] text-[#5C6166]">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <p className="private">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#008060" />
+                <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#008060" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="12" cy="15.5" r="1.4" fill="#fff" />
               </svg>
-              <span>AdsPeek · Sector 22, Gurugram</span>
-            </div>
-          </div>
-        )}
+              100% private · Never shared or sold
+            </p>
+          </section>
 
-      </div>
+          {/* 4 · DONE / WHATSAPP */}
+          <section className={`step done ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-done">
+            <div className="tick">
+              <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </div>
+            <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
+              You&apos;re all set — <strong>let&apos;s talk</strong>
+            </h2>
+            <p className="lead">
+              Just tap <b>Send</b> in WhatsApp — our team replies for your free consultation.
+            </p>
+            <div className="count" role="status" aria-live="polite">
+              <span className="ring" id="ring">
+                {isFallback ? '!' : countdown}
+              </span>
+              <span id="count-text">{countText}</span>
+            </div>
+            <div className="wa">
+              <small>Your message (pre-filled)</small>
+              <div className="bubble" id="bubble">
+                {bubbleMsg}
+              </div>
+            </div>
+            <a
+              className={`cta ${isFallback ? 'pulse' : ''}`}
+              id="wa-btn"
+              href={waUrl}
+              onClick={() => clearAllTimers()}
+            >
+              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z" />
+              </svg>
+              Open WhatsApp now
+            </a>
+          </section>
+        </div>
+      </main>
     </div>
   );
 }
+
 export default LeadQuiz;

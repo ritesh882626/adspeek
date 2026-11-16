@@ -3,8 +3,8 @@ import { Schibsted_Grotesk, IBM_Plex_Mono } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import './motion.css';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import MetaPixel from '@/components/MetaPixel';
+import SiteShell from '@/components/layout/SiteShell';
 
 const schibsted = Schibsted_Grotesk({
   subsets: ['latin'],
@@ -73,10 +73,8 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans bg-paper text-ink min-h-screen flex flex-col">
-        <Script src="/embed/adspeek-estimate-modal.js" strategy="afterInteractive" />
-        <Header />
-        <main className="flex-1 flex flex-col">{children}</main>
-        <Footer />
+        <MetaPixel />
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );
