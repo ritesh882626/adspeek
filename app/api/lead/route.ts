@@ -82,15 +82,24 @@ async function sendLeadToMeta(b: LeadBody, ip: string, ua: string): Promise<bool
 
 async function saveToSheet(b: LeadBody, ip: string, ua: string): Promise<boolean> {
   if (!SHEET_URL) { console.warn('[lead] LEAD_SHEET_URL missing — lead not saved'); return false; }
-  const res = await fetch(SHEET_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // Apps Script reads e.postData.contents
-    body: JSON.stringify({ ...b, ip, userAgent: ua }),
-    redirect: 'follow',
-    signal: AbortSignal.timeout(6000),
-  });
-  if (!res.ok) console.error('[lead] Sheet error', res.status);
-  return res.ok;
+  try {
+    const res = await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // Apps Script reads e.postData.contents
+      body: JSON.stringify({ ...b, ip, userAgent: ua }),
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) {
+      console.error('Sheet write failed', res.status, 'leadId:', b.leadId);
+      return false;
+    }
+    return true;
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('Sheet write failed', msg, 'leadId:', b.leadId);
+    return false;
+  }
 }
 
 export async function POST(req: Request) {
