@@ -52,6 +52,12 @@ const SALES: Record<string, string> = {
   '20plus': '₹20L+',
 };
 
+const TIMELINE: Record<string, string> = {
+  now: 'This month',
+  '1-3': 'In 1–3 months',
+  exploring: 'Just exploring',
+};
+
 interface VariantData {
   eyebrow: string;
   headline: string;
@@ -116,13 +122,35 @@ function productError(raw: string): string {
   return '';
 }
 
+const DISPOSABLE = [
+  'mailinator.com', 'guerrillamail.com', 'guerrillamail.net', 'sharklasers.com', '10minutemail.com', '10minutemail.net',
+  'tempmail.com', 'temp-mail.org', 'tempmail.net', 'tempmailo.com', 'yopmail.com', 'trashmail.com', 'getnada.com', 'maildrop.cc',
+  'dispostable.com', 'fakeinbox.com', 'throwawaymail.com', 'mintemail.com', 'mohmal.com', 'emailondeck.com', 'burnermail.io',
+  'moakt.com', 'mailnesia.com', 'spamgourmet.com', 'tempr.email', 'discard.email', 'mailcatch.com', 'inboxkitten.com',
+];
+
+function emailError(v: string): string {
+  const val = String(v || '').trim().toLowerCase();
+  if (!val) return '';
+  if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/.test(val)) return 'Enter a valid email, or leave it empty';
+  const dom = val.split('@')[1];
+  if (DISPOSABLE.indexOf(dom) !== -1) return 'Please use your real email, or leave it empty';
+  return '';
+}
+
 export function LeadQuiz() {
   const searchParams = useSearchParams();
   const [current, setCurrent] = useState<number>(0);
-  const [answers, setAnswers] = useState<{ business: string; product: string; sales: string }>({
+  const [answers, setAnswers] = useState<{
+    business: string;
+    product: string;
+    sales: string;
+    timeline: string;
+  }>({
     business: '',
     product: '',
     sales: '',
+    timeline: '',
   });
 
   const [product, setProduct] = useState<string>('');
@@ -130,6 +158,8 @@ export function LeadQuiz() {
 
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [emailErr, setEmailErr] = useState<string>('');
   const [link, setLink] = useState<string>('');
   const [hp, setHp] = useState<string>('');
 
@@ -145,8 +175,12 @@ export function LeadQuiz() {
 
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const leadSentRef = useRef<boolean>(false);
+  const contactSentRef = useRef<boolean>(false);
+
   const productInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
   const headingRefs = useRef<(HTMLHeadingElement | null)[]>([]);
 
   // Variant config
@@ -174,7 +208,7 @@ export function LeadQuiz() {
 
     const handlePopState = (e: PopStateEvent) => {
       let s = e.state && typeof e.state.s === 'number' ? e.state.s : 0;
-      if (s === 5 && !leadSentRef.current) s = 4;
+      if (s === 6 && !leadSentRef.current) s = 5;
       showStep(s, false);
     };
 
@@ -190,8 +224,8 @@ export function LeadQuiz() {
 
   // Step transition
   const showStep = (i: number, pushHistory: boolean = true) => {
-    if (i < 0 || i > 5) return;
-    if (current === 5 && i !== 5) clearAllTimers();
+    if (i < 0 || i > 6) return;
+    if (current === 6 && i !== 6) clearAllTimers();
 
     setCurrent(i);
 
@@ -201,7 +235,7 @@ export function LeadQuiz() {
     window.scrollTo(0, 0);
 
     setTimeout(() => {
-      if (i === 4 && nameInputRef.current) {
+      if (i === 5 && nameInputRef.current) {
         try {
           nameInputRef.current.focus({ preventScroll: true });
         } catch {
@@ -232,7 +266,7 @@ export function LeadQuiz() {
   };
 
   // Option selection with 180ms delay
-  const handleSelectOption = (key: 'business' | 'sales', val: string, nextStep: number) => {
+  const handleSelectOption = (key: 'business' | 'sales' | 'timeline', val: string, nextStep: number) => {
     setAnswers((prev) => ({ ...prev, [key]: val }));
     const from = current;
     setTimeout(() => {
@@ -297,6 +331,19 @@ export function LeadQuiz() {
     }
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setEmail(val);
+    if (!emailError(val)) {
+      setEmailErr('');
+    }
+  };
+
+  const handleEmailBlur = () => {
+    const er = emailError(email);
+    setEmailErr(er);
+  };
+
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
     if (e.target.value.trim().length >= 2) {
@@ -314,8 +361,10 @@ export function LeadQuiz() {
   // Quality calculation
   const getQuality = () => {
     if (answers.business === 'buyer') return 'Not a fit (buyer)';
-    if (answers.sales === '5-20' || answers.sales === '20plus') return 'Hot';
-    if (answers.sales === '1-5') return 'Warm';
+    const big = answers.sales === '5-20' || answers.sales === '20plus';
+    const soon = answers.timeline === 'now' || answers.timeline === '1-3';
+    if (big && soon) return 'Hot';
+    if (big || (answers.sales === '1-5' && soon)) return 'Warm';
     return 'Cold';
   };
 
@@ -324,7 +373,7 @@ export function LeadQuiz() {
     const b = BUSINESS[answers.business];
     let msg = `Hi AdsPeek, I'm ${leadName}. `;
     if (b && answers.business !== 'buyer') {
-      msg += `I sell ${answers.product || 'my products'} ${b.msg}, monthly sales ${SALES[answers.sales] || 'not sure'}. I'd like a free consultation for a store that sells.`;
+      msg += `I sell ${answers.product || 'my products'} ${b.msg}, monthly sales ${SALES[answers.sales] || 'not sure'}. Want to start: ${TIMELINE[answers.timeline] || 'not sure'}. I'd like a free consultation for a store that sells.`;
     } else {
       msg += `I'm looking to buy: ${answers.product || 'a product'}.`;
     }
@@ -337,30 +386,24 @@ export function LeadQuiz() {
     return url;
   };
 
-  // Send to Google Sheet
-  const DEFAULT_SHEET_URL =
-    'https://script.google.com/macros/s/AKfycbwMBdTUmtOQyC25na2yawmB97vF7RPfHnsiStVAeJru-iEJtyq8xXCKIwL7KYL0mkBCYw/exec';
-
-  const sendToSheet = (payload: Record<string, unknown>) => {
-    const sheetUrl = process.env.NEXT_PUBLIC_LEAD_SHEET_URL || DEFAULT_SHEET_URL;
-    if (!/^https:\/\/script\.google\.com\//.test(sheetUrl)) {
-      console.warn('[LeadQuiz] NEXT_PUBLIC_LEAD_SHEET_URL is not set — lead not saved.');
-      return Promise.resolve();
-    }
+  // Post lead to /api/lead
+  const saveLead = (payload: Record<string, unknown>) => {
     const body = JSON.stringify(payload);
-    return fetch(sheetUrl, {
+    return fetch('/api/lead', {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      headers: { 'Content-Type': 'application/json' },
       body,
       keepalive: true,
-    }).catch(() => {
-      try {
-        if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-          navigator.sendBeacon(sheetUrl, new Blob([body], { type: 'text/plain;charset=utf-8' }));
-        }
-      } catch {}
-    });
+    })
+      .then((r) => r.ok)
+      .catch(() => {
+        try {
+          if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+            return navigator.sendBeacon('/api/lead', new Blob([body], { type: 'application/json' }));
+          }
+        } catch {}
+        return false;
+      });
   };
 
   const waitMs = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -370,19 +413,27 @@ export function LeadQuiz() {
     e.preventDefault();
     const trimmedName = name.trim().replace(/\s+/g, ' ');
     const d = digits10(phone);
+    const trimmedEmail = email.trim().toLowerCase();
     const trimmedLink = link.trim().slice(0, 200);
 
     const okName = trimmedName.length >= 2;
     const okPhone = /^[6-9]\d{9}$/.test(d);
+    const eErr = emailError(trimmedEmail);
 
     setNameInvalid(!okName);
     setPhoneInvalid(!okPhone);
+    setEmailErr(eErr);
 
     if (!okName) {
       nameInputRef.current?.focus();
       return;
     }
     if (!okPhone) {
+      phoneInputRef.current?.focus();
+      return;
+    }
+    if (eErr) {
+      emailInputRef.current?.focus();
       return;
     }
 
@@ -407,10 +458,12 @@ export function LeadQuiz() {
       leadId,
       name: trimmedName,
       phone: `+91${d}`,
+      email: trimmedEmail,
       storeLink: trimmedLink,
       business: BUSINESS[answers.business] ? BUSINESS[answers.business].label : '',
       product: answers.product,
       sales: SALES[answers.sales] || '',
+      timeline: TIMELINE[answers.timeline] || '',
       quality: getQuality(),
       variant: variantKey,
       utm_source: utm.utm_source || '',
@@ -426,6 +479,18 @@ export function LeadQuiz() {
       hp,
     };
 
+    const targetWaUrl = buildWhatsApp(trimmedName, d, trimmedLink);
+
+    // Honeypot: bot trap - send nothing to Meta or Server
+    if (hp) {
+      leadSentRef.current = true;
+      setIsSubmitting(false);
+      showStep(6, true);
+      startRedirect(targetWaUrl);
+      return;
+    }
+
+    // Browser Lead event — same event_id as server Lead
     trackEvent(
       'Lead',
       {
@@ -433,18 +498,17 @@ export function LeadQuiz() {
         business_type: payload.business,
         product: payload.product,
         monthly_sales: payload.sales,
+        start: payload.timeline,
         lead_quality: payload.quality,
       },
-      payload.leadId
+      leadId
     );
 
-    const targetWaUrl = buildWhatsApp(trimmedName, d, trimmedLink);
-
-    const sendPromise = hp ? Promise.resolve() : sendToSheet(payload);
+    const sendPromise = saveLead(payload);
     Promise.race([sendPromise, waitMs(2500)]).then(() => {
       leadSentRef.current = true;
       setIsSubmitting(false);
-      showStep(5, true);
+      showStep(6, true);
       startRedirect(targetWaUrl);
     });
   };
@@ -470,6 +534,10 @@ export function LeadQuiz() {
         } else {
           setCountdown(0);
           setCountText('Opening WhatsApp…');
+          if (!contactSentRef.current) {
+            trackEvent('Contact', { content_name: 'whatsapp_redirect' });
+            contactSentRef.current = true;
+          }
           window.location.href = targetUrl;
           const fallbackTimer = setTimeout(() => {
             if (document.visibilityState === 'visible') {
@@ -486,7 +554,7 @@ export function LeadQuiz() {
   // Handle pageshow (back from WhatsApp)
   useEffect(() => {
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted && current === 5) {
+      if (e.persisted && current === 6) {
         clearAllTimers();
         triggerFallback();
       }
@@ -500,8 +568,9 @@ export function LeadQuiz() {
   if (BUSINESS[answers.business]) summaryParts.push(BUSINESS[answers.business].short);
   if (answers.product) summaryParts.push(answers.product);
   if (SALES[answers.sales]) summaryParts.push(`${SALES[answers.sales]} / month`);
+  if (TIMELINE[answers.timeline]) summaryParts.push(`Start: ${TIMELINE[answers.timeline]}`);
 
-  const inQuiz = current >= 1 && current <= 3;
+  const inQuiz = current >= 1 && current <= 4;
   const isBuyer = answers.business === 'buyer';
 
   return (
@@ -530,11 +599,11 @@ export function LeadQuiz() {
             <span
               className="steplabel"
               id="steplabel"
-              style={{ color: current === 4 ? '#008060' : undefined }}
+              style={{ color: current === 5 ? '#008060' : undefined }}
             >
               {inQuiz
-                ? `Step ${current} of 3`
-                : current === 4
+                ? `Step ${current} of 4`
+                : current === 5
                 ? 'Last step'
                 : ''}
             </span>
@@ -547,13 +616,13 @@ export function LeadQuiz() {
             role="progressbar"
             aria-label="Quiz progress"
             aria-valuemin={0}
-            aria-valuemax={3}
-            aria-valuenow={Math.min(current, 3)}
-            hidden={current === 0 || current === 5}
+            aria-valuemax={4}
+            aria-valuenow={Math.min(current, 4)}
+            hidden={current === 0 || current === 6}
           >
             <span
               id="bar"
-              style={{ width: `${current === 4 ? 100 : Math.round((current * 100) / 3)}%` }}
+              style={{ width: `${current === 5 ? 100 : current * 25}%` }}
             />
           </div>
 
@@ -708,7 +777,7 @@ export function LeadQuiz() {
                 </svg>
               </button>
             </div>
-            <p className="hint">Tap one to continue · 3 quick steps</p>
+            <p className="hint">Tap one to continue · 4 quick steps</p>
           </section>
 
           {/* 2 · WHAT DO YOU SELL */}
@@ -759,7 +828,7 @@ export function LeadQuiz() {
                 </svg>
               </button>
             </form>
-            <p className="hint">2 more steps</p>
+            <p className="hint">2 more taps</p>
           </section>
 
           {/* 3 · MONTHLY SALES */}
@@ -821,15 +890,67 @@ export function LeadQuiz() {
                 <span className="sub">per month</span>
               </button>
             </div>
+            <p className="hint">1 more tap</p>
+          </section>
+
+          {/* 4 · WHEN TO START */}
+          <section className={`step ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-qt">
+            <h2 id="h-qt" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
+              When do you want <strong>to start?</strong>
+            </h2>
+            <p className="lead">So we plan the right next step for you.</p>
+            <div className="opts" data-q="timeline">
+              <button
+                className="opt"
+                type="button"
+                data-v="now"
+                aria-pressed={answers.timeline === 'now'}
+                onClick={() => handleSelectOption('timeline', 'now', 5)}
+              >
+                <span className="radio" />
+                <span>
+                  This month
+                  <span className="sub">Ready to start now</span>
+                </span>
+              </button>
+
+              <button
+                className="opt"
+                type="button"
+                data-v="1-3"
+                aria-pressed={answers.timeline === '1-3'}
+                onClick={() => handleSelectOption('timeline', '1-3', 5)}
+              >
+                <span className="radio" />
+                <span>
+                  In 1–3 months
+                  <span className="sub">Planning ahead</span>
+                </span>
+              </button>
+
+              <button
+                className="opt"
+                type="button"
+                data-v="exploring"
+                aria-pressed={answers.timeline === 'exploring'}
+                onClick={() => handleSelectOption('timeline', 'exploring', 5)}
+              >
+                <span className="radio" />
+                <span>
+                  Just exploring
+                  <span className="sub">Comparing options</span>
+                </span>
+              </button>
+            </div>
             <p className="hint">Last question</p>
           </section>
 
-          {/* 4 · CONTACT */}
-          <section className={`step ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-contact">
+          {/* 5 · CONTACT */}
+          <section className={`step ${current === 5 ? 'on' : ''}`} data-step="5" aria-labelledby="h-contact">
             <div className="summary" id="summary">
               <b>Your business:</b> {summaryParts.join(' · ')}
             </div>
-            <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
+            <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[5] = el; }}>
               Where should we <strong>connect you?</strong>
             </h2>
             <form id="form" method="post" action="#" autoComplete="on" noValidate onSubmit={handleSubmit}>
@@ -864,6 +985,7 @@ export function LeadQuiz() {
                     +91
                   </span>
                   <input
+                    ref={phoneInputRef}
                     id="lq-phone"
                     name="tel"
                     type="tel"
@@ -880,6 +1002,33 @@ export function LeadQuiz() {
                 </div>
                 <div className="err" id="e-phone">
                   Enter a 10-digit WhatsApp number
+                </div>
+              </div>
+
+              <div className={`field ${emailErr ? 'invalid' : ''}`} id="f-email">
+                <label htmlFor="lq-email">
+                  Email <span className="opt-l">(optional)</span>
+                </label>
+                <input
+                  ref={emailInputRef}
+                  className="input"
+                  id="lq-email"
+                  name="email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  enterKeyHint="next"
+                  placeholder="you@yourbrand.com"
+                  aria-describedby="e-email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  onBlur={handleEmailBlur}
+                />
+                <div className="err" id="e-email">
+                  {emailErr || 'Enter a valid email, or leave it empty'}
                 </div>
               </div>
 
@@ -937,14 +1086,14 @@ export function LeadQuiz() {
             </p>
           </section>
 
-          {/* 5 · DONE / WHATSAPP */}
-          <section className={`step done ${current === 5 ? 'on' : ''}`} data-step="5" aria-labelledby="h-done">
+          {/* 6 · DONE / WHATSAPP */}
+          <section className={`step done ${current === 6 ? 'on' : ''}`} data-step="6" aria-labelledby="h-done">
             <div className="tick">
               <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 6 9 17l-5-5" />
               </svg>
             </div>
-            <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[5] = el; }}>
+            <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[6] = el; }}>
               You&apos;re all set — <strong>let&apos;s talk</strong>
             </h2>
             <p className="lead">
@@ -966,7 +1115,13 @@ export function LeadQuiz() {
               className={`cta ${isFallback ? 'pulse' : ''}`}
               id="wa-btn"
               href={waUrl}
-              onClick={() => clearAllTimers()}
+              onClick={() => {
+                clearAllTimers();
+                if (!contactSentRef.current) {
+                  trackEvent('Contact', { content_name: 'whatsapp_redirect' });
+                  contactSentRef.current = true;
+                }
+              }}
             >
               <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z" />

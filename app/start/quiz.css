@@ -563,7 +563,7 @@ form {
 }
 
 /* Short phones (iPhone SE, in-app browsers): keep every step inside 80% of the screen */
-@media (max-height: 720px) {
+@media (max-height: 780px) {
   .step {
     padding-top: 12px;
   }
@@ -588,8 +588,10 @@ form {
     margin-top: 8px;
   }
   .summary {
-    margin-bottom: 10px;
-    padding: 7px 12px;
+    display: none;
+  }
+  .field label {
+    margin-bottom: 3px;
   }
   .field {
     margin-top: 9px;
