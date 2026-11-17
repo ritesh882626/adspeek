@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { getFbCookies, trackEvent } from '@/lib/metaPixel';
 import './quiz.css';
 
 interface BusinessOption {
@@ -315,6 +316,10 @@ export function LeadQuiz() {
       utm = JSON.parse(sessionStorage.getItem('lq_utm') || '{}');
     } catch {}
 
+    const { fbp, fbc: fbcCookie } = getFbCookies();
+    const fbclid = utm.fbclid || '';
+    const fbc = !fbcCookie && fbclid ? `fb.1.${Date.now()}.${fbclid}` : fbcCookie;
+
     const payload = {
       leadId,
       name: trimmedName,
@@ -329,11 +334,24 @@ export function LeadQuiz() {
       utm_campaign: utm.utm_campaign || '',
       utm_content: utm.utm_content || '',
       utm_term: utm.utm_term || '',
-      fbclid: utm.fbclid || '',
+      fbclid,
+      fbp,
+      fbc,
       pageUrl: typeof window !== 'undefined' ? window.location.href.slice(0, 300) : '',
       device: typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 200) : '',
       hp,
     };
+
+    trackEvent(
+      'Lead',
+      {
+        content_name: 'lead_quiz',
+        business_type: payload.business,
+        monthly_sales: payload.sales,
+        lead_quality: payload.quality,
+      },
+      payload.leadId
+    );
 
     const targetWaUrl = buildWhatsApp(trimmedName, d, trimmedLink);
 
