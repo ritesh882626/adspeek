@@ -16,25 +16,25 @@ const BUSINESS: Record<string, BusinessOption> = {
   website: {
     label: 'Own website / Shopify',
     short: 'Own website',
-    msg: 'I sell through my own website',
+    msg: 'through my own website',
     note: "We'll rebuild it to convert better — not just look better.",
   },
   marketplace: {
     label: 'Amazon / Flipkart',
     short: 'Amazon / Flipkart',
-    msg: 'I sell on Amazon/Flipkart',
+    msg: 'on Amazon/Flipkart',
     note: 'Marketplace sellers keep the full margin on orders from their own store — no commission cut.',
   },
   social: {
     label: 'Instagram / WhatsApp',
     short: 'Instagram / WhatsApp',
-    msg: 'I sell on Instagram/WhatsApp',
+    msg: 'on Instagram/WhatsApp',
     note: 'Turn DMs into a checkout that takes orders while you sleep.',
   },
   offline: {
     label: 'Offline shop',
     short: 'Offline shop',
-    msg: 'I run an offline shop',
+    msg: 'in my offline shop',
     note: 'Take your shop online and sell beyond your area.',
   },
   buyer: {
@@ -68,13 +68,65 @@ const VARIANTS: Record<string, VariantData> = {
 
 const REDIRECT_SECONDS = 5;
 
+const JUNK = [
+  'test', 'testing', 'tester', 'asdf', 'asd', 'qwerty', 'qwe', 'abc', 'abcd', 'abcde', 'xyz', 'xxx', 'aaa',
+  'na', 'n/a', 'n.a', 'none', 'nothing', 'no', 'nope', 'nil', 'null', 'hi', 'hii', 'hello', 'hey', 'ok', 'okay', 'yes',
+  'product', 'products', 'item', 'items', 'goods', 'stuff', 'thing', 'things', 'anything', 'something', 'everything',
+  'all', 'many', 'random', 'idk', 'dont know', "don't know", 'not sure', 'nothing yet', 'no product', 'some product',
+  'business', 'shop', 'store', 'sell', 'selling', 'sale', 'online', 'offline', 'amazon', 'flipkart', 'meesho',
+  'instagram', 'whatsapp', 'website', 'shopify', 'many things', 'all types', 'all products', 'various', 'misc',
+];
+
+const MASH = [
+  'asdf', 'sdfg', 'dfgh', 'fghj', 'ghjk', 'hjkl', 'qwer', 'wert', 'erty', 'rtyu', 'tyui', 'yuio', 'uiop',
+  'zxcv', 'xcvb', 'cvbn', 'vbnm', 'qaz', 'wsx', 'edc', 'rfv', 'tgb', 'yhn', 'ujm', 'lkjh', 'poiu', 'mnbv',
+];
+
+function productError(raw: string): string {
+  const v = String(raw || '').trim().replace(/\s+/g, ' ');
+  const low = v.toLowerCase();
+  if (!v) return 'Please type what you sell';
+  if (v.length < 3) return "That's too short — type the product name";
+  const letters = (v.match(/[\p{L}\p{M}]/gu) || []).length;
+  if (letters < 3) return 'Please use words — e.g. Cotton kurtis';
+  if (/https?:|www\.|\.com\b|\.in\b|@/.test(low)) return 'Type the product name, not a link';
+  if (/\d{6,}/.test(v.replace(/\s/g, ''))) return 'Type the product name, not a number';
+  if (JUNK.indexOf(low.replace(/[.!?]+$/, '')) !== -1) return 'Please be specific — e.g. Handmade candles';
+  if (/(.)\1{3,}/i.test(low)) return "That doesn't look like a product name";
+  const latin = low.replace(/[^a-z]/g, '');
+  if (latin.length >= 4) {
+    for (let i = 0; i < MASH.length; i++) {
+      if (latin.indexOf(MASH[i]) !== -1 && latin.length <= MASH[i].length + 4) {
+        return "That doesn't look like a product name";
+      }
+    }
+    const words = low.match(/[a-z]+/g) || [];
+    for (let w = 0; w < words.length; w++) {
+      const word = words[w];
+      if (word.length >= 4 && !/[aeiouy]/.test(word)) return "That doesn't look like a product name";
+      if (/[^aeiouy\s]{6,}/.test(word)) return "That doesn't look like a product name";
+      if (word.length > 25) return "That doesn't look like a product name";
+    }
+    const uniq: Record<string, number> = {};
+    latin.split('').forEach((c) => {
+      uniq[c] = 1;
+    });
+    if (latin.length >= 6 && Object.keys(uniq).length <= 2) return "That doesn't look like a product name";
+  }
+  return '';
+}
+
 export function LeadQuiz() {
   const searchParams = useSearchParams();
   const [current, setCurrent] = useState<number>(0);
-  const [answers, setAnswers] = useState<{ business: string; sales: string }>({
+  const [answers, setAnswers] = useState<{ business: string; product: string; sales: string }>({
     business: '',
+    product: '',
     sales: '',
   });
+
+  const [product, setProduct] = useState<string>('');
+  const [productErr, setProductErr] = useState<string>('');
 
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
@@ -93,6 +145,7 @@ export function LeadQuiz() {
 
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const leadSentRef = useRef<boolean>(false);
+  const productInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const headingRefs = useRef<(HTMLHeadingElement | null)[]>([]);
 
@@ -121,7 +174,7 @@ export function LeadQuiz() {
 
     const handlePopState = (e: PopStateEvent) => {
       let s = e.state && typeof e.state.s === 'number' ? e.state.s : 0;
-      if (s === 4 && !leadSentRef.current) s = 3;
+      if (s === 5 && !leadSentRef.current) s = 4;
       showStep(s, false);
     };
 
@@ -137,8 +190,8 @@ export function LeadQuiz() {
 
   // Step transition
   const showStep = (i: number, pushHistory: boolean = true) => {
-    if (i < 0 || i > 4) return;
-    if (current === 4 && i !== 4) clearAllTimers();
+    if (i < 0 || i > 5) return;
+    if (current === 5 && i !== 5) clearAllTimers();
 
     setCurrent(i);
 
@@ -148,11 +201,17 @@ export function LeadQuiz() {
     window.scrollTo(0, 0);
 
     setTimeout(() => {
-      if (i === 3 && nameInputRef.current) {
+      if (i === 4 && nameInputRef.current) {
         try {
           nameInputRef.current.focus({ preventScroll: true });
         } catch {
           nameInputRef.current.focus();
+        }
+      } else if (i === 2 && productInputRef.current) {
+        try {
+          productInputRef.current.focus({ preventScroll: true });
+        } catch {
+          productInputRef.current.focus();
         }
       } else if (headingRefs.current[i]) {
         try {
@@ -181,6 +240,30 @@ export function LeadQuiz() {
         showStep(nextStep, true);
       }
     }, 180);
+  };
+
+  // Product submission
+  const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setProduct(val);
+    if (productErr && !productError(val)) {
+      setProductErr('');
+    }
+  };
+
+  const handleProductSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const err = productError(product);
+    if (err) {
+      setProductErr(err);
+      productInputRef.current?.focus();
+      return;
+    }
+    setProductErr('');
+    const cleaned = product.trim().replace(/\s+/g, ' ');
+    setAnswers((prev) => ({ ...prev, product: cleaned }));
+    setProduct(cleaned);
+    showStep(3, true);
   };
 
   // Phone sanitization & formatting
@@ -241,9 +324,9 @@ export function LeadQuiz() {
     const b = BUSINESS[answers.business];
     let msg = `Hi AdsPeek, I'm ${leadName}. `;
     if (b && answers.business !== 'buyer') {
-      msg += `${b.msg}, monthly sales ${SALES[answers.sales] || 'not sure'}. I'd like a free consultation for a store that sells.`;
+      msg += `I sell ${answers.product || 'my products'} ${b.msg}, monthly sales ${SALES[answers.sales] || 'not sure'}. I'd like a free consultation for a store that sells.`;
     } else {
-      msg += "I'm looking to buy a product.";
+      msg += `I'm looking to buy: ${answers.product || 'a product'}.`;
     }
     if (storeUrl) msg += ` Store: ${storeUrl}`;
 
@@ -326,6 +409,7 @@ export function LeadQuiz() {
       phone: `+91${d}`,
       storeLink: trimmedLink,
       business: BUSINESS[answers.business] ? BUSINESS[answers.business].label : '',
+      product: answers.product,
       sales: SALES[answers.sales] || '',
       quality: getQuality(),
       variant: variantKey,
@@ -347,6 +431,7 @@ export function LeadQuiz() {
       {
         content_name: 'lead_quiz',
         business_type: payload.business,
+        product: payload.product,
         monthly_sales: payload.sales,
         lead_quality: payload.quality,
       },
@@ -359,7 +444,7 @@ export function LeadQuiz() {
     Promise.race([sendPromise, waitMs(2500)]).then(() => {
       leadSentRef.current = true;
       setIsSubmitting(false);
-      showStep(4, true);
+      showStep(5, true);
       startRedirect(targetWaUrl);
     });
   };
@@ -401,7 +486,7 @@ export function LeadQuiz() {
   // Handle pageshow (back from WhatsApp)
   useEffect(() => {
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted && current === 4) {
+      if (e.persisted && current === 5) {
         clearAllTimers();
         triggerFallback();
       }
@@ -413,7 +498,11 @@ export function LeadQuiz() {
   // Summary rendering
   const summaryParts: string[] = [];
   if (BUSINESS[answers.business]) summaryParts.push(BUSINESS[answers.business].short);
+  if (answers.product) summaryParts.push(answers.product);
   if (SALES[answers.sales]) summaryParts.push(`${SALES[answers.sales]} / month`);
+
+  const inQuiz = current >= 1 && current <= 3;
+  const isBuyer = answers.business === 'buyer';
 
   return (
     <div className="quiz-root">
@@ -441,11 +530,11 @@ export function LeadQuiz() {
             <span
               className="steplabel"
               id="steplabel"
-              style={{ color: current === 3 ? '#008060' : undefined }}
+              style={{ color: current === 4 ? '#008060' : undefined }}
             >
-              {current >= 1 && current <= 2
-                ? `Step ${current} of 2`
-                : current === 3
+              {inQuiz
+                ? `Step ${current} of 3`
+                : current === 4
                 ? 'Last step'
                 : ''}
             </span>
@@ -458,13 +547,13 @@ export function LeadQuiz() {
             role="progressbar"
             aria-label="Quiz progress"
             aria-valuemin={0}
-            aria-valuemax={2}
-            aria-valuenow={Math.min(current, 2)}
-            hidden={current === 0 || current === 4}
+            aria-valuemax={3}
+            aria-valuenow={Math.min(current, 3)}
+            hidden={current === 0 || current === 5}
           >
             <span
               id="bar"
-              style={{ width: `${current === 3 ? 100 : current * 50}%` }}
+              style={{ width: `${current === 4 ? 100 : Math.round((current * 100) / 3)}%` }}
             />
           </div>
 
@@ -619,11 +708,62 @@ export function LeadQuiz() {
                 </svg>
               </button>
             </div>
-            <p className="hint">Tap one to continue</p>
+            <p className="hint">Tap one to continue · 3 quick steps</p>
           </section>
 
-          {/* 2 · MONTHLY SALES */}
-          <section className={`step ${current === 2 ? 'on' : ''}`} data-step="2" aria-labelledby="h-q2">
+          {/* 2 · WHAT DO YOU SELL */}
+          <section className={`step ${current === 2 ? 'on' : ''}`} data-step="2" aria-labelledby="h-qp">
+            <h2 id="h-qp" tabIndex={-1} ref={(el) => { headingRefs.current[2] = el; }}>
+              {isBuyer ? (
+                <>What are you <strong>looking to buy?</strong></>
+              ) : (
+                <>What do <strong>you sell?</strong></>
+              )}
+            </h2>
+            <p className="lead" id="qp-lead">
+              {isBuyer
+                ? 'Type the product you want — e.g. Office chairs, Bulk t-shirts.'
+                : 'Type your main product — e.g. Cotton kurtis, Handmade candles, Protein bars.'}
+            </p>
+            <form id="pform" action="#" autoComplete="off" noValidate onSubmit={handleProductSubmit}>
+              <div className={`field ${productErr ? 'invalid' : ''}`} id="f-product">
+                <label htmlFor="lq-product" id="qp-label">
+                  {isBuyer ? "Product you're looking for" : 'Product name'}
+                </label>
+                <input
+                  ref={productInputRef}
+                  className="input"
+                  id="lq-product"
+                  name="product"
+                  type="text"
+                  autoComplete="off"
+                  autoCapitalize="sentences"
+                  autoCorrect="on"
+                  spellCheck={true}
+                  enterKeyHint="next"
+                  maxLength={60}
+                  placeholder="e.g. Cotton kurtis for women"
+                  aria-describedby="e-product"
+                  value={product}
+                  onChange={handleProductChange}
+                  required
+                />
+                <div className="err" id="e-product">
+                  {productErr || 'Please type what you sell'}
+                </div>
+              </div>
+              <button className="cta" id="pnext" type="submit">
+                <span>Continue</span>
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+            </form>
+            <p className="hint">2 more steps</p>
+          </section>
+
+          {/* 3 · MONTHLY SALES */}
+          <section className={`step ${current === 3 ? 'on' : ''}`} data-step="3" aria-labelledby="h-q2">
             {BUSINESS[answers.business] && (
               <div className="note" id="note2">
                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
@@ -632,7 +772,7 @@ export function LeadQuiz() {
                 <span>{BUSINESS[answers.business].note}</span>
               </div>
             )}
-            <h2 id="h-q2" tabIndex={-1} ref={(el) => { headingRefs.current[2] = el; }}>
+            <h2 id="h-q2" tabIndex={-1} ref={(el) => { headingRefs.current[3] = el; }}>
               Monthly <strong>sales?</strong>
             </h2>
             <p className="lead">A rough number is fine — across all channels.</p>
@@ -642,7 +782,7 @@ export function LeadQuiz() {
                 type="button"
                 data-v="under1"
                 aria-pressed={answers.sales === 'under1'}
-                onClick={() => handleSelectOption('sales', 'under1', 3)}
+                onClick={() => handleSelectOption('sales', 'under1', 4)}
               >
                 <span className="num">Under ₹1L</span>
                 <span className="sub">per month</span>
@@ -653,7 +793,7 @@ export function LeadQuiz() {
                 type="button"
                 data-v="1-5"
                 aria-pressed={answers.sales === '1-5'}
-                onClick={() => handleSelectOption('sales', '1-5', 3)}
+                onClick={() => handleSelectOption('sales', '1-5', 4)}
               >
                 <span className="num">₹1–5L</span>
                 <span className="sub">per month</span>
@@ -664,7 +804,7 @@ export function LeadQuiz() {
                 type="button"
                 data-v="5-20"
                 aria-pressed={answers.sales === '5-20'}
-                onClick={() => handleSelectOption('sales', '5-20', 3)}
+                onClick={() => handleSelectOption('sales', '5-20', 4)}
               >
                 <span className="num">₹5–20L</span>
                 <span className="sub">per month</span>
@@ -675,7 +815,7 @@ export function LeadQuiz() {
                 type="button"
                 data-v="20plus"
                 aria-pressed={answers.sales === '20plus'}
-                onClick={() => handleSelectOption('sales', '20plus', 3)}
+                onClick={() => handleSelectOption('sales', '20plus', 4)}
               >
                 <span className="num">₹20L+</span>
                 <span className="sub">per month</span>
@@ -684,12 +824,12 @@ export function LeadQuiz() {
             <p className="hint">Last question</p>
           </section>
 
-          {/* 3 · CONTACT */}
-          <section className={`step ${current === 3 ? 'on' : ''}`} data-step="3" aria-labelledby="h-contact">
+          {/* 4 · CONTACT */}
+          <section className={`step ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-contact">
             <div className="summary" id="summary">
               <b>Your business:</b> {summaryParts.join(' · ')}
             </div>
-            <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[3] = el; }}>
+            <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
               Where should we <strong>connect you?</strong>
             </h2>
             <form id="form" method="post" action="#" autoComplete="on" noValidate onSubmit={handleSubmit}>
@@ -797,14 +937,14 @@ export function LeadQuiz() {
             </p>
           </section>
 
-          {/* 4 · DONE / WHATSAPP */}
-          <section className={`step done ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-done">
+          {/* 5 · DONE / WHATSAPP */}
+          <section className={`step done ${current === 5 ? 'on' : ''}`} data-step="5" aria-labelledby="h-done">
             <div className="tick">
               <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 6 9 17l-5-5" />
               </svg>
             </div>
-            <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
+            <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[5] = el; }}>
               You&apos;re all set — <strong>let&apos;s talk</strong>
             </h2>
             <p className="lead">
