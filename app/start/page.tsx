@@ -10,9 +10,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'AdsPeek — Check your Shopify store fit',
+  title: 'AdsPeek — Get your free store plan',
   description:
-    'Get a store that sells for you. Free consultation and store plan on WhatsApp.',
+    'For brands selling on Amazon, Instagram or offline. Answer 3 quick taps and get your Shopify plan + price on WhatsApp.',
   robots: {
     index: false,
     follow: false,
@@ -28,11 +28,11 @@ export const viewport: Viewport = {
 
 export default function StartQuizPage() {
   return (
-    <div className={poppins.className}>
+    <div className={`${poppins.className} min-h-screen bg-white text-[#0A0A0A]`}>
       <Suspense
         fallback={
           <div className="w-full min-h-[100dvh] bg-white flex items-center justify-center">
-            <div className="w-8 h-8 rounded-full border-2 border-[#008060] border-t-transparent animate-spin" />
+            <div className="w-8 h-8 rounded-full border-2 border-[#0A0A0A] border-t-transparent animate-spin" />
           </div>
         }
       >

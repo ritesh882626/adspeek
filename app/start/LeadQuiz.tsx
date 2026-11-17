@@ -7,135 +7,78 @@ import './quiz.css';
 
 interface BusinessOption {
   label: string;
-  short: string;
   msg: string;
-  note: string;
 }
 
 const BUSINESS: Record<string, BusinessOption> = {
-  website: {
-    label: 'Own website / Shopify',
-    short: 'Own website',
-    msg: 'through my own website',
-    note: "We'll rebuild it to convert better — not just look better.",
-  },
-  marketplace: {
-    label: 'Amazon / Flipkart',
-    short: 'Amazon / Flipkart',
-    msg: 'on Amazon/Flipkart',
-    note: 'Marketplace sellers keep the full margin on orders from their own store — no commission cut.',
-  },
-  social: {
-    label: 'Instagram / WhatsApp',
-    short: 'Instagram / WhatsApp',
-    msg: 'on Instagram/WhatsApp',
-    note: 'Turn DMs into a checkout that takes orders while you sleep.',
-  },
-  offline: {
-    label: 'Offline shop',
-    short: 'Offline shop',
-    msg: 'in my offline shop',
-    note: 'Take your shop online and sell beyond your area.',
-  },
-  buyer: {
-    label: 'Looking to buy a product',
-    short: 'Buyer',
-    msg: "I'm looking to buy a product",
-    note: 'Got it — share a few details and we will guide you.',
-  },
+  marketplace: { label: 'Amazon / Flipkart / Meesho', msg: 'on Amazon/Flipkart/Meesho' },
+  social: { label: 'Instagram / WhatsApp', msg: 'on Instagram/WhatsApp' },
+  website: { label: 'My own website', msg: 'on my own website' },
+  offline: { label: 'Offline shop', msg: 'in my offline shop' },
+  buyer: { label: 'I want to buy a product', msg: '' },
 };
 
 const SALES: Record<string, string> = {
-  under1: 'Under ₹1L',
-  '1-5': '₹1–5L',
-  '5-20': '₹5–20L',
-  '20plus': '₹20L+',
+  starting: 'Just starting out',
+  under1: 'Under ₹1 lakh',
+  '1-5': '₹1–5 lakh',
+  '5-20': '₹5–20 lakh',
+  '20plus': '₹20 lakh+',
+};
+
+const SALES_MSG: Record<string, string> = {
+  under1: 'under ₹1 lakh',
+  '1-5': '₹1–5 lakh',
+  '5-20': '₹5–20 lakh',
+  '20plus': '₹20 lakh+',
 };
 
 const TIMELINE: Record<string, string> = {
   now: 'This month',
   '1-3': 'In 1–3 months',
-  exploring: 'Just exploring',
+  exploring: 'Just exploring for now',
 };
 
-interface VariantData {
-  eyebrow: string;
-  headline: string;
-  cta: string;
-}
+const TIMELINE_MSG: Record<string, string> = {
+  now: 'this month',
+  '1-3': 'in 1–3 months',
+};
 
-const VARIANTS: Record<string, VariantData> = {
-  default: {
-    eyebrow: 'For brands and sellers only',
-    headline: 'Get a store that <strong>sells for you.</strong>',
-    cta: 'Get started',
-  },
+const PLAN_IMG: Record<string, string> = {
+  marketplace: '/start/stores/store-ordinary.webp',
+  social: '/start/stores/store-ivl.webp',
+  website: '/start/stores/store-kanno.webp',
+  offline: '/start/stores/store-kanno.webp',
+};
+
+const SHORT: Record<string, string> = {
+  marketplace: 'Amazon / Flipkart',
+  social: 'Instagram',
+  website: 'Own website',
+  offline: 'Offline shop',
 };
 
 const REDIRECT_SECONDS = 5;
 
-const JUNK = [
-  'test', 'testing', 'tester', 'asdf', 'asd', 'qwerty', 'qwe', 'abc', 'abcd', 'abcde', 'xyz', 'xxx', 'aaa',
-  'na', 'n/a', 'n.a', 'none', 'nothing', 'no', 'nope', 'nil', 'null', 'hi', 'hii', 'hello', 'hey', 'ok', 'okay', 'yes',
-  'product', 'products', 'item', 'items', 'goods', 'stuff', 'thing', 'things', 'anything', 'something', 'everything',
-  'all', 'many', 'random', 'idk', 'dont know', "don't know", 'not sure', 'nothing yet', 'no product', 'some product',
-  'business', 'shop', 'store', 'sell', 'selling', 'sale', 'online', 'offline', 'amazon', 'flipkart', 'meesho',
-  'instagram', 'whatsapp', 'website', 'shopify', 'many things', 'all types', 'all products', 'various', 'misc',
-];
-
-const MASH = [
-  'asdf', 'sdfg', 'dfgh', 'fghj', 'ghjk', 'hjkl', 'qwer', 'wert', 'erty', 'rtyu', 'tyui', 'yuio', 'uiop',
-  'zxcv', 'xcvb', 'cvbn', 'vbnm', 'qaz', 'wsx', 'edc', 'rfv', 'tgb', 'yhn', 'ujm', 'lkjh', 'poiu', 'mnbv',
-];
-
-function productError(raw: string): string {
-  const v = String(raw || '').trim().replace(/\s+/g, ' ');
-  const low = v.toLowerCase();
-  if (!v) return 'Please type what you sell';
-  if (v.length < 3) return "That's too short — type the product name";
-  const letters = (v.match(/[\p{L}\p{M}]/gu) || []).length;
-  if (letters < 3) return 'Please use words — e.g. Cotton kurtis';
-  if (/https?:|www\.|\.com\b|\.in\b|@/.test(low)) return 'Type the product name, not a link';
-  if (/\d{6,}/.test(v.replace(/\s/g, ''))) return 'Type the product name, not a number';
-  if (JUNK.indexOf(low.replace(/[.!?]+$/, '')) !== -1) return 'Please be specific — e.g. Handmade candles';
-  if (/(.)\1{3,}/i.test(low)) return "That doesn't look like a product name";
-  const latin = low.replace(/[^a-z]/g, '');
-  if (latin.length >= 4) {
-    for (let i = 0; i < MASH.length; i++) {
-      if (latin.indexOf(MASH[i]) !== -1 && latin.length <= MASH[i].length + 4) {
-        return "That doesn't look like a product name";
-      }
-    }
-    const words = low.match(/[a-z]+/g) || [];
-    for (let w = 0; w < words.length; w++) {
-      const word = words[w];
-      if (word.length >= 4 && !/[aeiouy]/.test(word)) return "That doesn't look like a product name";
-      if (/[^aeiouy\s]{6,}/.test(word)) return "That doesn't look like a product name";
-      if (word.length > 25) return "That doesn't look like a product name";
-    }
-    const uniq: Record<string, number> = {};
-    latin.split('').forEach((c) => {
-      uniq[c] = 1;
-    });
-    if (latin.length >= 6 && Object.keys(uniq).length <= 2) return "That doesn't look like a product name";
-  }
-  return '';
+function validName(v: string) {
+  const s = String(v || '').trim();
+  return s.length >= 2 && /[\p{L}]{2,}/u.test(s);
 }
 
-const DISPOSABLE = [
-  'mailinator.com', 'guerrillamail.com', 'guerrillamail.net', 'sharklasers.com', '10minutemail.com', '10minutemail.net',
-  'tempmail.com', 'temp-mail.org', 'tempmail.net', 'tempmailo.com', 'yopmail.com', 'trashmail.com', 'getnada.com', 'maildrop.cc',
-  'dispostable.com', 'fakeinbox.com', 'throwawaymail.com', 'mintemail.com', 'mohmal.com', 'emailondeck.com', 'burnermail.io',
-  'moakt.com', 'mailnesia.com', 'spamgourmet.com', 'tempr.email', 'discard.email', 'mailcatch.com', 'inboxkitten.com',
-];
+function linkOk(v: string) {
+  const s = String(v || '').trim();
+  if (!s) return true;
+  if (/^@[A-Za-z0-9._]{2,30}$/.test(s)) return true;
+  return /^(https?:\/\/)?(www\.)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(s);
+}
 
-function emailError(v: string): string {
-  const val = String(v || '').trim().toLowerCase();
-  if (!val) return '';
-  if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/.test(val)) return 'Enter a valid email, or leave it empty';
-  const dom = val.split('@')[1];
-  if (DISPOSABLE.indexOf(dom) !== -1) return 'Please use your real email, or leave it empty';
-  return '';
+function digits10(v: string) {
+  const d = String(v || '').replace(/\D/g, '');
+  return d.length > 10 ? d.slice(-10) : d;
+}
+
+function pretty(d: string) {
+  return d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d;
 }
 
 export function LeadQuiz() {
@@ -143,49 +86,40 @@ export function LeadQuiz() {
   const [current, setCurrent] = useState<number>(0);
   const [answers, setAnswers] = useState<{
     business: string;
-    product: string;
     sales: string;
     timeline: string;
   }>({
     business: '',
-    product: '',
     sales: '',
     timeline: '',
   });
 
-  const [product, setProduct] = useState<string>('');
-  const [productErr, setProductErr] = useState<string>('');
-
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [emailErr, setEmailErr] = useState<string>('');
   const [link, setLink] = useState<string>('');
   const [hp, setHp] = useState<string>('');
 
   const [nameInvalid, setNameInvalid] = useState<boolean>(false);
   const [phoneInvalid, setPhoneInvalid] = useState<boolean>(false);
+  const [linkInvalid, setLinkInvalid] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [countdown, setCountdown] = useState<number>(REDIRECT_SECONDS);
-  const [countText, setCountText] = useState<string>(`Opening WhatsApp in ${REDIRECT_SECONDS} seconds…`);
-  const [isFallback, setIsFallback] = useState<boolean>(false);
+  const [countText, setCountText] = useState<string>(`Opening WhatsApp in ${REDIRECT_SECONDS}…`);
+  const [returnedVisible, setReturnedVisible] = useState<boolean>(false);
+  const [isPulse, setIsPulse] = useState<boolean>(false);
   const [waUrl, setWaUrl] = useState<string>('#');
-  const [bubbleMsg, setBubbleMsg] = useState<string>('');
+  const [doneName, setDoneName] = useState<string>('there');
 
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const leadSentRef = useRef<boolean>(false);
+  const submittingRef = useRef<boolean>(false);
   const contactSentRef = useRef<boolean>(false);
 
-  const productInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
-  const emailInputRef = useRef<HTMLInputElement>(null);
+  const linkInputRef = useRef<HTMLInputElement>(null);
   const headingRefs = useRef<(HTMLHeadingElement | null)[]>([]);
-
-  // Variant config
-  const variantKey = VARIANTS[searchParams.get('v') || ''] ? (searchParams.get('v') as string) : 'default';
-  const V = VARIANTS[variantKey] || VARIANTS.default;
 
   // Stored UTM parameters
   useEffect(() => {
@@ -203,12 +137,11 @@ export function LeadQuiz() {
       sessionStorage.setItem('lq_utm', JSON.stringify(utm));
     } catch {}
 
-    // Initialize history
     window.history.replaceState({ s: 0 }, '', window.location.href);
 
     const handlePopState = (e: PopStateEvent) => {
       let s = e.state && typeof e.state.s === 'number' ? e.state.s : 0;
-      if (s === 6 && !leadSentRef.current) s = 5;
+      if (s === 5 && !leadSentRef.current) s = 4;
       showStep(s, false);
     };
 
@@ -216,16 +149,14 @@ export function LeadQuiz() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [searchParams]);
 
-  // Clear timers helper
   const clearAllTimers = () => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
   };
 
-  // Step transition
   const showStep = (i: number, pushHistory: boolean = true) => {
-    if (i < 0 || i > 6) return;
-    if (current === 6 && i !== 6) clearAllTimers();
+    if (i < 0 || i > 5) return;
+    if (current === 5 && i !== 5) clearAllTimers();
 
     setCurrent(i);
 
@@ -235,17 +166,11 @@ export function LeadQuiz() {
     window.scrollTo(0, 0);
 
     setTimeout(() => {
-      if (i === 5 && nameInputRef.current) {
+      if (i === 4 && nameInputRef.current) {
         try {
           nameInputRef.current.focus({ preventScroll: true });
         } catch {
           nameInputRef.current.focus();
-        }
-      } else if (i === 2 && productInputRef.current) {
-        try {
-          productInputRef.current.focus({ preventScroll: true });
-        } catch {
-          productInputRef.current.focus();
         }
       } else if (headingRefs.current[i]) {
         try {
@@ -261,55 +186,24 @@ export function LeadQuiz() {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      showStep(Math.max(0, current - 1), true);
+      const prev = current === 4 && answers.business === 'buyer' ? 1 : Math.max(0, current - 1);
+      showStep(prev, true);
     }
   };
 
   // Option selection with 180ms delay
-  const handleSelectOption = (key: 'business' | 'sales' | 'timeline', val: string, nextStep: number) => {
+  const handleSelectOption = (key: 'business' | 'sales' | 'timeline', val: string) => {
     setAnswers((prev) => ({ ...prev, [key]: val }));
     const from = current;
+    const next = key === 'business' && val === 'buyer' ? 4 : from + 1;
     setTimeout(() => {
       if (current === from) {
-        showStep(nextStep, true);
+        showStep(next, true);
       }
     }, 180);
   };
 
-  // Product submission
-  const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setProduct(val);
-    if (productErr && !productError(val)) {
-      setProductErr('');
-    }
-  };
-
-  const handleProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const err = productError(product);
-    if (err) {
-      setProductErr(err);
-      productInputRef.current?.focus();
-      return;
-    }
-    setProductErr('');
-    const cleaned = product.trim().replace(/\s+/g, ' ');
-    setAnswers((prev) => ({ ...prev, product: cleaned }));
-    setProduct(cleaned);
-    showStep(3, true);
-  };
-
-  // Phone sanitization & formatting
-  const digits10 = (v: string) => {
-    const d = String(v || '').replace(/\D/g, '');
-    return d.length > 10 ? d.slice(-10) : d;
-  };
-
-  const pretty = (d: string) => {
-    return d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d;
-  };
-
+  // Phone input handling
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
     const d = raw.replace(/\D/g, '');
@@ -318,7 +212,7 @@ export function LeadQuiz() {
     } else {
       setPhone(raw);
     }
-    if (phoneInvalid && /^[6-9]\d{9}$/.test(digits10(raw))) {
+    if (/^[6-9]\d{9}$/.test(digits10(raw))) {
       setPhoneInvalid(false);
     }
   };
@@ -331,34 +225,21 @@ export function LeadQuiz() {
     }
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setEmail(val);
-    if (!emailError(val)) {
-      setEmailErr('');
-    }
-  };
-
-  const handleEmailBlur = () => {
-    const er = emailError(email);
-    setEmailErr(er);
-  };
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
-    if (e.target.value.trim().length >= 2) {
+    if (validName(e.target.value)) {
       setNameInvalid(false);
     }
   };
 
-  const handleNameBlur = () => {
-    const v = name.trim();
-    if (v && v.length < 2) {
-      setNameInvalid(true);
+  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLink(e.target.value);
+    if (linkOk(e.target.value)) {
+      setLinkInvalid(false);
     }
   };
 
-  // Quality calculation
+  // Lead quality
   const getQuality = () => {
     if (answers.business === 'buyer') return 'Not a fit (buyer)';
     const big = answers.sales === '5-20' || answers.sales === '20plus';
@@ -368,25 +249,34 @@ export function LeadQuiz() {
     return 'Cold';
   };
 
-  // WhatsApp builder
-  const buildWhatsApp = (leadName: string, dPhone: string, storeUrl: string) => {
-    const b = BUSINESS[answers.business];
-    let msg = `Hi AdsPeek, I'm ${leadName}. `;
-    if (b && answers.business !== 'buyer') {
-      msg += `I sell ${answers.product || 'my products'} ${b.msg}, monthly sales ${SALES[answers.sales] || 'not sure'}. Want to start: ${TIMELINE[answers.timeline] || 'not sure'}. I'd like a free consultation for a store that sells.`;
+  // Build WhatsApp message
+  const buildWhatsApp = (leadName: string, storeUrl: string) => {
+    let msg: string;
+    if (answers.business === 'buyer') {
+      msg = 'Hi, I came across your ad and want to buy a product.';
+    } else if (answers.sales === 'starting' || answers.timeline === 'exploring') {
+      msg = `Hi AdsPeek, I’m ${leadName}. I’m ${
+        answers.sales === 'starting' ? 'just starting out' : 'just exploring'
+      } and would like to know how a Shopify store could work for me.`;
+      if (storeUrl) msg += ` My store: ${storeUrl}.`;
     } else {
-      msg += `I'm looking to buy: ${answers.product || 'a product'}.`;
+      const b = BUSINESS[answers.business];
+      msg = `Hi AdsPeek, I’m ${leadName}. I sell ${b ? b.msg : 'online'}, about ${
+        SALES_MSG[answers.sales] || 'some sales'
+      } a month, and want my store live ${TIMELINE_MSG[answers.timeline] || 'soon'}.`;
+      if (storeUrl) msg += ` My store: ${storeUrl}.`;
+      msg += ' Please send my store plan and price.';
     }
-    if (storeUrl) msg += ` Store: ${storeUrl}`;
 
     const waNum = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918796279223').replace(/\D/g, '');
     const url = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
     setWaUrl(url);
-    setBubbleMsg(msg);
+    const fName = leadName.split(' ')[0] || 'there';
+    setDoneName(fName);
     return url;
   };
 
-  // Post lead to /api/lead
+  // Save lead via /api/lead
   const saveLead = (payload: Record<string, unknown>) => {
     const body = JSON.stringify(payload);
     return fetch('/api/lead', {
@@ -413,16 +303,15 @@ export function LeadQuiz() {
     e.preventDefault();
     const trimmedName = name.trim().replace(/\s+/g, ' ');
     const d = digits10(phone);
-    const trimmedEmail = email.trim().toLowerCase();
     const trimmedLink = link.trim().slice(0, 200);
 
-    const okName = trimmedName.length >= 2;
+    const okName = validName(trimmedName);
     const okPhone = /^[6-9]\d{9}$/.test(d);
-    const eErr = emailError(trimmedEmail);
+    const okLink = linkOk(trimmedLink);
 
     setNameInvalid(!okName);
     setPhoneInvalid(!okPhone);
-    setEmailErr(eErr);
+    setLinkInvalid(!okLink);
 
     if (!okName) {
       nameInputRef.current?.focus();
@@ -432,18 +321,48 @@ export function LeadQuiz() {
       phoneInputRef.current?.focus();
       return;
     }
-    if (eErr) {
-      emailInputRef.current?.focus();
+    if (!okLink) {
+      linkInputRef.current?.focus();
       return;
     }
 
     setPhone(pretty(d));
+    const targetWaUrl = buildWhatsApp(trimmedName, trimmedLink);
+
+    // Bot trap: no Lead, nothing saved
+    if (hp) {
+      leadSentRef.current = true;
+      showStep(5, true);
+      startRedirect(targetWaUrl);
+      return;
+    }
+
+    // Session deduplication: one person = one Lead
+    const seenKey = 'lq_lead_' + d;
+    let prevId: string | null = null;
+    try {
+      prevId = sessionStorage.getItem(seenKey);
+    } catch {}
+
+    if (submittingRef.current || isSubmitting) return; // double tap ignored
+    if (prevId) {
+      leadSentRef.current = true;
+      showStep(5, true);
+      startRedirect(targetWaUrl);
+      return;
+    }
+
+    submittingRef.current = true;
     setIsSubmitting(true);
 
     const leadId =
       typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : `lq-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+    try {
+      sessionStorage.setItem(seenKey, leadId);
+    } catch {}
 
     let utm: Record<string, string> = {};
     try {
@@ -458,14 +377,12 @@ export function LeadQuiz() {
       leadId,
       name: trimmedName,
       phone: `+91${d}`,
-      email: trimmedEmail,
       storeLink: trimmedLink,
       business: BUSINESS[answers.business] ? BUSINESS[answers.business].label : '',
-      product: answers.product,
       sales: SALES[answers.sales] || '',
       timeline: TIMELINE[answers.timeline] || '',
       quality: getQuality(),
-      variant: variantKey,
+      variant: searchParams.get('v') || 'default',
       utm_source: utm.utm_source || '',
       utm_medium: utm.utm_medium || '',
       utm_campaign: utm.utm_campaign || '',
@@ -476,27 +393,15 @@ export function LeadQuiz() {
       fbc,
       pageUrl: typeof window !== 'undefined' ? window.location.href.slice(0, 300) : '',
       device: typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 200) : '',
-      hp,
+      hp: '',
     };
 
-    const targetWaUrl = buildWhatsApp(trimmedName, d, trimmedLink);
-
-    // Honeypot: bot trap - send nothing to Meta or Server
-    if (hp) {
-      leadSentRef.current = true;
-      setIsSubmitting(false);
-      showStep(6, true);
-      startRedirect(targetWaUrl);
-      return;
-    }
-
-    // Browser Lead event — same event_id as server Lead
+    // Browser Lead — exact same eventID as server Lead sent by /api/lead
     trackEvent(
       'Lead',
       {
         content_name: 'lead_quiz',
         business_type: payload.business,
-        product: payload.product,
         monthly_sales: payload.sales,
         start: payload.timeline,
         lead_quality: payload.quality,
@@ -504,44 +409,61 @@ export function LeadQuiz() {
       leadId
     );
 
-    const sendPromise = saveLead(payload);
-    Promise.race([sendPromise, waitMs(2500)]).then(() => {
+    Promise.race([saveLead(payload), waitMs(2500)]).then(() => {
       leadSentRef.current = true;
+      submittingRef.current = false;
       setIsSubmitting(false);
-      showStep(6, true);
+      showStep(5, true);
       startRedirect(targetWaUrl);
     });
   };
 
-  // 5-second countdown & redirect
-  const triggerFallback = () => {
-    setIsFallback(true);
-    setCountText('Tap the button to open WhatsApp');
+  // WhatsApp Contact event
+  const sendContact = (src: string) => {
+    const k = 'lq_contact_' + digits10(phone);
+    let done = false;
+    try {
+      done = !!sessionStorage.getItem(k);
+    } catch {}
+    if (contactSentRef.current || done) {
+      contactSentRef.current = true;
+      return;
+    }
+    trackEvent('Contact', { content_name: src });
+    contactSentRef.current = true;
+    try {
+      sessionStorage.setItem(k, '1');
+    } catch {}
+  };
+
+  const returnedState = () => {
+    setCountText('WhatsApp didn’t open?');
+    setReturnedVisible(true);
+    setIsPulse(true);
   };
 
   const startRedirect = (targetUrl: string) => {
     clearAllTimers();
+    setReturnedVisible(false);
+    setIsPulse(false);
     let n = REDIRECT_SECONDS;
     setCountdown(n);
-    setCountText(`Opening WhatsApp in ${n} seconds…`);
-    setIsFallback(false);
+    setCountText(`Opening WhatsApp in ${n}…`);
 
     for (let k = 1; k <= n; k++) {
       const t = setTimeout(() => {
+        if (current !== 5) return;
         if (k < n) {
           setCountdown(n - k);
-          setCountText(`Opening WhatsApp in ${n - k} ${n - k === 1 ? 'second…' : 'seconds…'}`);
+          setCountText(`Opening WhatsApp in ${n - k}…`);
         } else {
           setCountdown(0);
           setCountText('Opening WhatsApp…');
-          if (!contactSentRef.current) {
-            trackEvent('Contact', { content_name: 'whatsapp_redirect' });
-            contactSentRef.current = true;
-          }
+          sendContact('whatsapp_redirect');
           window.location.href = targetUrl;
           const fallbackTimer = setTimeout(() => {
             if (document.visibilityState === 'visible') {
-              triggerFallback();
+              returnedState();
             }
           }, 2000);
           timersRef.current.push(fallbackTimer);
@@ -551,587 +473,540 @@ export function LeadQuiz() {
     }
   };
 
-  // Handle pageshow (back from WhatsApp)
+  // Listeners for return from WhatsApp
   useEffect(() => {
     const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted && current === 6) {
+      if (e.persisted && current === 5) {
         clearAllTimers();
-        triggerFallback();
+        returnedState();
       }
     };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && current === 5 && contactSentRef.current) {
+        clearAllTimers();
+        returnedState();
+      }
+    };
+
     window.addEventListener('pageshow', handlePageShow);
-    return () => window.removeEventListener('pageshow', handlePageShow);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [current]);
 
-  // Summary rendering
-  const summaryParts: string[] = [];
-  if (BUSINESS[answers.business]) summaryParts.push(BUSINESS[answers.business].short);
-  if (answers.product) summaryParts.push(answers.product);
-  if (SALES[answers.sales]) summaryParts.push(`${SALES[answers.sales]} / month`);
-  if (TIMELINE[answers.timeline]) summaryParts.push(`Start: ${TIMELINE[answers.timeline]}`);
-
-  const inQuiz = current >= 1 && current <= 4;
+  // Plan card chips
   const isBuyer = answers.business === 'buyer';
+  const planChips = [SHORT[answers.business], SALES[answers.sales], TIMELINE[answers.timeline]].filter(Boolean);
+  const planImgSrc = PLAN_IMG[answers.business] || PLAN_IMG.marketplace;
 
   return (
-    <div className="quiz-root">
-      <main className="wrap">
-        <div className="card" id="card">
-          {/* Header */}
-          <div className="top">
-            <button
-              className="back"
-              id="back"
-              type="button"
-              aria-label="Back"
-              hidden={current === 0}
-              onClick={handleBack}
-            >
-              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 6l-6 6 6 6" />
-              </svg>
-            </button>
+    <main className="wrap">
+      <div className={`card ${current === 0 ? 'wide' : ''}`} id="card">
+        {/* Top logo */}
+        <div className="top">
+          <span className="logo" aria-label="AdsPeek">
+            Ads<span>Peek</span>
+          </span>
+        </div>
 
-            <span className="logo" id="logo">
-              <img src="/logo-black.svg" alt="AdsPeek" height={28} />
-            </span>
-
-            <span
-              className="steplabel"
-              id="steplabel"
-              style={{ color: current === 5 ? '#008060' : undefined }}
-            >
-              {inQuiz
-                ? `Step ${current} of 4`
-                : current === 5
-                ? 'Last step'
-                : ''}
-            </span>
-          </div>
-
-          {/* Progress bar */}
-          <div
-            className="progress"
-            id="progress"
-            role="progressbar"
-            aria-label="Quiz progress"
-            aria-valuemin={0}
-            aria-valuemax={4}
-            aria-valuenow={Math.min(current, 4)}
-            hidden={current === 0 || current === 6}
-          >
-            <span
-              id="bar"
-              style={{ width: `${current === 5 ? 100 : current * 25}%` }}
-            />
-          </div>
-
-          {/* 0 · HOOK */}
-          <section className={`step ${current === 0 ? 'on' : ''}`} data-step="0" aria-labelledby="h-hook">
-            <div className="hero">
-              <span className="pill" id="v-eyebrow">
-                {V.eyebrow}
+        {/* Progress header (Step 1-4) */}
+        {current >= 1 && current <= 4 && (
+          <div id="nav">
+            <div className="nav">
+              <button className="back" id="back" type="button" onClick={handleBack}>
+                ← Back
+              </button>
+              <span className="steplabel" id="steplabel">
+                {current === 4 ? 'Last step' : `Step ${current} of 3`}
               </span>
-              <h1
-                id="h-hook"
-                tabIndex={-1}
-                ref={(el) => { headingRefs.current[0] = el; }}
-                dangerouslySetInnerHTML={{ __html: V.headline }}
+            </div>
+            <div
+              className="progress"
+              role="progressbar"
+              aria-label="Progress"
+              aria-valuemin={0}
+              aria-valuemax={3}
+              aria-valuenow={Math.min(current, 3)}
+              id="progress"
+            >
+              <span
+                id="bar"
+                style={{ width: `${current === 4 ? 100 : Math.round((current * 100) / 3)}%` }}
               />
-              <ul className="perks" id="v-perks">
+            </div>
+          </div>
+        )}
+
+        {/* 0 · HOOK: store showcase */}
+        <section className={`step ${current === 0 ? 'on' : ''}`} data-step="0" aria-labelledby="h-hook">
+          <div className="s0">
+            <div className="s0-copy">
+              <h1 id="h-hook" tabIndex={-1} ref={(el) => { headingRefs.current[0] = el; }}>
+                Get your free store plan <strong>in 30 seconds</strong>
+              </h1>
+              <p className="sub" id="v-sub">
+                For brands selling on Amazon, Instagram or offline. Answer 3 quick taps and get your Shopify plan + price on WhatsApp.
+              </p>
+              <ul className="proofs proofs-desk">
                 <li>
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
-                  Takes 5 seconds
+                  <span>
+                    Stores from <b>₹25,000</b>, with payments and delivery set up
+                  </span>
                 </li>
                 <li>
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
-                  Free consultation
+                  <span>
+                    Live in <b>2–3 weeks</b>
+                  </span>
                 </li>
                 <li>
-                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
-                  Reply on WhatsApp
+                  <span>
+                    Plus the <b>Meta ads</b> that bring buyers
+                  </span>
                 </li>
               </ul>
               <button
-                className="cta"
-                id="start"
+                className="cta cta-desk"
                 type="button"
+                data-start
                 onClick={() => showStep(1, true)}
               >
-                <span id="v-cta">{V.cta}</span>
-                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
+                Get my free store plan →
               </button>
             </div>
-            <p className="private">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#008060" />
-                <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#008060" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="12" cy="15.5" r="1.4" fill="#fff" />
-              </svg>
-              Your details stay private. We never share them.
-            </p>
-          </section>
 
-          {/* 1 · BUSINESS */}
-          <section className={`step ${current === 1 ? 'on' : ''}`} data-step="1" aria-labelledby="h-q1">
-            <h2 id="h-q1" tabIndex={-1} ref={(el) => { headingRefs.current[1] = el; }}>
-              How do you <strong>sell now?</strong>
-            </h2>
-            <div className="opts" data-q="business">
-              <button
-                className="opt"
-                type="button"
-                data-v="website"
-                aria-pressed={answers.business === 'website'}
-                onClick={() => handleSelectOption('business', 'website', 2)}
-              >
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="4" width="18" height="16" rx="2" />
-                  <path d="M3 9h18" />
-                  <circle cx="6.5" cy="6.5" r=".6" fill="#008060" />
-                </svg>
-                <span>Own website / Shopify</span>
-                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              </button>
-
-              <button
-                className="opt"
-                type="button"
-                data-v="marketplace"
-                aria-pressed={answers.business === 'marketplace'}
-                onClick={() => handleSelectOption('business', 'marketplace', 2)}
-              >
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                  <path d="M3 6h18" />
-                  <path d="M16 10a4 4 0 0 1-8 0" />
-                </svg>
-                <span>Amazon / Flipkart</span>
-                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              </button>
-
-              <button
-                className="opt"
-                type="button"
-                data-v="social"
-                aria-pressed={answers.business === 'social'}
-                onClick={() => handleSelectOption('business', 'social', 2)}
-              >
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r=".8" fill="#008060" />
-                </svg>
-                <span>Instagram / WhatsApp</span>
-                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              </button>
-
-              <button
-                className="opt"
-                type="button"
-                data-v="offline"
-                aria-pressed={answers.business === 'offline'}
-                onClick={() => handleSelectOption('business', 'offline', 2)}
-              >
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l1.5-5h15L21 9" />
-                  <path d="M4 9v11h16V9" />
-                  <path d="M3 9h18" />
-                  <path d="M10 20v-6h4v6" />
-                </svg>
-                <span>Offline shop</span>
-                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              </button>
-
-              <button
-                className="opt"
-                type="button"
-                data-v="buyer"
-                aria-pressed={answers.business === 'buyer'}
-                onClick={() => handleSelectOption('business', 'buyer', 2)}
-              >
-                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="20" r="1.5" />
-                  <circle cx="18" cy="20" r="1.5" />
-                  <path d="M2 3h3l2.5 12h11.5l2-8H6.5" />
-                </svg>
-                <span>Looking to buy a product</span>
-                <svg className="chev" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C9196" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              </button>
-            </div>
-            <p className="hint">Tap one to continue · 4 quick steps</p>
-          </section>
-
-          {/* 2 · WHAT DO YOU SELL */}
-          <section className={`step ${current === 2 ? 'on' : ''}`} data-step="2" aria-labelledby="h-qp">
-            <h2 id="h-qp" tabIndex={-1} ref={(el) => { headingRefs.current[2] = el; }}>
-              {isBuyer ? (
-                <>What are you <strong>looking to buy?</strong></>
-              ) : (
-                <>What do <strong>you sell?</strong></>
-              )}
-            </h2>
-            <p className="lead" id="qp-lead">
-              {isBuyer
-                ? 'Type the product you want — e.g. Office chairs, Bulk t-shirts.'
-                : 'Type your main product — e.g. Cotton kurtis, Handmade candles, Protein bars.'}
-            </p>
-            <form id="pform" action="#" autoComplete="off" noValidate onSubmit={handleProductSubmit}>
-              <div className={`field ${productErr ? 'invalid' : ''}`} id="f-product">
-                <label htmlFor="lq-product" id="qp-label">
-                  {isBuyer ? "Product you're looking for" : 'Product name'}
-                </label>
-                <input
-                  ref={productInputRef}
-                  className="input"
-                  id="lq-product"
-                  name="product"
-                  type="text"
-                  autoComplete="off"
-                  autoCapitalize="sentences"
-                  autoCorrect="on"
-                  spellCheck={true}
-                  enterKeyHint="next"
-                  maxLength={60}
-                  placeholder="e.g. Cotton kurtis for women"
-                  aria-describedby="e-product"
-                  value={product}
-                  onChange={handleProductChange}
-                  required
+            <figure className="stage" aria-label="Stores we’ve built for brands like yours">
+              <div className="fan">
+                <img
+                  className="ph ph1"
+                  src="/start/stores/store-ordinary.webp"
+                  alt="Skincare store design by AdsPeek"
+                  width={420}
+                  height={865}
+                  decoding="async"
                 />
-                <div className="err" id="e-product">
-                  {productErr || 'Please type what you sell'}
-                </div>
+                <img
+                  className="ph ph2"
+                  src="/start/stores/store-ivl.webp"
+                  alt="Activewear store design by AdsPeek"
+                  width={420}
+                  height={867}
+                  decoding="async"
+                />
+                <img
+                  className="ph ph3"
+                  src="/start/stores/store-kanno.webp"
+                  alt="Furniture store design by AdsPeek"
+                  width={420}
+                  height={890}
+                  decoding="async"
+                />
+                <figcaption>Stores we’ve built for brands like yours</figcaption>
               </div>
-              <button className="cta" id="pnext" type="submit">
-                <span>Continue</span>
-                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </button>
-            </form>
-            <p className="hint">2 more taps</p>
-          </section>
+            </figure>
 
-          {/* 3 · MONTHLY SALES */}
-          <section className={`step ${current === 3 ? 'on' : ''}`} data-step="3" aria-labelledby="h-q2">
-            {BUSINESS[answers.business] && (
-              <div className="note" id="note2">
-                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-                <span>{BUSINESS[answers.business].note}</span>
-              </div>
-            )}
-            <h2 id="h-q2" tabIndex={-1} ref={(el) => { headingRefs.current[3] = el; }}>
-              Monthly <strong>sales?</strong>
-            </h2>
-            <p className="lead">A rough number is fine — across all channels.</p>
-            <div className="opts grid2" data-q="sales">
-              <button
-                className="opt tile"
-                type="button"
-                data-v="under1"
-                aria-pressed={answers.sales === 'under1'}
-                onClick={() => handleSelectOption('sales', 'under1', 4)}
-              >
-                <span className="num">Under ₹1L</span>
-                <span className="sub">per month</span>
-              </button>
-
-              <button
-                className="opt tile"
-                type="button"
-                data-v="1-5"
-                aria-pressed={answers.sales === '1-5'}
-                onClick={() => handleSelectOption('sales', '1-5', 4)}
-              >
-                <span className="num">₹1–5L</span>
-                <span className="sub">per month</span>
-              </button>
-
-              <button
-                className="opt tile"
-                type="button"
-                data-v="5-20"
-                aria-pressed={answers.sales === '5-20'}
-                onClick={() => handleSelectOption('sales', '5-20', 4)}
-              >
-                <span className="num">₹5–20L</span>
-                <span className="sub">per month</span>
-              </button>
-
-              <button
-                className="opt tile"
-                type="button"
-                data-v="20plus"
-                aria-pressed={answers.sales === '20plus'}
-                onClick={() => handleSelectOption('sales', '20plus', 4)}
-              >
-                <span className="num">₹20L+</span>
-                <span className="sub">per month</span>
-              </button>
-            </div>
-            <p className="hint">1 more tap</p>
-          </section>
-
-          {/* 4 · WHEN TO START */}
-          <section className={`step ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-qt">
-            <h2 id="h-qt" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
-              When do you want <strong>to start?</strong>
-            </h2>
-            <p className="lead">So we plan the right next step for you.</p>
-            <div className="opts" data-q="timeline">
-              <button
-                className="opt"
-                type="button"
-                data-v="now"
-                aria-pressed={answers.timeline === 'now'}
-                onClick={() => handleSelectOption('timeline', 'now', 5)}
-              >
-                <span className="radio" />
+            <div className="s0-mob">
+              <div className="pills">
                 <span>
-                  This month
-                  <span className="sub">Ready to start now</span>
+                  <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <em>Stores from <b>₹25,000</b></em>
                 </span>
-              </button>
-
-              <button
-                className="opt"
-                type="button"
-                data-v="1-3"
-                aria-pressed={answers.timeline === '1-3'}
-                onClick={() => handleSelectOption('timeline', '1-3', 5)}
-              >
-                <span className="radio" />
                 <span>
-                  In 1–3 months
-                  <span className="sub">Planning ahead</span>
+                  <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <em>Payments + delivery set up</em>
                 </span>
-              </button>
-
-              <button
-                className="opt"
-                type="button"
-                data-v="exploring"
-                aria-pressed={answers.timeline === 'exploring'}
-                onClick={() => handleSelectOption('timeline', 'exploring', 5)}
-              >
-                <span className="radio" />
                 <span>
-                  Just exploring
-                  <span className="sub">Comparing options</span>
+                  <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <em>Live in <b>2–3 weeks</b></em>
                 </span>
+                <span>
+                  <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <em>Plus <b>Meta ads</b> that bring buyers</em>
+                </span>
+              </div>
+              <button
+                className="cta"
+                type="button"
+                data-start
+                onClick={() => showStep(1, true)}
+              >
+                Get my free store plan →
               </button>
             </div>
-            <p className="hint">Last question</p>
-          </section>
 
-          {/* 5 · CONTACT */}
-          <section className={`step ${current === 5 ? 'on' : ''}`} data-step="5" aria-labelledby="h-contact">
-            <div className="summary" id="summary">
-              <b>Your business:</b> {summaryParts.join(' · ')}
-            </div>
-            <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[5] = el; }}>
-              Where should we <strong>connect you?</strong>
-            </h2>
-            <form id="form" method="post" action="#" autoComplete="on" noValidate onSubmit={handleSubmit}>
-              <div className={`field ${nameInvalid ? 'invalid' : ''}`} id="f-name">
-                <label htmlFor="lq-name">Your name</label>
-                <input
-                  ref={nameInputRef}
-                  className="input"
-                  id="lq-name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  autoCapitalize="words"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  enterKeyHint="next"
-                  placeholder="e.g. Priya Sharma"
-                  value={name}
-                  onChange={handleNameChange}
-                  onBlur={handleNameBlur}
-                  required
-                />
-                <div className="err" id="e-name">
-                  Please enter your name
-                </div>
-              </div>
-
-              <div className={`field ${phoneInvalid ? 'invalid' : ''}`} id="f-phone">
-                <label htmlFor="lq-phone">WhatsApp number</label>
-                <div className="phone">
-                  <span className="cc" aria-hidden="true">
-                    +91
-                  </span>
-                  <input
-                    ref={phoneInputRef}
-                    id="lq-phone"
-                    name="tel"
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    enterKeyHint="next"
-                    placeholder="98765 43210"
-                    aria-describedby="e-phone"
-                    value={phone}
-                    onChange={handlePhoneChange}
-                    onBlur={handlePhoneBlur}
-                    required
-                  />
-                </div>
-                <div className="err" id="e-phone">
-                  Enter a 10-digit WhatsApp number
-                </div>
-              </div>
-
-              <div className={`field ${emailErr ? 'invalid' : ''}`} id="f-email">
-                <label htmlFor="lq-email">
-                  Email <span className="opt-l">(optional)</span>
-                </label>
-                <input
-                  ref={emailInputRef}
-                  className="input"
-                  id="lq-email"
-                  name="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  enterKeyHint="next"
-                  placeholder="you@yourbrand.com"
-                  aria-describedby="e-email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  onBlur={handleEmailBlur}
-                />
-                <div className="err" id="e-email">
-                  {emailErr || 'Enter a valid email, or leave it empty'}
-                </div>
-              </div>
-
-              <div className="field">
-                <label htmlFor="lq-link">
-                  Store or Instagram link <span className="opt-l">(optional)</span>
-                </label>
-                <input
-                  className="input"
-                  id="lq-link"
-                  name="url"
-                  type="text"
-                  inputMode="url"
-                  autoComplete="url"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  enterKeyHint="done"
-                  placeholder="amazon.in/… or @yourbrand"
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                />
-              </div>
-
-              <div className="hp" aria-hidden="true">
-                <label htmlFor="lq-hp">Leave empty</label>
-                <input
-                  id="lq-hp"
-                  name="lq_hp_x"
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={hp}
-                  onChange={(e) => setHp(e.target.value)}
-                />
-              </div>
-
-              <button className="cta" id="submit" type="submit" disabled={isSubmitting}>
-                <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z" />
-                </svg>
-                <span id="submit-text">
-                  {isSubmitting ? 'Saving…' : 'Connect me on WhatsApp'}
-                </span>
-              </button>
-            </form>
-
-            <p className="private">
-              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#008060" />
-                <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#008060" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="12" cy="15.5" r="1.4" fill="#fff" />
+            <p className="trust s0-trust">
+              <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#0A0A0A" />
+                <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              100% private · Never shared or sold
+              No calls, no spam. One WhatsApp message from our team.
             </p>
-          </section>
+          </div>
+        </section>
 
-          {/* 6 · DONE / WHATSAPP */}
-          <section className={`step done ${current === 6 ? 'on' : ''}`} data-step="6" aria-labelledby="h-done">
-            <div className="tick">
-              <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#008060" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-            </div>
-            <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[6] = el; }}>
-              You&apos;re all set — <strong>let&apos;s talk</strong>
-            </h2>
-            <p className="lead">
-              Just tap <b>Send</b> in WhatsApp — our team replies for your free consultation.
-            </p>
-            <div className="count" role="status" aria-live="polite">
-              <span className="ring" id="ring">
-                {isFallback ? '!' : countdown}
-              </span>
-              <span id="count-text">{countText}</span>
-            </div>
-            <div className="wa">
-              <small>Your message (pre-filled)</small>
-              <div className="bubble" id="bubble">
-                {bubbleMsg}
-              </div>
-            </div>
-            <a
-              className={`cta ${isFallback ? 'pulse' : ''}`}
-              id="wa-btn"
-              href={waUrl}
-              onClick={() => {
-                clearAllTimers();
-                if (!contactSentRef.current) {
-                  trackEvent('Contact', { content_name: 'whatsapp_redirect' });
-                  contactSentRef.current = true;
-                }
-              }}
+        {/* 1 · QUESTION 1 */}
+        <section className={`step ${current === 1 ? 'on' : ''}`} data-step="1" aria-labelledby="h-q1">
+          <h2 id="h-q1" tabIndex={-1} ref={(el) => { headingRefs.current[1] = el; }}>
+            Where do you <strong>sell right now?</strong>
+          </h2>
+          <p className="helper">Pick the one that brings most of your orders.</p>
+          <div className="opts" data-q="business" role="group" aria-labelledby="h-q1">
+            <button
+              className="opt"
+              type="button"
+              data-v="marketplace"
+              aria-pressed={answers.business === 'marketplace'}
+              onClick={() => handleSelectOption('business', 'marketplace')}
             >
-              <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z" />
-              </svg>
-              Open WhatsApp now
-            </a>
-          </section>
-        </div>
-      </main>
-    </div>
+              <span className="radio" />
+              Amazon / Flipkart / Meesho
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="social"
+              aria-pressed={answers.business === 'social'}
+              onClick={() => handleSelectOption('business', 'social')}
+            >
+              <span className="radio" />
+              Instagram / WhatsApp
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="website"
+              aria-pressed={answers.business === 'website'}
+              onClick={() => handleSelectOption('business', 'website')}
+            >
+              <span className="radio" />
+              My own website
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="offline"
+              aria-pressed={answers.business === 'offline'}
+              onClick={() => handleSelectOption('business', 'offline')}
+            >
+              <span className="radio" />
+              Offline shop
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="buyer"
+              aria-pressed={answers.business === 'buyer'}
+              onClick={() => handleSelectOption('business', 'buyer')}
+            >
+              <span className="radio" />
+              I want to buy a product
+            </button>
+          </div>
+          <p className="trust">
+            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#0A0A0A" />
+              <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            No calls, no spam. One WhatsApp message from our team.
+          </p>
+        </section>
+
+        {/* 2 · MONTHLY SALES */}
+        <section className={`step ${current === 2 ? 'on' : ''}`} data-step="2" aria-labelledby="h-q2">
+          <h2 id="h-q2" tabIndex={-1} ref={(el) => { headingRefs.current[2] = el; }}>
+            How much do you <strong>sell in a month?</strong>
+          </h2>
+          <p className="helper">A rough idea is fine. It helps us suggest the right plan.</p>
+          <div className="opts" data-q="sales" role="group" aria-labelledby="h-q2">
+            <button
+              className="opt"
+              type="button"
+              data-v="starting"
+              aria-pressed={answers.sales === 'starting'}
+              onClick={() => handleSelectOption('sales', 'starting')}
+            >
+              <span className="radio" />
+              Just starting out
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="under1"
+              aria-pressed={answers.sales === 'under1'}
+              onClick={() => handleSelectOption('sales', 'under1')}
+            >
+              <span className="radio" />
+              Under ₹1 lakh
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="1-5"
+              aria-pressed={answers.sales === '1-5'}
+              onClick={() => handleSelectOption('sales', '1-5')}
+            >
+              <span className="radio" />
+              ₹1–5 lakh
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="5-20"
+              aria-pressed={answers.sales === '5-20'}
+              onClick={() => handleSelectOption('sales', '5-20')}
+            >
+              <span className="radio" />
+              ₹5–20 lakh
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="20plus"
+              aria-pressed={answers.sales === '20plus'}
+              onClick={() => handleSelectOption('sales', '20plus')}
+            >
+              <span className="radio" />
+              ₹20 lakh+
+            </button>
+          </div>
+        </section>
+
+        {/* 3 · WHEN LIVE */}
+        <section className={`step ${current === 3 ? 'on' : ''}`} data-step="3" aria-labelledby="h-q3">
+          <h2 id="h-q3" tabIndex={-1} ref={(el) => { headingRefs.current[3] = el; }}>
+            When do you want <strong>your store live?</strong>
+          </h2>
+          <div className="opts" data-q="timeline" role="group" aria-labelledby="h-q3">
+            <button
+              className="opt"
+              type="button"
+              data-v="now"
+              aria-pressed={answers.timeline === 'now'}
+              onClick={() => handleSelectOption('timeline', 'now')}
+            >
+              <span className="radio" />
+              This month
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="1-3"
+              aria-pressed={answers.timeline === '1-3'}
+              onClick={() => handleSelectOption('timeline', '1-3')}
+            >
+              <span className="radio" />
+              In 1–3 months
+            </button>
+            <button
+              className="opt"
+              type="button"
+              data-v="exploring"
+              aria-pressed={answers.timeline === 'exploring'}
+              onClick={() => handleSelectOption('timeline', 'exploring')}
+            >
+              <span className="radio" />
+              Just exploring for now
+            </button>
+          </div>
+        </section>
+
+        {/* 4 · CONTACT */}
+        <section className={`step ${current === 4 ? 'on' : ''}`} data-step="4" aria-labelledby="h-contact">
+          <h2 id="h-contact" tabIndex={-1} ref={(el) => { headingRefs.current[4] = el; }}>
+            Your store plan <strong>is ready</strong>
+          </h2>
+          <p className="helper">Tell us where to send it. We’ll reply on WhatsApp with your plan and price.</p>
+
+          {!isBuyer && (
+            <div className="plan" id="plan">
+              <img
+                className="plan-img"
+                id="plan-img"
+                src={planImgSrc}
+                alt=""
+                width={420}
+                height={865}
+              />
+              <div className="plan-body">
+                <div className="plan-t">
+                  <span className="plan-k">Your plan</span> Shopify store + payments, delivery &amp; Meta ads
+                </div>
+                <div className="chips" id="plan-chips">
+                  {planChips.map((c, idx) => (
+                    <span key={idx}>{c}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <form id="form" method="post" action="#" autoComplete="on" noValidate onSubmit={handleSubmit}>
+            <div className={`field ${nameInvalid ? 'invalid' : ''}`} id="f-name">
+              <label htmlFor="lq-name">Your name</label>
+              <input
+                ref={nameInputRef}
+                className="input"
+                id="lq-name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                autoCapitalize="words"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="next"
+                placeholder="e.g. Rahul Sharma"
+                aria-describedby="e-name"
+                value={name}
+                onChange={handleNameChange}
+                required
+              />
+              <div className="err" id="e-name">
+                Please enter your name
+              </div>
+            </div>
+
+            <div className={`field ${phoneInvalid ? 'invalid' : ''}`} id="f-phone">
+              <label htmlFor="lq-phone">WhatsApp number</label>
+              <div className="phone">
+                <span className="cc" aria-hidden="true">
+                  +91
+                </span>
+                <input
+                  ref={phoneInputRef}
+                  id="lq-phone"
+                  name="tel"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  enterKeyHint="next"
+                  placeholder="10-digit number"
+                  aria-describedby="e-phone"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  onBlur={handlePhoneBlur}
+                  required
+                />
+              </div>
+              <div className="err" id="e-phone">
+                Enter a valid 10-digit WhatsApp number
+              </div>
+            </div>
+
+            <div className={`field ${linkInvalid ? 'invalid' : ''}`} id="f-link">
+              <label htmlFor="lq-link">
+                Store or Instagram link <span className="opt-l">(optional)</span>
+              </label>
+              <input
+                ref={linkInputRef}
+                className="input"
+                id="lq-link"
+                name="url"
+                type="text"
+                inputMode="url"
+                autoComplete="url"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="done"
+                placeholder="instagram.com/yourbrand or amazon.in/…"
+                aria-describedby="h-link e-link"
+                value={link}
+                onChange={handleLinkChange}
+              />
+              <div className="fhelp" id="h-link">
+                Sharing this gets you a more accurate plan.
+              </div>
+              <div className="err" id="e-link">
+                This doesn’t look like a link. Leave it blank if you don’t have one.
+              </div>
+            </div>
+
+            <div className="hp" aria-hidden="true">
+              <label htmlFor="lq-hp">Leave empty</label>
+              <input
+                id="lq-hp"
+                name="lq_hp_x"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={hp}
+                onChange={(e) => setHp(e.target.value)}
+              />
+            </div>
+
+            <button className="cta" id="submit" type="submit" disabled={isSubmitting}>
+              <span id="submit-text">
+                {isSubmitting ? 'Saving…' : 'Get my store plan on WhatsApp →'}
+              </span>
+            </button>
+          </form>
+
+          <p className="trust">
+            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="#0A0A0A" />
+              <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Your number is only used to send your plan. No spam.
+          </p>
+        </section>
+
+        {/* 5 · WHATSAPP REDIRECT */}
+        <section className={`step done ${current === 5 ? 'on' : ''}`} data-step="5" aria-labelledby="h-done">
+          <div className="tick">
+            <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </div>
+          <h2 id="h-done" tabIndex={-1} ref={(el) => { headingRefs.current[5] = el; }}>
+            Done, <strong id="done-name">{doneName}</strong>! Opening WhatsApp…
+          </h2>
+          <p className="helper">
+            Just tap <b>Send</b> in WhatsApp. Our team will reply with your store plan and price.
+          </p>
+          <div className="count" role="status" aria-live="polite">
+            <span className="ring" id="ring">
+              {returnedVisible ? '!' : countdown}
+            </span>
+            <span id="count-text">{countText}</span>
+          </div>
+          <a
+            className={`cta ${isPulse ? 'pulse' : ''}`}
+            id="wa-btn"
+            href={waUrl}
+            onClick={() => {
+              clearAllTimers();
+              sendContact('whatsapp_button');
+            }}
+          >
+            Open WhatsApp now
+          </a>
+          <p className="returned" id="returned" hidden={!returnedVisible}>
+            Didn’t open? Tap the button above to send your message.
+          </p>
+          <p className="hours" id="hours">
+            Replies usually within 1 hour, 10 am – 8 pm.
+          </p>
+        </section>
+      </div>
+    </main>
   );
 }
 

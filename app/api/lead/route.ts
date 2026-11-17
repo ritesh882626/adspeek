@@ -115,7 +115,7 @@ export async function POST(req: Request) {
     !!b.leadId && (b.name || '').length >= 2 &&
     /^\+91[6-9]\d{9}$/.test(b.phone || '') &&
     (!b.email || /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/.test(b.email)) &&
-    !!b.product;
+    !!b.business;
   if (!valid) return Response.json({ ok: false, error: 'invalid' }, { status: 400 });
 
   const ip = clientIp(req);
